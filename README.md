@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# Dashboard de Gestión de Ventas con React y Ant Design
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Una aplicación web moderna para la gestión de ventas, desarrollada con React y Ant Design, optimizada para el formato monetario chileno (CLP).
 
-## Available Scripts
+## Índice
 
-In the project directory, you can run:
+- [Características](#características)
+- [Requisitos Previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Uso](#uso)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologías](#tecnologías)
+- [Estructura del Proyecto](#estructura-del-proyecto)
 
-### `npm start`
+## Características
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 📊 Dashboard interactivo con gráficos y estadísticas
+- 💰 Formato monetario chileno (CLP) con separadores de miles
+- 📱 Diseño responsive para dispositivos móviles y escritorio
+- 💾 Persistencia de datos con localStorage
+- 🔍 Filtrado y búsqueda avanzada de ventas
+- 📝 Registro de nuevas ventas con validación de datos
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Requisitos Previos
 
-### `npm test`
+Antes de comenzar, asegúrate de tener instalado:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- [Node.js](https://nodejs.org/) (versión 14.0.0 o superior)
+- [npm](https://www.npmjs.com/) (normalmente viene con Node.js)
+- [Git](https://git-scm.com/) para clonar el repositorio
 
-### `npm run build`
+## Instalación
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Clonar el Repositorio
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone https://github.com/tu-usuario/react-dashboard-ui.git
+cd react-dashboard-ui
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2. Instalar Dependencias
 
-### `npm run eject`
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3. Configuración del Entorno
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+No se requiere configuración adicional para el entorno de desarrollo local.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Uso
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Iniciar el Servidor de Desarrollo
 
-## Learn More
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Esto iniciará el servidor de desarrollo en [http://localhost:3000](http://localhost:3000).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Compilar para Producción
 
-### Code Splitting
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Funcionalidades
 
-### Analyzing the Bundle Size
+### Dashboard Principal
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+El dashboard principal muestra una visión general del negocio con:
 
-### Making a Progressive Web App
+- **Tarjetas de Resumen**: Muestran métricas clave como ventas totales, promedio diario y tendencias.
+- **Gráficos Interactivos**: Visualización de datos de ventas por período y categoría.
+- **Ventas Recientes**: Últimas ventas registradas en el sistema.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Gestión de Ventas
 
-### Advanced Configuration
+- **Registro de Ventas**: Formulario optimizado para agregar nuevas ventas con validación de datos.
+- **Tabla de Ventas**: Visualización detallada de todas las ventas con opciones de filtrado y ordenamiento.
+- **Acciones Rápidas**: Eliminar ventas directamente desde la tabla.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Características del Formulario de Ventas
 
-### Deployment
+- **Formato CLP**: Los montos se muestran y se ingresan con formato chileno (puntos como separadores de miles).
+- **Teclado Numérico**: En dispositivos móviles, se abre automáticamente el teclado numérico para facilitar la entrada de datos.
+- **Validación**: Verificación de datos antes de registrar la venta para evitar errores.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Persistencia de Datos
 
-### `npm run build` fails to minify
+- Los datos de ventas se almacenan en localStorage, permitiendo que la información persista entre sesiones.
+- Las fechas se convierten correctamente entre formato string y objeto Date para mantener la integridad de los datos.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Navegación Adaptativa
+
+- **Título Dinámico**: El encabezado muestra el título de la sección actual para mejor orientación.
+- **Barra Lateral Responsive**: Se adapta a diferentes tamaños de pantalla, con modo colapsable en dispositivos móviles.
+- **Botón Flotante**: En dispositivos móviles, un botón flotante permite agregar ventas rápidamente desde cualquier sección.
+
+## Tecnologías
+
+- **Framework**: [React](https://reactjs.org/)
+- **UI Components**: [Ant Design](https://ant.design/)
+- **Gráficos**: [Recharts](https://recharts.org/)
+- **Enrutamiento**: [React Router](https://reactrouter.com/)
+- **Gestión de Estado**: React Context API
+- **Almacenamiento**: localStorage
+
+## Estructura del Proyecto
+
+```
+src/
+├── components/           # Componentes reutilizables
+│   ├── charts/           # Componentes de gráficos
+│   ├── dashboard/        # Componentes específicos del dashboard
+│   └── layout/           # Componentes de estructura (header, sidebar)
+├── context/              # Contextos de React para gestión de estado
+├── pages/                # Páginas de la aplicación
+└── utils/                # Utilidades y funciones auxiliares
+```
+
+---
+
+Desarrollado con ❤️ para la gestión eficiente de ventas con formato chileno.

@@ -1,3 +1,5 @@
+/* Estilos globales para la aplicación */
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +7,43 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Estilos para el logo */
+.logo {
+  color: #1890ff;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Estilos para títulos */
+h1, h2, h3, h4, h5, h6 {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .ant-layout-content {
+    padding: 16px !important;
+  }
+  
+  .ant-card {
+    margin-bottom: 16px;
+  }
+  
+  .ant-row {
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+  }
+  
+  .ant-col {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
 }
