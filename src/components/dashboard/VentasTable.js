@@ -50,30 +50,9 @@ const VentasTable = () => {
     setFilteredData(filtered);
   };
   
-  // Renderizar el color del tag según el tipo de pago
-  const renderTipoPagoTag = (tipoPago) => {
-    let color;
-    let text;
-    
-    switch (tipoPago) {
-      case 'efectivo':
-        color = 'green';
-        text = 'Efectivo';
-        break;
-      case 'debito':
-        color = 'blue';
-        text = 'Débito';
-        break;
-      case 'credito':
-        color = 'orange';
-        text = 'Crédito';
-        break;
-      default:
-        color = 'default';
-        text = tipoPago;
-    }
-    
-    return <Tag color={color}>{text}</Tag>;
+  // Función para formatear el monto en pesos chilenos
+  const formatearMontoCLP = (monto) => {
+    return `$${monto.toLocaleString('es-CL')}`;
   };
   
   // Columnas para la tabla
@@ -101,44 +80,58 @@ const VentasTable = () => {
         }
         return 0;
       },
-      width: 150
     },
     {
       title: 'Vendedor',
       dataIndex: 'vendedor',
       key: 'vendedor',
-      sorter: (a, b) => a.vendedor.localeCompare(b.vendedor)
+      sorter: (a, b) => a.vendedor.localeCompare(b.vendedor),
+      render: (text) => (
+        <span style={{ fontWeight: 500 }}>{text}</span>
+      )
     },
     {
       title: 'Monto',
       dataIndex: 'monto',
       key: 'monto',
-      render: (monto) => `$${monto.toLocaleString('es-CL')}`,
+      render: (text) => (
+        <span style={{ fontWeight: 600, color: '#52c41a' }}>
+          {formatearMontoCLP(text)}
+        </span>
+      ),
       sorter: (a, b) => a.monto - b.monto,
-      width: 150
     },
     {
       title: 'Tipo de Pago',
       dataIndex: 'tipoPago',
       key: 'tipoPago',
-      render: renderTipoPagoTag,
-      filters: [
-        { text: 'Efectivo', value: 'efectivo' },
-        { text: 'Débito', value: 'debito' },
-        { text: 'Crédito', value: 'credito' }
-      ],
-      onFilter: (value, record) => record.tipoPago === value,
-      width: 120
+      sorter: (a, b) => a.tipoPago.localeCompare(b.tipoPago),
+      render: (text) => {
+        let color = 'blue';
+        if (text === 'efectivo') color = 'green';
+        if (text === 'credito') color = 'volcano';
+        if (text === 'debito') color = 'geekblue';
+        
+        return (
+          <Tag color={color} style={{ padding: '2px 10px', borderRadius: '4px' }}>
+            {text === 'efectivo' ? 'Efectivo' : 
+             text === 'credito' ? 'Tarjeta de Crédito' : 
+             text === 'debito' ? 'Tarjeta de Débito' : text}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Acciones',
       key: 'acciones',
+      width: 120,
       render: (_, record) => (
-        <Space size="small">
+        <Space size="middle">
           <Button 
             type="text" 
-            icon={<EditOutlined />} 
-            onClick={() => message.info('Funcionalidad de edición en desarrollo')}
+            icon={<EditOutlined style={{ fontSize: '16px' }} />} 
+            onClick={() => console.log('Editar venta', record.id)}
+            style={{ background: '#f0f5ff', borderRadius: '4px' }}
           />
           <Popconfirm
             title="¿Está seguro de eliminar esta venta?"
@@ -149,13 +142,13 @@ const VentasTable = () => {
             <Button 
               type="text" 
               danger 
-              icon={<DeleteOutlined />} 
+              icon={<DeleteOutlined style={{ fontSize: '16px' }} />} 
+              style={{ background: '#fff1f0', borderRadius: '4px' }}
             />
           </Popconfirm>
         </Space>
       ),
-      width: 100
-    }
+    },
   ];
   
   return (

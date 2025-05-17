@@ -17,6 +17,12 @@ import {
 import MainLayout from '../components/layout/MainLayout';
 import { useVentas } from '../context/VentasContext';
 
+// Importar datos de reportes desde el archivo JSON
+import reportesData from '../data/reportes.json';
+
+// Importar estilos CSS
+import '../styles/pages/Reportes.css';
+
 // Extraemos los componentes necesarios de Typography
 const { Paragraph } = Typography;
 
@@ -52,12 +58,113 @@ const Reportes = () => {
     // Aquí iría la lógica real para generar y descargar el reporte
   };
   
+  /**
+   * Obtiene el icono correspondiente según el nombre del icono en el JSON
+   * @param {string} iconName - Nombre del icono
+   * @returns {JSX.Element} Componente de icono
+   */
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      'BarChartOutlined': <BarChartOutlined className="report-icon" style={{ fontSize: '72px' }} />,
+      'LineChartOutlined': <LineChartOutlined className="report-icon" style={{ fontSize: '72px' }} />,
+      'TableOutlined': <TableOutlined className="report-icon" style={{ fontSize: '72px' }} />,
+      'PieChartOutlined': <PieChartOutlined className="report-icon" style={{ fontSize: '72px' }} />,
+      'CalendarOutlined': <CalendarOutlined className="report-icon" style={{ fontSize: '72px' }} />,
+      'DownloadOutlined': <DownloadOutlined className="report-icon" style={{ fontSize: '72px' }} />
+    };
+    return iconMap[iconName] || <BarChartOutlined className="report-icon" style={{ fontSize: '72px' }} />;
+  };
+
+  /**
+   * Renderiza los botones de descarga para un reporte
+   * @param {string} reportId - ID del reporte
+   * @param {Array} formatos - Formatos disponibles para descarga
+   * @returns {JSX.Element} Componente con botones de descarga
+   */
+  const renderDownloadButtons = (reportId, formatos) => {
+    return (
+      <Space direction="vertical" className="download-buttons-container">
+        {formatos.includes('excel') && (
+          <Button 
+            icon={<FileExcelOutlined />} 
+            onClick={() => handleDownload(reportId, 'excel')}
+            disabled={!hayDatos}
+            block
+            className="download-button"
+            aria-label={`Descargar reporte en Excel`}
+          >
+            Descargar Excel
+          </Button>
+        )}
+        {formatos.includes('pdf') && (
+          <Button 
+            icon={<FilePdfOutlined />} 
+            onClick={() => handleDownload(reportId, 'pdf')}
+            disabled={!hayDatos}
+            block
+            className="download-button"
+            aria-label={`Descargar reporte en PDF`}
+          >
+            Descargar PDF
+          </Button>
+        )}
+        {formatos.includes('csv') && (
+          <Button 
+            icon={<DownloadOutlined />} 
+            onClick={() => handleDownload(reportId, 'csv')}
+            disabled={!hayDatos}
+            block
+            className="download-button"
+            aria-label={`Descargar datos en CSV`}
+          >
+            Descargar CSV
+          </Button>
+        )}
+      </Space>
+    );
+  };
+
+  /**
+   * Renderiza una card de reporte
+   * @param {Object} reporte - Datos del reporte
+   * @returns {JSX.Element} Componente Card de reporte
+   */
+  const renderReportCard = (reporte) => {
+    const headerClass = `report-card-header ${reporte.id.toLowerCase()}-header`;
+    
+    return (
+      <Col xs={24} md={12} lg={8} key={reporte.id}>
+        <Card 
+          hoverable
+          className="report-card"
+          cover={
+            <div className={headerClass} style={{ background: reporte.color }}>
+              {getIconComponent(reporte.icono)}
+            </div>
+          }
+        >
+          <Card.Meta
+            title={reporte.titulo}
+            description={
+              <>
+                <Paragraph>
+                  {reporte.descripcion}
+                </Paragraph>
+                {renderDownloadButtons(reporte.id.toLowerCase(), reporte.formatos)}
+              </>
+            }
+          />
+        </Card>
+      </Col>
+    );
+  };
+
   return (
     <MainLayout currentPage="Reportes">
       {/* Encabezado de la página */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Reportes y Estadísticas</h1>
-        <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
+      <div className="reportes-header">
+        <h1 className="reportes-title">Reportes y Estadísticas</h1>
+        <p className="reportes-description">
           Descarga informes detallados de las ventas y tendencias
         </p>
       </div>
@@ -69,356 +176,18 @@ const Reportes = () => {
           description="Los reportes están disponibles pero pueden no contener información completa hasta que haya más datos disponibles."
           type="info"
           showIcon
-          style={{ marginBottom: 24 }}
+          className="data-alert"
         />
       )}
       
       {/* Primera fila de cards de reportes */}
-      <Row gutter={[16, 16]}>
-        {/* Card de Reporte de Ventas Diarias */}
-        <Col xs={24} md={12} lg={8}>
-          <Card 
-            hoverable
-            style={{ height: '100%', marginBottom: 16 }} // Altura uniforme y margen para separación en móviles
-            className="report-card" // Clase para estilos adicionales en CSS
-            cover={
-              <div style={{ 
-                background: '#1890ff', 
-                height: 120, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                color: 'white',
-                borderTopLeftRadius: '8px', // Bordes redondeados para mejor estética
-                borderTopRightRadius: '8px'
-              }}>
-                <BarChartOutlined style={{ fontSize: 48 }} />
-              </div>
-            }
-          >
-            <Card.Meta
-              title="Reporte de Ventas Diarias"
-              description={
-                <>
-                  <Paragraph>
-                    Este reporte incluye un análisis detallado de las ventas realizadas en los últimos 7 días, 
-                    agrupadas por día, con totales y promedios.
-                  </Paragraph>
-                  {/* Botones de descarga en formato vertical para mejor UX */}
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Button 
-                      icon={<FileExcelOutlined />} 
-                      onClick={() => handleDownload('ventas-diarias', 'excel')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                    >
-                      Descargar Excel
-                    </Button>
-                    <Button 
-                      icon={<FilePdfOutlined />} 
-                      onClick={() => handleDownload('ventas-diarias', 'pdf')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                    >
-                      Descargar PDF
-                    </Button>
-                  </Space>
-                </>
-              }
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Reporte de Tendencias */}
-        <Col xs={24} md={12} lg={8}>
-          <Card 
-            hoverable
-            style={{ height: '100%', marginBottom: 16 }}
-            className="report-card"
-            cover={
-              <div style={{ 
-                background: '#52c41a', 
-                height: 120, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                color: 'white',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px'
-              }}>
-                <LineChartOutlined style={{ fontSize: 48 }} />
-              </div>
-            }
-          >
-            <Card.Meta
-              title="Reporte de Tendencias"
-              description={
-                <>
-                  <Paragraph>
-                    Análisis de tendencias de ventas por períodos (diario, semanal, mensual) con 
-                    comparativas y proyecciones.
-                  </Paragraph>
-                  {/* Botones de descarga en formato vertical */}
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Button 
-                      icon={<FileExcelOutlined />} 
-                      onClick={() => handleDownload('tendencias', 'excel')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                    >
-                      Descargar Excel
-                    </Button>
-                    <Button 
-                      icon={<FilePdfOutlined />} 
-                      onClick={() => handleDownload('tendencias', 'pdf')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                    >
-                      Descargar PDF
-                    </Button>
-                  </Space>
-                </>
-              }
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Reporte de Vendedores */}
-        <Col xs={24} md={12} lg={8}>
-          <Card 
-            hoverable
-            style={{ height: '100%', marginBottom: 16 }}
-            className="report-card"
-            cover={
-              <div style={{ 
-                background: '#722ed1', 
-                height: 120, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                color: 'white',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px'
-              }}>
-                <TableOutlined style={{ fontSize: 48 }} />
-              </div>
-            }
-          >
-            <Card.Meta
-              title="Reporte de Vendedores"
-              description={
-                <>
-                  <Paragraph>
-                    Desempeño detallado de cada vendedor, incluyendo total de ventas, 
-                    promedio, y porcentaje de participación.
-                  </Paragraph>
-                  {/* Botones de descarga en formato vertical */}
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Button 
-                      icon={<FileExcelOutlined />} 
-                      onClick={() => handleDownload('vendedores', 'excel')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                    >
-                      Descargar Excel
-                    </Button>
-                    <Button 
-                      icon={<FilePdfOutlined />} 
-                      onClick={() => handleDownload('vendedores', 'pdf')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                    >
-                      Descargar PDF
-                    </Button>
-                  </Space>
-                </>
-              }
-            />
-          </Card>
-        </Col>
+      <Row gutter={[16, 16]} className="reports-row">
+        {reportesData.slice(0, 3).map(reporte => renderReportCard(reporte))}
       </Row>
       
       {/* Segunda fila de cards de reportes */}
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        {/* Card de Reporte de Métodos de Pago */}
-        <Col xs={24} md={12} lg={8}>
-          <Card 
-            hoverable
-            style={{ height: '100%', marginBottom: 16 }}
-            className="report-card"
-            cover={
-              <div style={{ 
-                background: '#fa8c16', 
-                height: 120, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                color: 'white',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px'
-              }}>
-                <PieChartOutlined style={{ fontSize: 48 }} />
-              </div>
-            }
-          >
-            <Card.Meta
-              title="Reporte de Métodos de Pago"
-              description={
-                <>
-                  <Paragraph>
-                    Análisis de ventas por método de pago (efectivo, débito, crédito) 
-                    con porcentajes y comparativas.
-                  </Paragraph>
-                  {/* Botones de descarga en formato vertical */}
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Button 
-                      icon={<FileExcelOutlined />} 
-                      onClick={() => handleDownload('metodos-pago', 'excel')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                      aria-label="Descargar reporte en Excel"
-                    >
-                      Descargar Excel
-                    </Button>
-                    <Button 
-                      icon={<FilePdfOutlined />} 
-                      onClick={() => handleDownload('metodos-pago', 'pdf')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                      aria-label="Descargar reporte en PDF"
-                    >
-                      Descargar PDF
-                    </Button>
-                  </Space>
-                </>
-              }
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Reporte Mensual Consolidado */}
-        <Col xs={24} md={12} lg={8}>
-          <Card 
-            hoverable
-            style={{ height: '100%', marginBottom: 16 }}
-            className="report-card"
-            cover={
-              <div style={{ 
-                background: '#eb2f96', 
-                height: 120, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                color: 'white',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px'
-              }}>
-                <CalendarOutlined style={{ fontSize: 48 }} />
-              </div>
-            }
-          >
-            <Card.Meta
-              title="Reporte Mensual Consolidado"
-              description={
-                <>
-                  <Paragraph>
-                    Informe mensual completo con todas las métricas importantes, 
-                    resumen ejecutivo y proyecciones.
-                  </Paragraph>
-                  {/* Botones de descarga en formato vertical */}
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Button 
-                      icon={<FileExcelOutlined />} 
-                      onClick={() => handleDownload('mensual', 'excel')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                      aria-label="Descargar reporte mensual en Excel"
-                    >
-                      Descargar Excel
-                    </Button>
-                    <Button 
-                      icon={<FilePdfOutlined />} 
-                      onClick={() => handleDownload('mensual', 'pdf')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                      aria-label="Descargar reporte mensual en PDF"
-                    >
-                      Descargar PDF
-                    </Button>
-                  </Space>
-                </>
-              }
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Exportar Datos Completos */}
-        <Col xs={24} md={12} lg={8}>
-          <Card 
-            hoverable
-            style={{ height: '100%', marginBottom: 16 }}
-            className="report-card"
-            cover={
-              <div style={{ 
-                background: '#f5222d', 
-                height: 120, 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                color: 'white',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px'
-              }}>
-                <DownloadOutlined style={{ fontSize: 48 }} />
-              </div>
-            }
-          >
-            <Card.Meta
-              title="Exportar Datos Completos"
-              description={
-                <>
-                  <Paragraph>
-                    Exportación completa de todos los datos de ventas en formato crudo 
-                    para análisis personalizado.
-                  </Paragraph>
-                  {/* Botones de descarga en formato vertical */}
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Button 
-                      icon={<FileExcelOutlined />} 
-                      onClick={() => handleDownload('datos-completos', 'excel')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                      aria-label="Descargar datos completos en Excel"
-                    >
-                      Descargar Excel
-                    </Button>
-                    <Button 
-                      icon={<FilePdfOutlined />} 
-                      onClick={() => handleDownload('datos-completos', 'pdf')}
-                      disabled={!hayDatos}
-                      block
-                      className="download-button"
-                      aria-label="Descargar datos completos en PDF"
-                    >
-                      Descargar PDF
-                    </Button>
-                  </Space>
-                </>
-              }
-            />
-          </Card>
-        </Col>
+      <Row gutter={[16, 16]} className="reports-row">
+        {reportesData.slice(3).map(reporte => renderReportCard(reporte))}
       </Row>
     </MainLayout>
   );

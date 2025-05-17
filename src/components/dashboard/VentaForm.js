@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
-import { Form, Input, Select, DatePicker, Button, message } from 'antd';
-import { DollarOutlined, UserOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Button, message } from 'antd';
+import { DollarOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
-import moment from 'moment';
 
 const { Option } = Select;
 
@@ -44,11 +43,11 @@ const VentaForm = ({ onCancel }) => {
         return;
       }
       
-      // Crear la nueva venta
+      // Crear la nueva venta con fecha actual y vendedor predeterminado
       const nuevaVenta = {
         id: generateId(),
-        fechaHora: values.fechaHora.toDate(),
-        vendedor: values.vendedor,
+        fechaHora: new Date(), // Fecha y hora actual
+        vendedor: "Laura Fernández", // Vendedor de ejemplo (simulando usuario logueado)
         monto: montoNumerico,
         tipoPago: values.tipoPago
       };
@@ -74,20 +73,10 @@ const VentaForm = ({ onCancel }) => {
       layout="vertical"
       onFinish={handleSubmit}
       initialValues={{
-        fechaHora: moment(),
-        vendedor: '',
         monto: '',
         tipoPago: 'efectivo'
       }}
     >
-      <Form.Item
-        name="vendedor"
-        label="Vendedor"
-        rules={[{ required: true, message: 'Por favor ingrese el nombre del vendedor' }]}
-      >
-        <Input prefix={<UserOutlined />} placeholder="Nombre del vendedor" />
-      </Form.Item>
-      
       <Form.Item
         name="monto"
         label="Monto (CLP)"
@@ -98,20 +87,7 @@ const VentaForm = ({ onCancel }) => {
           placeholder="Monto en pesos chilenos" 
           onChange={formatearMontoCLP}
           inputMode="numeric"
-        />
-      </Form.Item>
-      
-      <Form.Item
-        name="fechaHora"
-        label="Fecha y Hora"
-        rules={[{ required: true, message: 'Por favor seleccione la fecha y hora' }]}
-      >
-        <DatePicker 
-          showTime 
-          format="DD/MM/YYYY HH:mm" 
-          placeholder="Seleccione fecha y hora"
-          style={{ width: '100%' }}
-          prefix={<CalendarOutlined />}
+          autoFocus
         />
       </Form.Item>
       
@@ -122,15 +98,25 @@ const VentaForm = ({ onCancel }) => {
       >
         <Select placeholder="Seleccione el tipo de pago">
           <Option value="efectivo">Efectivo</Option>
-          <Option value="debito">Débito</Option>
-          <Option value="credito">Crédito</Option>
+          <Option value="debito">Tarjeta de Débito</Option>
+          <Option value="credito">Tarjeta de Crédito</Option>
         </Select>
       </Form.Item>
       
-      <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-        <Button style={{ marginRight: 8 }} onClick={onCancel}>Cancelar</Button>
-        <Button type="primary" htmlType="submit">Guardar</Button>
-      </Form.Item>
+      <div className="form-info">
+        <p className="form-info-text">
+          <strong>Vendedor:</strong> Laura Fernández (usuario actual)
+        </p>
+      </div>
+      
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '24px' }}>
+        <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
+          Guardar
+        </Button>
+        <Button onClick={onCancel}>
+          Cancelar
+        </Button>
+      </div>
     </Form>
   );
 };

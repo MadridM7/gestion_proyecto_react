@@ -1,6 +1,5 @@
 /**
- * @fileoverview Componente que muestra tarjetas de resumen con estadísticas de ventas
- * Organizado en dos filas: totales generales y desglose por método de pago
+ * @fileoverview Componente que muestra tarjetas de resumen con estadísticas clave de ventas
  */
 import React from 'react';
 import { Row, Col, Card, Statistic, Divider } from 'antd';
@@ -10,9 +9,17 @@ import {
   CreditCardOutlined, // Icono para pagos con tarjeta de crédito
   BankOutlined, // Icono para pagos con tarjeta de débito
   WalletOutlined, // Icono para pagos en efectivo
-  NumberOutlined // Icono para cantidad de ventas
+  NumberOutlined, // Icono para cantidad de ventas
+  DollarCircleOutlined,
+  ShoppingCartOutlined,
+  CalculatorOutlined
 } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
+
+// Importar datos del dashboard desde el archivo JSON
+import dashboardData from '../../data/dashboard.json';
+
+import '../../styles/components/dashboard/SummaryCards.css';
 
 /**
  * Componente de tarjetas de resumen para mostrar estadísticas de ventas
@@ -31,124 +38,122 @@ const SummaryCards = () => {
   const formatCLP = (value) => {
     return `$${value.toLocaleString('es-CL')}`;
   };
+
+  /**
+   * Obtiene el icono correspondiente según el nombre del icono en el JSON
+   * @param {string} iconName - Nombre del icono
+   * @returns {JSX.Element} Componente de icono
+   */
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      'DollarCircleOutlined': <DollarCircleOutlined />,
+      'ShoppingCartOutlined': <ShoppingCartOutlined />,
+      'CalculatorOutlined': <CalculatorOutlined />,
+      'WalletOutlined': <WalletOutlined />,
+      'CreditCardOutlined': <CreditCardOutlined />,
+      'BankOutlined': <BankOutlined />,
+      'DollarOutlined': <DollarOutlined />,
+      'NumberOutlined': <NumberOutlined />,
+      'ShoppingOutlined': <ShoppingOutlined />
+    };
+    return iconMap[iconName] || <DollarOutlined />;
+  };
+
+  /**
+   * Renderiza una tarjeta de resumen con los datos proporcionados
+   * @param {Object} cardData - Datos de la tarjeta
+   * @returns {JSX.Element} Componente Card con los datos
+   */
+  const renderSummaryCard = (cardData) => {
+    // Usar datos reales de estadísticas si están disponibles, de lo contrario usar datos del JSON
+    let value;
+    let useJsonValue = false;
+    
+    switch(cardData.id) {
+      case 'total-ventas-dinero':
+        value = estadisticas?.totalVentas;
+        break;
+      case 'total-ventas-cantidad':
+        value = ventas?.length;
+        break;
+      case 'promedio-venta':
+        value = estadisticas?.promedioVentas;
+        break;
+      case 'ventas-efectivo':
+        value = estadisticas?.ventasPorTipo?.efectivo;
+        break;
+      case 'ventas-debito':
+        value = estadisticas?.ventasPorTipo?.debito;
+        break;
+      case 'ventas-credito':
+        value = estadisticas?.ventasPorTipo?.credito;
+        break;
+      default:
+        value = 0;
+    }
+    
+    // Si no hay datos reales, usar el valor del JSON como fallback
+    if (value === undefined || value === null) {
+      useJsonValue = true;
+      // Convertir el valor del JSON a número
+      if (cardData.value) {
+        value = parseFloat(cardData.value.replace('$', '').replace(/,/g, ''));
+      } else {
+        value = 0;
+      }
+    }
+
+    // Determinar si se debe formatear como moneda
+    const needsFormatting = cardData.id !== 'total-ventas-cantidad';
+    
+    // Si no hay datos reales y estamos usando el valor del JSON, mostrar directamente el valor del JSON
+    const displayValue = useJsonValue && cardData.value ? 
+      cardData.value : // Mostrar el valor formateado del JSON
+      (value || 0);   // Mostrar el valor calculado o 0 si es nulo
+    
+    return (
+      <Col xs={24} sm={12} lg={8} key={cardData.id}>
+        <Card 
+          hoverable 
+          className={`summary-card ${cardData.id}-card`}
+        >
+          <Statistic
+            title={cardData.title}
+            value={useJsonValue ? displayValue : value || 0}
+            precision={0}
+            formatter={(val) => {
+              if (useJsonValue && typeof val === 'string') {
+                return val; // Ya está formateado en el JSON
+              }
+              return needsFormatting ? formatCLP(val) : val;
+            }}
+            prefix={getIconComponent(cardData.icon)}
+            valueStyle={{ color: cardData.color, fontSize: '28px' }}
+            className={`statistic-value-${cardData.id}`}
+          />
+          {cardData.description && (
+            <div className="card-description">{cardData.description}</div>
+          )}
+        </Card>
+      </Col>
+    );
+  };
   
   return (
-    <>
+    <div className="summary-cards-container">
       {/* Primera fila: Total ventas (dinero), total ventas (cantidad) y promedio por ventas */}
       <Row gutter={[16, 16]}>
-        {/* Card de Total de Ventas (monto) */}
-        <Col xs={24} sm={12} lg={8}>
-          <Card 
-            hoverable 
-            style={{ height: '100%' }} // Asegura altura uniforme en todas las cards
-            className="summary-card"
-          >
-            <Statistic
-              title="Total Ventas"
-              value={estadisticas?.totalVentas || 0}
-              precision={0}
-              formatter={(value) => formatCLP(value)}
-              prefix={<DollarOutlined />}
-              valueStyle={{ color: '#1890ff', fontSize: '28px' }}
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Cantidad de Ventas */}
-        <Col xs={24} sm={12} lg={8}>
-          <Card 
-            hoverable 
-            style={{ height: '100%' }}
-            className="summary-card"
-          >
-            <Statistic
-              title="Cantidad de Ventas"
-              value={ventas?.length || 0}
-              prefix={<NumberOutlined />}
-              valueStyle={{ color: '#52c41a', fontSize: '28px' }}
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Promedio por Venta */}
-        <Col xs={24} sm={12} lg={8}>
-          <Card 
-            hoverable 
-            style={{ height: '100%' }}
-            className="summary-card"
-          >
-            <Statistic
-              title="Promedio por Venta"
-              value={estadisticas?.promedioVentas || 0}
-              precision={0}
-              formatter={(value) => formatCLP(value)}
-              prefix={<ShoppingOutlined />}
-              valueStyle={{ color: '#722ed1', fontSize: '28px' }}
-            />
-          </Card>
-        </Col>
+        {dashboardData.summaryCards.slice(0, 3).map(cardData => renderSummaryCard(cardData))}
       </Row>
       
       {/* Divisor visual entre las dos secciones de cards */}
-      <Divider style={{ margin: '24px 0 16px' }} />
+      <Divider className="cards-divider" />
       
       {/* Segunda fila: Ventas por débito, crédito y efectivo */}
       <Row gutter={[16, 16]}>
-        {/* Card de Ventas con Débito */}
-        <Col xs={24} sm={12} lg={8}>
-          <Card 
-            hoverable 
-            style={{ height: '100%' }}
-            className="summary-card"
-          >
-            <Statistic
-              title="Ventas Débito"
-              value={estadisticas?.ventasPorTipo?.debito || 0}
-              precision={0}
-              formatter={(value) => formatCLP(value)}
-              prefix={<BankOutlined />}
-              valueStyle={{ color: '#1890ff', fontSize: '24px' }}
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Ventas con Crédito */}
-        <Col xs={24} sm={12} lg={8}>
-          <Card 
-            hoverable 
-            style={{ height: '100%' }}
-            className="summary-card"
-          >
-            <Statistic
-              title="Ventas Crédito"
-              value={estadisticas?.ventasPorTipo?.credito || 0}
-              precision={0}
-              formatter={(value) => formatCLP(value)}
-              prefix={<CreditCardOutlined />}
-              valueStyle={{ color: '#f5222d', fontSize: '24px' }}
-            />
-          </Card>
-        </Col>
-        
-        {/* Card de Ventas en Efectivo */}
-        <Col xs={24} sm={12} lg={8}>
-          <Card 
-            hoverable 
-            style={{ height: '100%' }}
-            className="summary-card"
-          >
-            <Statistic
-              title="Ventas Efectivo"
-              value={estadisticas?.ventasPorTipo?.efectivo || 0}
-              precision={0}
-              formatter={(value) => formatCLP(value)}
-              prefix={<WalletOutlined />}
-              valueStyle={{ color: '#faad14', fontSize: '24px' }}
-            />
-          </Card>
-        </Col>
+        {dashboardData.summaryCards.slice(3).map(cardData => renderSummaryCard(cardData))}
       </Row>
-    </>
+    </div>
   );
 };
 

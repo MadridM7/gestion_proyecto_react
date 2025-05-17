@@ -1,0 +1,107 @@
+[
+  {
+    "id": "V001",
+    "fechaHora": "2025-05-16T08:30:00",
+    "vendedor": "Juan Pérez",
+    "monto": 125000,
+    "tipoPago": "efectivo"
+  },
+  {
+    "id": "V002",
+    "fechaHora": "2025-05-16T09:15:00",
+    "vendedor": "María González",
+    "monto": 78500,
+    "tipoPago": "debito"
+  },
+  {
+    "id": "V003",
+    "fechaHora": "2025-05-16T10:05:00",
+    "vendedor": "Carlos Rodríguez",
+    "monto": 245000,
+    "tipoPago": "credito"
+  },
+  {
+    "id": "V004",
+    "fechaHora": "2025-05-15T14:20:00",
+    "vendedor": "Ana Martínez",
+    "monto": 156000,
+    "tipoPago": "efectivo"
+  },
+  {
+    "id": "V005",
+    "fechaHora": "2025-05-15T11:45:00",
+    "vendedor": "Juan Pérez",
+    "monto": 89000,
+    "tipoPago": "debito"
+  },
+  {
+    "id": "V006",
+    "fechaHora": "2025-05-15T16:30:00",
+    "vendedor": "María González",
+    "monto": 320000,
+    "tipoPago": "credito"
+  },
+  {
+    "id": "V007",
+    "fechaHora": "2025-05-14T09:20:00",
+    "vendedor": "Carlos Rodríguez",
+    "monto": 145000,
+    "tipoPago": "efectivo"
+  },
+  {
+    "id": "V008",
+    "fechaHora": "2025-05-14T13:10:00",
+    "vendedor": "Ana Martínez",
+    "monto": 67500,
+    "tipoPago": "debito"
+  },
+  {
+    "id": "V009",
+    "fechaHora": "2025-05-14T15:45:00",
+    "vendedor": "Juan Pérez",
+    "monto": 198000,
+    "tipoPago": "credito"
+  },
+  {
+    "id": "V010",
+    "fechaHora": "2025-05-13T10:30:00",
+    "vendedor": "María González",
+    "monto": 112000,
+    "tipoPago": "efectivo"
+  },
+  {
+    "id": "V011",
+    "fechaHora": "2025-05-13T14:15:00",
+    "vendedor": "Carlos Rodríguez",
+    "monto": 76000,
+    "tipoPago": "debito"
+  },
+  {
+    "id": "V012",
+    "fechaHora": "2025-05-13T16:50:00",
+    "vendedor": "Ana Martínez",
+    "monto": 285000,
+    "tipoPago": "credito"
+  },
+  {
+    "id": "V013",
+    "fechaHora": "2025-05-12T08:45:00",
+    "vendedor": "Juan Pérez",
+    "monto": 134000,
+    "tipoPago": "efectivo"
+  },
+  {
+    "id": "V014",
+    "fechaHora": "2025-05-12T11:30:00",
+    "vendedor": "María González",
+    "monto": 92500,
+    "tipoPago": "debito"
+  },
+  {
+    "id": "V015",
+    "fechaHora": "2025-05-12T13:20:00",
+    "vendedor": "Carlos Rodríguez",
+    "monto": 187000,
+    "tipoPago": "credito"
+  }
+]

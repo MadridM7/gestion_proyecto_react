@@ -1,0 +1,137 @@
+/**
+ * Estilos para el componente MainLayout
+ */
+
+/* Contenedor principal */
+.main-layout {
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.main-sidebar {
+  overflow: auto;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo de la aplicación */
+.app-logo {
+  height: 60px;
+  margin: 16px 16px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.app-logo:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.logo-icon {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.logo-text-main {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.logo-text-sub {
+  font-size: 12px;
+  opacity: 0.8;
+  letter-spacing: 0.3px;
+}
+
+/* Contenedor del botón de nueva venta */
+.new-sale-button-container {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+/* Separador del menú */
+.menu-divider {
+  margin: 0 0 8px 0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenido principal */
+.main-content-wrapper {
+  transition: all 0.2s;
+}
+
+/* Header principal */
+.main-header {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  z-index: 10;
+  position: relative;
+  border-radius: 8px;
+  margin: 16px 16px 0;
+}
+
+/* Separador entre el botón del sidebar y el título */
+.header-divider {
+  height: 24px;
+  width: 1px;
+  background-color: #8c8c8c;
+  margin: 0 16px;
+  display: inline-block;
+}
+
+/* Botón de colapsar/expandir sidebar */
+.collapse-button {
+  font-size: 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px 0 0 8px;
+}
+
+/* Título de la página */
+.page-title {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Área de contenido principal */
+.main-content-area {
+  margin: 10px 16px;
+  padding: 24px;
+  min-height: 280px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: auto;
+}
+
+/* Estilos para el modal de nueva venta */
+.new-sale-modal .ant-modal-footer {
+  display: none;
+}

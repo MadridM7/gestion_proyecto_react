@@ -1,0 +1,64 @@
+/**
+ * Estilos para la página de Ventas
+ */
+
+/* Encabezado de la página */
+.ventas-header {
+  margin-bottom: 24px;
+}
+
+.ventas-title {
+  margin: 0;
+}
+
+.ventas-description {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* Filtros y controles */
+.ventas-controls {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-control {
+  min-width: 200px;
+}
+
+.date-range-control {
+  min-width: 300px;
+}
+
+/* Tabla de ventas */
+.ventas-table {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Acciones en la tabla */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Formulario de venta */
+.venta-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-item-full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}

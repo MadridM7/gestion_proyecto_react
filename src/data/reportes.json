@@ -1,0 +1,50 @@
+[
+  {
+    "id": "R001",
+    "titulo": "Reporte de Ventas Diarias",
+    "descripcion": "Este reporte incluye un análisis detallado de las ventas realizadas en los últimos 7 días, agrupadas por día, con totales y promedios.",
+    "icono": "BarChartOutlined",
+    "color": "#1890ff",
+    "formatos": ["excel", "pdf"]
+  },
+  {
+    "id": "R002",
+    "titulo": "Reporte de Tendencias",
+    "descripcion": "Análisis de tendencias de ventas por períodos (diario, semanal, mensual) con comparativas y proyecciones.",
+    "icono": "LineChartOutlined",
+    "color": "#52c41a",
+    "formatos": ["excel", "pdf"]
+  },
+  {
+    "id": "R003",
+    "titulo": "Reporte de Vendedores",
+    "descripcion": "Desempeño detallado de cada vendedor, incluyendo total de ventas, promedio, y porcentaje de participación.",
+    "icono": "TableOutlined",
+    "color": "#722ed1",
+    "formatos": ["excel", "pdf"]
+  },
+  {
+    "id": "R004",
+    "titulo": "Reporte de Métodos de Pago",
+    "descripcion": "Análisis de ventas por método de pago (efectivo, débito, crédito) con porcentajes y comparativas.",
+    "icono": "PieChartOutlined",
+    "color": "#fa8c16",
+    "formatos": ["excel", "pdf"]
+  },
+  {
+    "id": "R005",
+    "titulo": "Reporte Mensual Consolidado",
+    "descripcion": "Informe mensual completo con todas las métricas importantes, resumen ejecutivo y proyecciones.",
+    "icono": "CalendarOutlined",
+    "color": "#eb2f96",
+    "formatos": ["excel", "pdf"]
+  },
+  {
+    "id": "R006",
+    "titulo": "Exportar Datos Completos",
+    "descripcion": "Exportación completa de todos los datos de ventas en formato crudo para análisis personalizado.",
+    "icono": "DownloadOutlined",
+    "color": "#f5222d",
+    "formatos": ["excel", "pdf", "csv"]
+  }
+]

@@ -1,0 +1,55 @@
+/**
+ * Estilos para la página de Dashboard
+ */
+
+/* Encabezado del dashboard */
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-title {
+  margin: 0;
+}
+
+.dashboard-description {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* Contenedor de gráficos */
+.dashboard-charts {
+  margin-bottom: 24px;
+}
+
+/* Estilos para los gráficos */
+.chart-container {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  height: 100%;
+}
+
+.chart-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* Sección de ventas recientes */
+.recent-sales-section {
+  margin-top: 24px;
+}
+
+.recent-sales-title {
+  margin-bottom: 16px;
+}
+
+/* Botón flotante para agregar ventas */
+.floating-button {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}

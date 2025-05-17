@@ -1,0 +1,45 @@
+/* Estilos para el placeholder de gráficos */
+.chart-placeholder {
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px dashed #d9d9d9;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 16px;
+  text-align: center;
+  padding: 20px;
+}
+
+.chart-placeholder p {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+}
+
+.chart-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.02),
+    rgba(0, 0, 0, 0.02) 10px,
+    rgba(0, 0, 0, 0.04) 10px,
+    rgba(0, 0, 0, 0.04) 20px
+  );
+  border-radius: 8px;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.chart-placeholder p {
+  position: relative;
+  z-index: 1;
+}

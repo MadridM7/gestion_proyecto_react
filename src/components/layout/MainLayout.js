@@ -15,6 +15,9 @@ import {
 } from '@ant-design/icons';
 import VentaForm from '../dashboard/VentaForm';
 
+// Importar estilos CSS
+import '../../styles/components/layout/MainLayout.css';
+
 // Extraemos los componentes necesarios de Layout
 const { Header, Sider, Content } = Layout;
 
@@ -92,7 +95,7 @@ const MainLayout = ({ children, currentPage }) => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout className="main-layout">
       {/* Sidebar con navegación principal y bordes redondeados */}
       <Sider 
         trigger={null} 
@@ -106,41 +109,19 @@ const MainLayout = ({ children, currentPage }) => {
             setCollapsed(true);
           }
         }}
-        style={{
-          overflow: 'auto',
-          height: '100vh',
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: 100,
-          // Bordes redondeados en el lado derecho del sidebar
-          borderTopRightRadius: '24px',
-          borderBottomRightRadius: '24px',
-          boxShadow: '4px 0 10px rgba(0, 0, 0, 0.1)' // Sombra para efecto de elevación
-        }}
+        className="main-sidebar"
       >
-        {/* Logo de la aplicación con diseño mejorado */}
-        <div className="logo" style={{ 
-          height: '50px', 
-          margin: '16px 16px 24px', 
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: collapsed ? '16px' : '20px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-          letterSpacing: '1px'
-        }}>
-          {/* Mostrar versión corta o completa según el estado del sidebar */}
-          {collapsed ? 'DV' : 'DASHBOARD VENTAS'}
+        {/* Logo de la aplicación */}
+        <div className="app-logo">
+          <span className="logo-icon">📊</span>
+          <span className="logo-text">
+            <span className="logo-text-main">VentaSoft</span>
+            <span className="logo-text-sub">Analytics Pro</span>
+          </span>
         </div>
         
         {/* Botón de Nueva Venta - siempre visible para acceso rápido */}
-        <div style={{ padding: '0 16px', marginBottom: '16px' }}>
+        <div className="new-sale-button-container">
           <Button 
             type="primary" 
             icon={<PlusOutlined />}
@@ -154,7 +135,7 @@ const MainLayout = ({ children, currentPage }) => {
         </div>
         
         {/* Separador visual entre el botón de acción y el menú de navegación */}
-        <Divider style={{ margin: '0 0 8px 0', borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+        <Divider className="menu-divider" />
         
         {/* Menú principal de navegación */}
         <Menu
@@ -190,57 +171,31 @@ const MainLayout = ({ children, currentPage }) => {
         />
       </Sider>
       {/* Contenido principal que se ajusta al estado del sidebar */}
-      <Layout style={{ 
-        marginLeft: collapsed ? 0 : 200, // Ajusta el margen según el estado del sidebar
-        transition: 'all 0.2s' // Animación suave al expandir/colapsar
-      }}>
+      <Layout 
+        className="main-content-wrapper"
+        style={{ marginLeft: collapsed ? 0 : 200 }}
+      >
         {/* Header fijo con botón para colapsar/expandir el sidebar */}
-        <Header
-          style={{
-            padding: 0,
-            background: token.colorBgContainer,
-            position: 'sticky', // Mantiene el header visible al hacer scroll
-            top: 0,
-            zIndex: 1,
-            //width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', // Sombra sutil para separación visual
-            borderRadius: '8px', // Bordes redondeados para mejor estética
-            margin: '8px 8px 0 8px', // Margen para separar del borde de la ventana
-            height: '64px' // Altura fija para consistencia
-          }}
-        >
-          {/* Botón para colapsar/expandir el sidebar con icono dinámico */}
+        <Header className="main-header">
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-              borderRadius: '8px 0 0 8px' // Borde redondeado solo en el lado izquierdo
-            }}
+            className="collapse-button"
             aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
           />
-          {/* Título de la página actual */}
-          <h2 style={{ margin: 0, fontWeight: '500' }}>{currentPage}</h2>
+          <div className="header-divider"></div>
+          <h2 className="page-title">{currentPage}</h2>
         </Header>
         
         {/* Área de contenido principal donde se renderiza el contenido específico de cada página */}
         <Content
+          className="main-content-area"
           style={{
-            margin: '24px 16px',
-            padding: 24,
-            minHeight: 280, // Altura mínima para asegurar que siempre haya espacio suficiente
             background: token.colorBgContainer,
-            borderRadius: token.borderRadiusLG, // Bordes redondeados consistentes con el tema
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)', // Sombra sutil para efecto de elevación
-            overflow: 'auto', // Manejo de desbordamiento para contenido extenso
-            borderTopLeftRadius: collapsed ? token.borderRadiusLG : '24px' // Borde especial cuando el sidebar está visible
+            borderRadius: token.borderRadiusLG,
+            borderTopLeftRadius: collapsed ? token.borderRadiusLG : '24px'
           }}
-          className="main-content-area" // Clase para estilos adicionales en CSS
         >
           {children}
         </Content>
@@ -253,6 +208,7 @@ const MainLayout = ({ children, currentPage }) => {
         onCancel={handleCancel}
         footer={null} // Sin botones de pie de página, se manejan en el formulario
         destroyOnClose // Destruye el contenido al cerrarse para resetear el formulario
+        className="new-sale-modal"
       >
         <VentaForm onCancel={handleCancel} />
       </Modal>

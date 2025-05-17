@@ -1,0 +1,104 @@
+/**
+ * Estilos para el componente SummaryCards
+ */
+
+/* Contenedor de tarjetas */
+.summary-cards-container {
+  margin-bottom: 24px;
+}
+
+/* Estilos para las tarjetas de resumen */
+.summary-card {
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para la descripción de la tarjeta */
+.card-description {
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+/* Estilos para la tendencia */
+.card-trend {
+  margin-top: 8px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.card-trend.up {
+  color: #52c41a;
+}
+
+.card-trend.down {
+  color: #f5222d;
+}
+
+/* Estilos específicos para cada tipo de tarjeta basados en los IDs del JSON */
+.total-ventas-dinero-card .ant-statistic-title {
+  color: #1890ff;
+}
+
+.total-ventas-cantidad-card .ant-statistic-title {
+  color: #52c41a;
+}
+
+.promedio-venta-card .ant-statistic-title {
+  color: #722ed1;
+}
+
+.ventas-debito-card .ant-statistic-title {
+  color: #eb2f96;
+}
+
+.ventas-credito-card .ant-statistic-title {
+  color: #f5222d;
+}
+
+.ventas-efectivo-card .ant-statistic-title {
+  color: #fa8c16;
+}
+
+/* Estilos para los valores de las estadísticas */
+.statistic-value-money {
+  color: #1890ff;
+  font-size: 28px;
+}
+
+.statistic-value-count {
+  color: #52c41a;
+  font-size: 28px;
+}
+
+.statistic-value-average {
+  color: #722ed1;
+  font-size: 28px;
+}
+
+.statistic-value-debit {
+  color: #1890ff;
+  font-size: 24px;
+}
+
+.statistic-value-credit {
+  color: #f5222d;
+  font-size: 24px;
+}
+
+.statistic-value-cash {
+  color: #faad14;
+  font-size: 24px;
+}
+
+/* Divisor entre las filas de tarjetas */
+.cards-divider {
+  margin: 24px 0 16px;
+}

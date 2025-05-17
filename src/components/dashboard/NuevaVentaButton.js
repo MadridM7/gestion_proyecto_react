@@ -3,6 +3,9 @@ import { Button, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import VentaForm from './VentaForm';
 
+// Importar estilos CSS
+import '../../styles/components/dashboard/VentaForm.css';
+
 /**
  * Componente de botón para agregar nuevas ventas
  * @param {Object} props - Propiedades del componente
@@ -42,6 +45,8 @@ const NuevaVentaButton = ({ type = 'primary', size = 'middle', style = {} }) => 
         onCancel={handleCancel}
         footer={null}
         destroyOnClose
+        className="venta-modal"
+        width={400}
       >
         <VentaForm onCancel={handleCancel} />
       </Modal>
