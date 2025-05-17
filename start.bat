@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando la aplicación Dashboard UI...
+node start-all.js

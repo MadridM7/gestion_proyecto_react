@@ -6,9 +6,7 @@
       "value": "$2,345,000",
       "icon": "DollarCircleOutlined",
       "color": "#1890ff",
-      "description": "Total acumulado en el período actual",
-      "trend": "+15%",
-      "trendType": "up"
+      "description": "Total acumulado en el período actual"
     },
     {
       "id": "total-ventas-cantidad",
@@ -16,9 +14,7 @@
       "value": "156",
       "icon": "ShoppingCartOutlined",
       "color": "#52c41a",
-      "description": "Número de transacciones realizadas",
-      "trend": "+8%",
-      "trendType": "up"
+      "description": "Número de transacciones realizadas"   
     },
     {
       "id": "promedio-venta",
@@ -26,9 +22,7 @@
       "value": "$15,032",
       "icon": "CalculatorOutlined",
       "color": "#722ed1",
-      "description": "Valor promedio por transacción",
-      "trend": "+3%",
-      "trendType": "up"
+      "description": "Valor promedio por transacción"
     },
     {
       "id": "ventas-efectivo",
@@ -36,9 +30,7 @@
       "value": "$765,000",
       "icon": "WalletOutlined",
       "color": "#fa8c16",
-      "description": "Total de ventas pagadas en efectivo",
-      "trend": "+5%",
-      "trendType": "up"
+      "description": "Total de ventas pagadas en efectivo"
     },
     {
       "id": "ventas-debito",
@@ -46,9 +38,7 @@
       "value": "$890,000",
       "icon": "CreditCardOutlined",
       "color": "#eb2f96",
-      "description": "Total de ventas pagadas con tarjeta de débito",
-      "trend": "+12%",
-      "trendType": "up"
+      "description": "Total de ventas pagadas con tarjeta de débito"
     },
     {
       "id": "ventas-credito",
@@ -56,9 +46,7 @@
       "value": "$690,000",
       "icon": "BankOutlined",
       "color": "#f5222d",
-      "description": "Total de ventas pagadas con tarjeta de crédito",
-      "trend": "+7%",
-      "trendType": "up"
+      "description": "Total de ventas pagadas con tarjeta de crédito"
     }
   ]
 }

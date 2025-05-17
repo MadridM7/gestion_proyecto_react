@@ -11,7 +11,8 @@ import {
   ShoppingCartOutlined,
   BarChartOutlined,
   UserOutlined,
-  PlusOutlined
+  PlusOutlined,
+  ShoppingOutlined
 } from '@ant-design/icons';
 import VentaForm from '../dashboard/VentaForm';
 
@@ -49,6 +50,8 @@ const MainLayout = ({ children, currentPage }) => {
         return ['3'];
       case 'Usuarios':
         return ['4'];
+      case 'Productos':
+        return ['5'];
       default:
         return ['1'];
     }
@@ -71,6 +74,9 @@ const MainLayout = ({ children, currentPage }) => {
         break;
       case '4':
         window.location.href = '/usuarios';
+        break;
+      case '5':
+        window.location.href = '/productos';
         break;
       case 'nueva-venta':
         showModal();
@@ -154,6 +160,12 @@ const MainLayout = ({ children, currentPage }) => {
               icon: <ShoppingCartOutlined />,
               label: 'Ventas',
               onClick: () => handleNavigation('2')
+            },
+            {
+              key: '5',
+              icon: <ShoppingOutlined />,
+              label: 'Productos',
+              onClick: () => handleNavigation('5')
             },
             {
               key: '3',

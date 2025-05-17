@@ -4,12 +4,14 @@ import { ConfigProvider } from 'antd';
 import esES from 'antd/lib/locale/es_ES';
 import { VentasProvider } from './context/VentasContext';
 import { UsuariosProvider } from './context/UsuariosContext';
+import { ProductosProvider } from './context/ProductosContext';
 
 // Importar páginas
 import Dashboard from './pages/Dashboard';
 import Ventas from './pages/Ventas';
 import Reportes from './pages/Reportes';
 import Usuarios from './pages/Usuarios';
+import Productos from './pages/Productos';
 
 // Importar estilos
 import './App.css';
@@ -20,15 +22,18 @@ function App() {
     <ConfigProvider locale={esES}>
       <VentasProvider>
         <UsuariosProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/ventas" element={<Ventas />} />
-              <Route path="/reportes" element={<Reportes />} />
-              <Route path="/usuarios" element={<Usuarios />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </Router>
+          <ProductosProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/ventas" element={<Ventas />} />
+                <Route path="/reportes" element={<Reportes />} />
+                <Route path="/usuarios" element={<Usuarios />} />
+                <Route path="/productos" element={<Productos />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </Router>
+          </ProductosProvider>
         </UsuariosProvider>
       </VentasProvider>
     </ConfigProvider>

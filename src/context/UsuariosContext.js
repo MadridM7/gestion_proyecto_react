@@ -1,56 +1,29 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
-// Datos de ejemplo para la tabla de usuarios
-const usuariosIniciales = [
-  {
-    id: "U001",
-    nombre: "Juan Pérez",
-    email: "juan.perez@ejemplo.com",
-    rol: "Administrador",
-    activo: true,
-    fechaRegistro: new Date("2025-01-15")
-  },
-  {
-    id: "U002",
-    nombre: "María González",
-    email: "maria.gonzalez@ejemplo.com",
-    rol: "Vendedor",
-    activo: true,
-    fechaRegistro: new Date("2025-02-10")
-  },
-  {
-    id: "U003",
-    nombre: "Carlos Rodríguez",
-    email: "carlos.rodriguez@ejemplo.com",
-    rol: "Vendedor",
-    activo: true,
-    fechaRegistro: new Date("2025-02-25")
-  },
-  {
-    id: "U004",
-    nombre: "Ana Martínez",
-    email: "ana.martinez@ejemplo.com",
-    rol: "Vendedor",
-    activo: true,
-    fechaRegistro: new Date("2025-03-05")
-  },
-  {
-    id: "U005",
-    nombre: "Pedro Sánchez",
-    email: "pedro.sanchez@ejemplo.com",
-    rol: "Supervisor",
-    activo: true,
-    fechaRegistro: new Date("2025-03-15")
-  },
-  {
-    id: "U006",
-    nombre: "Laura Torres",
-    email: "laura.torres@ejemplo.com",
-    rol: "Vendedor",
-    activo: false,
-    fechaRegistro: new Date("2025-04-01")
-  }
-];
+// Importar servicios API
+import { 
+  obtenerUsuarios, 
+  guardarUsuarios as guardarUsuariosAPI,
+  agregarUsuario as agregarUsuarioAPI,
+  actualizarUsuario as actualizarUsuarioAPI,
+  eliminarUsuario as eliminarUsuarioAPI 
+} from '../services/api';
+
+// Importar datos iniciales del archivo JSON
+import usuariosData from '../data/usuarios.json';
+
+// Función para convertir fechas de string a objetos Date
+const procesarUsuarios = (usuarios) => {
+  return usuarios.map(usuario => ({
+    ...usuario,
+    fechaRegistro: usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : new Date(),
+    fechaCreacion: usuario.fechaCreacion ? new Date(usuario.fechaCreacion) : new Date(),
+    ultimoAcceso: usuario.ultimoAcceso ? new Date(usuario.ultimoAcceso) : new Date()
+  }));
+};
+
+// Cargar datos iniciales desde el archivo JSON
+const usuariosIniciales = procesarUsuarios(usuariosData);
 
 // Crear el contexto de usuarios
 const UsuariosContext = createContext();
@@ -75,7 +48,36 @@ export const useUsuarios = () => {
  */
 export const UsuariosProvider = ({ children }) => {
   // Estado para los usuarios
-  const [usuarios, setUsuarios] = useState(usuariosIniciales);
+  const [usuarios, setUsuarios] = useState([]);
+  
+  // Cargar usuarios desde el archivo JSON al iniciar
+  useEffect(() => {
+    const cargarUsuarios = async () => {
+      try {
+        // Intentar cargar los usuarios desde la API
+        const usuariosDesdeAPI = await obtenerUsuarios();
+        
+        if (usuariosDesdeAPI && usuariosDesdeAPI.length > 0) {
+          // Procesar las fechas
+          const usuariosProcesados = procesarUsuarios(usuariosDesdeAPI);
+          setUsuarios(usuariosProcesados);
+          console.log('Usuarios cargados desde el archivo JSON:', usuariosProcesados);
+        } else {
+          // Si no hay usuarios en la API, usar los datos iniciales
+          setUsuarios(usuariosIniciales);
+          // Guardar los datos iniciales en el archivo JSON
+          await guardarUsuariosAPI(usuariosIniciales);
+          console.log('Usuarios iniciales guardados en el archivo JSON');
+        }
+      } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+        // En caso de error, usar los datos iniciales
+        setUsuarios(usuariosIniciales);
+      }
+    };
+    
+    cargarUsuarios();
+  }, []);
   
   // Estado para las estadísticas
   const [estadisticas, setEstadisticas] = useState({
@@ -139,63 +141,115 @@ export const UsuariosProvider = ({ children }) => {
     }
   }, [usuarios]);
   
-  // Función para agregar un nuevo usuario
-  const agregarUsuario = useCallback((nuevoUsuario) => {
-    // Asegurar que la fecha sea un objeto Date
-    const usuarioConFechaCorrecta = {
-      ...nuevoUsuario,
-      fechaRegistro: nuevoUsuario.fechaRegistro instanceof Date ? 
-        nuevoUsuario.fechaRegistro : new Date(),
-      // Asegurar que el ID sea único
-      id: nuevoUsuario.id || `U${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`
-    };
-    
-    // Agregar el nuevo usuario al estado
-    setUsuarios(usuariosActuales => {
-      // Verificar si ya existe un usuario con el mismo ID
-      const existeID = usuariosActuales.some(u => u.id === usuarioConFechaCorrecta.id);
-      if (existeID) {
-        usuarioConFechaCorrecta.id = `U${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`;
+  // Función para agregar un nuevo usuario y guardarlo en el archivo JSON a través de la API
+  const agregarUsuario = useCallback(async (nuevoUsuario) => {
+    try {
+      // Asegurar que la fecha sea un objeto Date
+      const usuarioConFechaCorrecta = {
+        ...nuevoUsuario,
+        fechaRegistro: nuevoUsuario.fechaRegistro instanceof Date ? 
+          nuevoUsuario.fechaRegistro : new Date(),
+        // Asegurar que el ID sea único
+        id: nuevoUsuario.id || `U${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`
+      };
+      
+      // Guardar el nuevo usuario en el archivo JSON a través de la API
+      const respuesta = await agregarUsuarioAPI(usuarioConFechaCorrecta);
+      
+      if (respuesta.success) {
+        // Agregar el nuevo usuario al estado
+        setUsuarios(usuariosActuales => {
+          // Verificar si ya existe un usuario con el mismo ID
+          const existeID = usuariosActuales.some(u => u.id === usuarioConFechaCorrecta.id);
+          if (existeID) {
+            usuarioConFechaCorrecta.id = `U${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`;
+          }
+          return [...usuariosActuales, usuarioConFechaCorrecta];
+        });
+        
+        console.log('Nuevo usuario agregado y guardado en el archivo JSON:', usuarioConFechaCorrecta);
+        return usuarioConFechaCorrecta;
+      } else {
+        console.error('Error al guardar el usuario en el archivo JSON');
+        return null;
       }
-      return [...usuariosActuales, usuarioConFechaCorrecta];
-    });
-    
-    // Mostrar mensaje de confirmación en la consola
-    console.log('Nuevo usuario agregado:', usuarioConFechaCorrecta);
+    } catch (error) {
+      console.error('Error al agregar usuario:', error);
+      return null;
+    }
   }, []);
   
-  // Función para eliminar un usuario
-  const eliminarUsuario = useCallback((id) => {
-    setUsuarios(usuariosActuales => {
-      // Filtrar el usuario a eliminar
-      const usuariosActualizados = usuariosActuales.filter(usuario => usuario.id !== id);
-      console.log(`Usuario con ID ${id} eliminado`);
-      return usuariosActualizados;
-    });
+  // Función para eliminar un usuario y actualizar el archivo JSON a través de la API
+  const eliminarUsuario = useCallback(async (id) => {
+    try {
+      // Eliminar el usuario a través de la API
+      const respuesta = await eliminarUsuarioAPI(id);
+      
+      if (respuesta.success) {
+        // Actualizar el estado local
+        setUsuarios(usuariosActuales => {
+          // Filtrar el usuario a eliminar
+          const usuariosActualizados = usuariosActuales.filter(usuario => usuario.id !== id);
+          console.log(`Usuario con ID ${id} eliminado y actualizado en el archivo JSON`);
+          return usuariosActualizados;
+        });
+        return true;
+      } else {
+        console.error(`Error al eliminar el usuario con ID ${id} del archivo JSON`);
+        return false;
+      }
+    } catch (error) {
+      console.error(`Error al eliminar usuario con ID ${id}:`, error);
+      return false;
+    }
   }, []);
   
-  // Función para actualizar un usuario
-  const actualizarUsuario = useCallback((id, datosActualizados) => {
-    setUsuarios(usuariosActuales => {
-      // Buscar y actualizar el usuario
-      const usuariosActualizados = usuariosActuales.map(usuario => {
-        if (usuario.id === id) {
-          const usuarioActualizado = {
-            ...usuario,
-            ...datosActualizados,
-            // Asegurarse de que la fecha sea válida
-            fechaRegistro: datosActualizados.fechaRegistro instanceof Date ? 
-              datosActualizados.fechaRegistro : 
-              (usuario.fechaRegistro instanceof Date ? usuario.fechaRegistro : new Date())
-          };
-          console.log(`Usuario con ID ${id} actualizado:`, usuarioActualizado);
-          return usuarioActualizado;
-        }
-        return usuario;
-      });
-      return usuariosActualizados;
-    });
-  }, []);
+  // Función para actualizar un usuario y guardarlo en el archivo JSON a través de la API
+  const actualizarUsuario = useCallback(async (id, datosActualizados) => {
+    try {
+      // Buscar el usuario actual
+      const usuarioActual = usuarios.find(u => u.id === id);
+      
+      if (!usuarioActual) {
+        console.error(`No se encontró el usuario con ID ${id}`);
+        return null;
+      }
+      
+      // Crear el usuario actualizado
+      const usuarioActualizado = {
+        ...usuarioActual,
+        ...datosActualizados,
+        // Asegurarse de que la fecha sea válida
+        fechaRegistro: datosActualizados.fechaRegistro instanceof Date ? 
+          datosActualizados.fechaRegistro : 
+          (usuarioActual.fechaRegistro instanceof Date ? usuarioActual.fechaRegistro : new Date())
+      };
+      
+      // Actualizar el usuario en el archivo JSON a través de la API
+      const respuesta = await actualizarUsuarioAPI(id, usuarioActualizado);
+      
+      if (respuesta.success) {
+        // Actualizar el estado local
+        setUsuarios(usuariosActuales => {
+          return usuariosActuales.map(usuario => {
+            if (usuario.id === id) {
+              return usuarioActualizado;
+            }
+            return usuario;
+          });
+        });
+        
+        console.log(`Usuario con ID ${id} actualizado y guardado en el archivo JSON:`, usuarioActualizado);
+        return usuarioActualizado;
+      } else {
+        console.error(`Error al guardar la actualización del usuario ${id} en el archivo JSON`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Error al actualizar usuario ${id}:`, error);
+      return null;
+    }
+  }, [usuarios]);
   
   // Valor del contexto
   const value = {

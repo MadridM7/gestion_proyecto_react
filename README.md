@@ -1,6 +1,6 @@
 # VentaSoft Analytics Pro - Dashboard de Gestión de Ventas
 
-Una aplicación web moderna para la gestión de ventas, desarrollada con React y Ant Design, optimizada para el formato monetario chileno (CLP). Ofrece una interfaz de usuario mejorada con gráficos interactivos y un diseño intuitivo.
+Una aplicación web moderna para la gestión de ventas, desarrollada con React y Ant Design, optimizada para el formato monetario chileno (CLP). Ofrece una interfaz de usuario mejorada con gráficos interactivos y un diseño intuitivo. Todos los datos se guardan directamente en archivos JSON, lo que permite una persistencia de datos sin necesidad de una base de datos externa.
 
 ## Índice
 
@@ -14,13 +14,16 @@ Una aplicación web moderna para la gestión de ventas, desarrollada con React y
 
 ## Características
 
-- 📊 Dashboard interactivo con gráficos de área y barras personalizados
-- 🏈 Tarjetas de reportes con iconos mejorados y efectos visuales
-- 💰 Formato monetario chileno (CLP) con separadores de miles
-- 📱 Diseño responsive para dispositivos móviles y escritorio
-- 💾 Persistencia de datos con archivos JSON
-- 🔍 Filtrado y búsqueda avanzada de ventas
-- 📝 Registro simplificado de ventas con formulario optimizado
+- 📊 **Dashboard interactivo** con gráficos de área y barras personalizados
+- 🏈 **Tarjetas de reportes** con iconos mejorados y efectos visuales
+- 💰 **Formato monetario chileno (CLP)** con separadores de miles
+- 📱 **Diseño responsive** para dispositivos móviles y escritorio
+- 💾 **Persistencia de datos** con archivos JSON
+- 🔍 **Filtrado y búsqueda avanzada** de ventas, productos y usuarios
+- 📝 **Registro simplificado** de ventas con formulario optimizado
+- 🔄 **Sincronización automática** entre la interfaz y los archivos JSON
+- 💻 **Arquitectura cliente-servidor** con Express para manejar operaciones CRUD
+- 🔥 **API RESTful** para operaciones de datos
 
 ## Requisitos Previos
 
@@ -51,13 +54,33 @@ No se requiere configuración adicional para el entorno de desarrollo local.
 
 ## Uso
 
-### Iniciar el Servidor de Desarrollo
+### Iniciar la Aplicación Completa (Cliente y Servidor)
+
+Utiliza el script de inicio rápido que inicia tanto el servidor API como la aplicación React:
+
+```bash
+# En Windows
+start.bat
+
+# O usando Node.js directamente
+node start-all.js
+```
+
+Esto iniciará:
+- El servidor API en [http://localhost:3001](http://localhost:3001)
+- La aplicación React en [http://localhost:3000](http://localhost:3000)
+
+### Iniciar Solo el Servidor API
+
+```bash
+node server.js
+```
+
+### Iniciar Solo la Aplicación React
 
 ```bash
 npm start
 ```
-
-Esto iniciará el servidor de desarrollo en [http://localhost:3000](http://localhost:3000).
 
 ### Compilar para Producción
 
@@ -67,9 +90,14 @@ npm run build
 
 ## Funcionalidades
 
-### Dashboard Principal Mejorado
+### Sistema de Persistencia de Datos
 
-El dashboard principal ofrece una experiencia visual mejorada con:
+- **Almacenamiento en JSON**: Todos los datos (ventas, productos, usuarios) se guardan directamente en archivos JSON.
+- **API RESTful**: Implementación de endpoints para operaciones CRUD completas en todas las entidades.
+- **Sincronización Automática**: Los cambios en la interfaz se reflejan inmediatamente en los archivos JSON.
+- **Respaldo en LocalStorage**: Sistema de respaldo en caso de fallos en la comunicación con el servidor.
+
+### Dashboard Principal Mejorado
 
 - **Tarjetas de Resumen**: Muestran métricas clave como ventas totales, promedio diario y ventas por tipo de pago, con iconos distintivos y colores temáticos.
 - **Gráficos Interactivos**: 
@@ -77,27 +105,33 @@ El dashboard principal ofrece una experiencia visual mejorada con:
   - **Gráfico de Barras**: Distribución de ventas por tipo de pago con colores personalizados para cada categoría.
 - **Tabla de Ventas Mejorada**: Visualización de ventas con etiquetas de colores para los tipos de pago y mejor formato de datos.
 
-### Página de Reportes Optimizada
+### Gestión de Ventas
 
-- **Tarjetas de Reportes**: Diseño mejorado con iconos más grandes y efectos visuales atractivos.
-- **Animaciones de Gradiente**: Fondos dinámicos para las cabeceras de las tarjetas de reportes.
-- **Botones de Descarga**: Opciones para descargar reportes en diferentes formatos (Excel, PDF, CSV).
+- **Registro de Nuevas Ventas**: Interfaz simplificada para agregar ventas con validación de datos.
+- **Edición y Eliminación**: Funcionalidades completas para modificar o eliminar ventas existentes.
+- **Filtrado y Búsqueda**: Herramientas avanzadas para encontrar ventas por fecha, monto o tipo de pago.
+- **Estadísticas en Tiempo Real**: Cálculo automático de estadísticas basadas en los datos actuales.
 
-### Formulario de Ventas Simplificado
+### Gestión de Productos
 
-- **Entrada Mínima de Datos**: Solo requiere monto y tipo de pago, autocompletando fecha y vendedor.
-- **Formato CLP Automático**: Los montos se formatean automáticamente con separadores de miles.
-- **Interfaz Centrada**: Botones centrados y diseño limpio para mejor experiencia de usuario.
-- **Validación Mejorada**: Verificación instantánea de datos para prevenir errores.
+- **Catálogo de Productos**: Visualización y gestión completa del inventario de productos.
+- **Cálculo Automático de Precios**: Sistema para calcular precios de venta basados en costos y márgenes.
+- **Generación de IDs Únicos**: Asignación automática de identificadores únicos para nuevos productos.
+- **Validación de Datos**: Verificación de la integridad de los datos de productos.
 
-### Mejoras en la Interfaz de Usuario
+### Gestión de Usuarios
 
-- **Header Rediseñado**: Fondo blanco con bordes redondeados y separador oscuro para mejor contraste.
-- **Logo Personalizado**: Nuevo logo con el nombre "VentaSoft Analytics Pro" para una identidad visual más profesional.
-- **Espaciado Optimizado**: Mejor distribución de elementos para evitar superposiciones y mejorar la legibilidad.
-- **Consistencia Visual**: Paleta de colores coherente en toda la aplicación para una experiencia unificada.
+- **Registro de Usuarios**: Sistema para agregar nuevos usuarios con roles y permisos.
+- **Perfiles de Usuario**: Gestión de información detallada de cada usuario.
+- **Control de Acceso**: Diferentes niveles de acceso según el rol del usuario.
+- **Estadísticas de Usuarios**: Seguimiento de la actividad y rendimiento de los usuarios.
 
-### Navegación Adaptativa
+### Arquitectura Cliente-Servidor
+
+- **Servidor Express**: Backend robusto para manejar operaciones de datos.
+- **API REST**: Endpoints bien definidos para todas las operaciones CRUD.
+- **Manejo de Errores**: Sistema completo de captura y gestión de errores.
+- **Scripts de Inicio Unificados**: Herramientas para iniciar toda la aplicación con un solo comando.
 
 - **Barra Lateral Mejorada**: Diseño con bordes redondeados y mejor contraste para facilitar la navegación.
 - **Indicadores Visuales**: Resaltado de la sección actual para mejor orientación del usuario.
@@ -117,17 +151,42 @@ El dashboard principal ofrece una experiencia visual mejorada con:
 ## Estructura del Proyecto
 
 ```
-src/
-│à── components/           # Componentes reutilizables
-│   │à── dashboard/        # Componentes específicos del dashboard (gráficos, tablas, etc.)
-│   └à── layout/           # Componentes de estructura (header, sidebar)
-│à── context/              # Contextos de React para gestión de estado
-│à── data/                 # Archivos JSON con datos de la aplicación
-│à── pages/                # Páginas principales de la aplicación
-│à── styles/               # Archivos CSS organizados por componentes y páginas
-│   │à── components/       # Estilos para componentes específicos
-│   └à── pages/            # Estilos para páginas completas
-└à── utils/                # Utilidades y funciones auxiliares
+react-dashboard-ui/
+│à-- public/               # Archivos públicos y estáticos
+│à-- server/               # Archivos relacionados con el servidor
+│à-- src/                  # Código fuente de la aplicación React
+│   │à-- components/           # Componentes reutilizables
+│   │   │à-- dashboard/        # Componentes del dashboard (gráficos, tablas, cards)
+│   │   │à-- layout/           # Componentes de estructura (header, sidebar)
+│   │   │à-- charts/           # Componentes de gráficos y visualizaciones
+│   │   │à-- reportes/         # Componentes para la sección de reportes
+│   │   │à-- usuarios/         # Componentes para la gestión de usuarios
+│   │à-- context/              # Contextos de React para gestión de estado
+│   │   │à-- VentasContext.js   # Contexto para la gestión de ventas
+│   │   │à-- ProductosContext.js # Contexto para la gestión de productos
+│   │   │à-- UsuariosContext.js # Contexto para la gestión de usuarios
+│   │à-- data/                 # Archivos JSON con datos de la aplicación
+│   │   │à-- ventas.json        # Datos de ventas
+│   │   │à-- productos.json     # Datos de productos
+│   │   │à-- usuarios.json      # Datos de usuarios
+│   │   │à-- dashboard.json     # Datos para el dashboard
+│   │à-- pages/                # Páginas principales de la aplicación
+│   │   │à-- Dashboard.js       # Página principal del dashboard
+│   │   │à-- Ventas.js          # Página de gestión de ventas
+│   │   │à-- Productos.js       # Página de gestión de productos
+│   │   │à-- Usuarios.js        # Página de gestión de usuarios
+│   │   │à-- Reportes.js        # Página de reportes
+│   │à-- services/             # Servicios para comunicación con el servidor
+│   │   │à-- api.js             # Funciones para comunicación con la API
+│   │à-- styles/               # Archivos CSS y estilos
+│   │à-- utils/                # Utilidades y funciones auxiliares
+│   │à-- App.js                # Componente principal de la aplicación
+│   │à-- index.js              # Punto de entrada de React
+│à-- server.js              # Servidor Express para la API
+│à-- start-all.js          # Script para iniciar cliente y servidor juntos
+│à-- start.bat             # Script de inicio rápido para Windows
+│à-- package.json          # Dependencias y scripts
+│à-- README.md             # Documentación del proyecto
 ```
 
 ---

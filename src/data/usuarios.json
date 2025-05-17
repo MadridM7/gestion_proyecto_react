@@ -70,5 +70,13 @@
     "activo": true,
     "fechaCreacion": "2025-03-10T11:45:00",
     "ultimoAcceso": "2025-05-15T15:30:00"
+  },
+  {
+    "nombre": "Martin",
+    "email": "martin@gmail.com",
+    "rol": "Administrador",
+    "fechaRegistro": "2025-05-17T04:00:00.000Z",
+    "activo": true,
+    "id": "U8280"
   }
 ]

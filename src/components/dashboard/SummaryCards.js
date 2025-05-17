@@ -67,49 +67,36 @@ const SummaryCards = () => {
   const renderSummaryCard = (cardData) => {
     // Usar datos reales de estadísticas si están disponibles, de lo contrario usar datos del JSON
     let value;
-    let useJsonValue = false;
     
+    // Primero intentamos obtener los valores reales de las ventas
     switch(cardData.id) {
       case 'total-ventas-dinero':
-        value = estadisticas?.totalVentas;
+        value = estadisticas?.totalVentas || 0;
         break;
       case 'total-ventas-cantidad':
-        value = ventas?.length;
+        value = ventas?.length || 0;
         break;
       case 'promedio-venta':
-        value = estadisticas?.promedioVentas;
+        value = estadisticas?.promedioVentas || 0;
         break;
       case 'ventas-efectivo':
-        value = estadisticas?.ventasPorTipo?.efectivo;
+        value = estadisticas?.ventasPorTipo?.efectivo || 0;
         break;
       case 'ventas-debito':
-        value = estadisticas?.ventasPorTipo?.debito;
+        value = estadisticas?.ventasPorTipo?.debito || 0;
         break;
       case 'ventas-credito':
-        value = estadisticas?.ventasPorTipo?.credito;
+        value = estadisticas?.ventasPorTipo?.credito || 0;
         break;
       default:
         value = 0;
     }
     
-    // Si no hay datos reales, usar el valor del JSON como fallback
-    if (value === undefined || value === null) {
-      useJsonValue = true;
-      // Convertir el valor del JSON a número
-      if (cardData.value) {
-        value = parseFloat(cardData.value.replace('$', '').replace(/,/g, ''));
-      } else {
-        value = 0;
-      }
-    }
+    // Siempre usamos los valores reales, incluso si son 0
+    // Esto asegura que se muestre la información correcta en el dashboard
 
     // Determinar si se debe formatear como moneda
     const needsFormatting = cardData.id !== 'total-ventas-cantidad';
-    
-    // Si no hay datos reales y estamos usando el valor del JSON, mostrar directamente el valor del JSON
-    const displayValue = useJsonValue && cardData.value ? 
-      cardData.value : // Mostrar el valor formateado del JSON
-      (value || 0);   // Mostrar el valor calculado o 0 si es nulo
     
     return (
       <Col xs={24} sm={12} lg={8} key={cardData.id}>
@@ -119,12 +106,9 @@ const SummaryCards = () => {
         >
           <Statistic
             title={cardData.title}
-            value={useJsonValue ? displayValue : value || 0}
+            value={value}
             precision={0}
             formatter={(val) => {
-              if (useJsonValue && typeof val === 'string') {
-                return val; // Ya está formateado en el JSON
-              }
               return needsFormatting ? formatCLP(val) : val;
             }}
             prefix={getIconComponent(cardData.icon)}
