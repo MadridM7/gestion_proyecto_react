@@ -3,7 +3,7 @@
     {
       "id": "total-ventas-dinero",
       "title": "Total Ventas (Dinero)",
-      "value": "$2,345,000",
+      "value": "$0",
       "icon": "DollarCircleOutlined",
       "color": "#1890ff",
       "description": "Total acumulado en el período actual"
@@ -11,15 +11,15 @@
     {
       "id": "total-ventas-cantidad",
       "title": "Total Ventas (Cantidad)",
-      "value": "156",
+      "value": "0",
       "icon": "ShoppingCartOutlined",
       "color": "#52c41a",
-      "description": "Número de transacciones realizadas"   
+      "description": "Número de transacciones realizadas"
     },
     {
       "id": "promedio-venta",
       "title": "Promedio por Venta",
-      "value": "$15,032",
+      "value": "$0",
       "icon": "CalculatorOutlined",
       "color": "#722ed1",
       "description": "Valor promedio por transacción"
@@ -27,7 +27,7 @@
     {
       "id": "ventas-efectivo",
       "title": "Ventas en Efectivo",
-      "value": "$765,000",
+      "value": "$0",
       "icon": "WalletOutlined",
       "color": "#fa8c16",
       "description": "Total de ventas pagadas en efectivo"
@@ -35,7 +35,7 @@
     {
       "id": "ventas-debito",
       "title": "Ventas con Débito",
-      "value": "$890,000",
+      "value": "$0",
       "icon": "CreditCardOutlined",
       "color": "#eb2f96",
       "description": "Total de ventas pagadas con tarjeta de débito"
@@ -43,7 +43,7 @@
     {
       "id": "ventas-credito",
       "title": "Ventas con Crédito",
-      "value": "$690,000",
+      "value": "$0",
       "icon": "BankOutlined",
       "color": "#f5222d",
       "description": "Total de ventas pagadas con tarjeta de crédito"

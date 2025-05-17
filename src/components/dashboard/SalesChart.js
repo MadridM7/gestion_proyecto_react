@@ -39,13 +39,13 @@ const SalesChart = () => {
     // Si no hay ventas, retornar datos de ejemplo
     if (!ventas || ventas.length === 0) {
       return [
-        { name: 'Lun', ventas: 450000 },
-        { name: 'Mar', ventas: 520000 },
-        { name: 'Mié', ventas: 380000 },
-        { name: 'Jue', ventas: 620000 },
-        { name: 'Vie', ventas: 780000 },
-        { name: 'Sáb', ventas: 350000 },
-        { name: 'Dom', ventas: 220000 }
+        { name: 'Lun', ventas: 0 },
+        { name: 'Mar', ventas: 0 },
+        { name: 'Mié', ventas: 0 },
+        { name: 'Jue', ventas: 0 },
+        { name: 'Vie', ventas: 0 },
+        { name: 'Sáb', ventas: 0 },
+        { name: 'Dom', ventas: 0 }
       ];
     }
 

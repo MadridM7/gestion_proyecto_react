@@ -40,9 +40,9 @@ const PaymentTypeChart = () => {
     // Si no hay ventas, retornar datos de ejemplo
     if (!ventas || ventas.length === 0) {
       return [
-        { name: 'Efectivo', monto: 950000, fill: '#52c41a' },
-        { name: 'Débito', monto: 1250000, fill: '#2f54eb' },
-        { name: 'Crédito', monto: 820000, fill: '#eb2f96' }
+        { name: 'Efectivo', monto: 0, fill: '#52c41a' },
+        { name: 'Débito', monto: 0, fill: '#2f54eb' },
+        { name: 'Crédito', monto: 0, fill: '#eb2f96' }
       ];
     }
 
