@@ -6,6 +6,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const HOST = '0.0.0.0'; // Permite conexiones desde cualquier IP
 
 // Middleware
 app.use(cors());
@@ -36,6 +37,30 @@ app.post('/api/ventas', (req, res) => {
   } catch (error) {
     console.error('Error al guardar ventas:', error);
     res.status(500).json({ error: 'Error al guardar en el archivo de ventas' });
+  }
+});
+
+// Ruta para agregar una nueva venta
+app.post('/api/ventas/agregar', (req, res) => {
+  try {
+    const ventasPath = path.join(__dirname, 'src', 'data', 'ventas.json');
+    // Leer las ventas actuales
+    const ventas = fs.readJsonSync(ventasPath);
+    // Obtener la nueva venta del cuerpo de la petición
+    const nuevaVenta = req.body;
+    
+    // Agregar la nueva venta al array
+    ventas.push(nuevaVenta);
+    
+    // Guardar el array actualizado
+    fs.writeJsonSync(ventasPath, ventas, { spaces: 2 });
+    
+    // Responder con éxito
+    res.json({ success: true, message: 'Venta agregada correctamente', venta: nuevaVenta });
+    console.log('Nueva venta agregada:', nuevaVenta);
+  } catch (error) {
+    console.error('Error al agregar venta:', error);
+    res.status(500).json({ error: 'Error al agregar la venta' });
   }
 });
 
@@ -296,6 +321,7 @@ app.delete('/api/usuarios/:id', (req, res) => {
 });
 
 // Iniciar el servidor
-app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Servidor ejecutándose en http://${HOST}:${PORT}`);
+  console.log('Accede desde dispositivos móviles usando la IP de tu red local');
 });

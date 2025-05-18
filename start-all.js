@@ -1,10 +1,11 @@
 /**
  * Script para iniciar tanto el servidor API como la aplicación React
  * Ejecuta ambos procesos en paralelo y maneja su ciclo de vida
+ * Muestra la IP de la red local para facilitar la conexión desde dispositivos móviles
  */
 
 const { spawn } = require('child_process');
-const path = require('path');
+const os = require('os');
 
 // Colores para la consola
 const colors = {
@@ -65,5 +66,38 @@ setTimeout(() => {
   });
 }, 2000);
 
+/**
+ * Obtiene las direcciones IP de la red local
+ * @returns {Array<string>} Lista de direcciones IP
+ */
+function getLocalIPs() {
+  const interfaces = os.networkInterfaces();
+  const addresses = [];
+  
+  for (const interfaceName in interfaces) {
+    const interfaceInfo = interfaces[interfaceName];
+    for (const info of interfaceInfo) {
+      // Solo nos interesan las direcciones IPv4 que no sean localhost
+      if (info.family === 'IPv4' && !info.internal) {
+        addresses.push(info.address);
+      }
+    }
+  }
+  
+  return addresses;
+}
+
 console.log('Iniciando aplicación completa...');
 console.log('Presiona Ctrl+C para detener todos los procesos.');
+
+// Mostrar las IPs de la red local para facilitar la conexión desde dispositivos móviles
+const localIPs = getLocalIPs();
+if (localIPs.length > 0) {
+  console.log('\nPara acceder desde dispositivos móviles, utiliza una de estas direcciones:');
+  localIPs.forEach(ip => {
+    console.log(`${colors.react}http://${ip}:3000${colors.reset} - Para la aplicación React`);
+    console.log(`${colors.server}http://${ip}:3001${colors.reset} - Para la API del servidor`);
+  });
+} else {
+  console.log('\nNo se pudieron detectar direcciones IP de la red local.');
+}

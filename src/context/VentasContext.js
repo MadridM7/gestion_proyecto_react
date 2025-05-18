@@ -2,36 +2,24 @@
  * @fileoverview Contexto para la gestión de ventas en la aplicación
  * Proporciona funcionalidades para agregar, editar, eliminar y filtrar ventas,
  * así como calcular estadísticas relacionadas con las ventas.
+ * Implementa un sistema de polling para actualizar los datos sin recompilar la aplicación.
  */
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
-// Importar datos de ventas desde el archivo JSON
+// Importar datos de ventas desde el archivo JSON para la carga inicial
 import ventasData from '../data/ventas.json';
 
 // Importar servicios API
 import { 
-  guardarVentas as guardarVentasAPI,
   agregarVenta as agregarVentaAPI,
   actualizarVenta as actualizarVentaAPI,
   eliminarVenta as eliminarVentaAPI 
 } from '../services/api';
 
-/**
- * Procesa los datos de ventas del archivo JSON para convertir las fechas en objetos Date
- * @returns {Array} Array de ventas con fechas convertidas a objetos Date
- */
-const procesarDatosVentas = () => {
-  return ventasData.map(venta => ({
-    ...venta,
-    fechaHora: new Date(venta.fechaHora)
-  }));
-};
+// Importar el sistema de polling para actualización de datos sin recompilar
+import { dataPoller } from '../services/dataPoller';
 
-// Datos iniciales de ventas procesados desde el archivo JSON
-const ventasIniciales = procesarDatosVentas();
-
-// Clave para guardar las ventas en localStorage
-const VENTAS_STORAGE_KEY = 'dashboard-ventas';
+// Contexto para la gestión de ventas
 
 // Crear el contexto de ventas
 const VentasContext = createContext();
@@ -48,8 +36,14 @@ export const useVentas = () => {
   return context;
 };
 
-// Función auxiliar para convertir fechas de string a objeto Date
-const convertirFechasVentas = (ventas) => {
+/**
+ * Procesa los datos de ventas para convertir las fechas en objetos Date
+ * @param {Array} ventas - Array de ventas a procesar
+ * @returns {Array} Array de ventas con fechas convertidas a objetos Date
+ */
+const procesarVentas = (ventas) => {
+  if (!Array.isArray(ventas)) return [];
+  
   return ventas.map(venta => ({
     ...venta,
     fechaHora: venta.fechaHora instanceof Date ? venta.fechaHora : new Date(venta.fechaHora)
@@ -57,96 +51,33 @@ const convertirFechasVentas = (ventas) => {
 };
 
 /**
- * Función para guardar las ventas en el archivo JSON a través de la API
- * @param {Array} ventas - Array de ventas a guardar
- */
-const guardarVentas = async (ventas) => {
-  try {
-    // Convertir las fechas a strings antes de guardar para evitar problemas de serialización
-    const ventasParaGuardar = ventas.map(venta => ({
-      ...venta,
-      fechaHora: venta.fechaHora instanceof Date ? venta.fechaHora.toISOString() : venta.fechaHora
-    }));
-    
-    // Guardar en localStorage como respaldo
-    localStorage.setItem(VENTAS_STORAGE_KEY, JSON.stringify(ventasParaGuardar));
-    
-    // Guardar en el archivo JSON a través de la API
-    await guardarVentasAPI(ventasParaGuardar);
-    
-    console.log('Ventas guardadas en el archivo JSON:', ventasParaGuardar);
-  } catch (error) {
-    console.error('Error al guardar ventas:', error);
-    // En caso de error, al menos intentar guardar en localStorage
-    try {
-      const ventasParaGuardar = ventas.map(venta => ({
-        ...venta,
-        fechaHora: venta.fechaHora instanceof Date ? venta.fechaHora.toISOString() : venta.fechaHora
-      }));
-      localStorage.setItem(VENTAS_STORAGE_KEY, JSON.stringify(ventasParaGuardar));
-      console.log('Ventas guardadas solo en localStorage como respaldo');
-    } catch (localError) {
-      console.error('Error al guardar ventas en localStorage:', localError);
-    }
-  }
-};
-
-/**
- * Proveedor del contexto de ventas que maneja el estado global de ventas
- * y proporciona funciones para manipular este estado en toda la aplicación.
- * 
+ * Proveedor del contexto de ventas
  * @param {Object} props - Propiedades del componente
- * @param {React.ReactNode} props.children - Componentes hijos que tendrán acceso al contexto
- * @returns {JSX.Element} Proveedor de contexto que envuelve la aplicación o componentes
+ * @param {React.ReactNode} props.children - Componentes hijos
+ * @returns {JSX.Element} Proveedor de contexto
  */
 export const VentasProvider = ({ children }) => {
-  /**
-   * Estado principal que almacena todas las ventas de la aplicación
-   * @type {Array} Array de objetos de venta con propiedades id, fechaHora, vendedor, monto, tipoPago
-   */
+  // Estado para las ventas
   const [ventas, setVentas] = useState([]);
   
-  /**
-   * Estado que almacena las estadísticas calculadas a partir de las ventas
-   * Se actualiza automáticamente cuando cambia el estado de ventas
-   * @type {Object} Objeto con propiedades totalVentas, promedioVentas y ventasPorTipo
-   */
+  // Estado para las estadísticas
   const [estadisticas, setEstadisticas] = useState({
-    totalVentas: 0,        // Suma total de los montos de todas las ventas
-    promedioVentas: 0,     // Promedio de los montos de todas las ventas
-    ventasPorTipo: {       // Montos totales agrupados por tipo de pago
-      efectivo: 0,         // Total de ventas en efectivo
-      debito: 0,           // Total de ventas con tarjeta de débito
-      credito: 0           // Total de ventas con tarjeta de crédito
+    totalVentas: 0,
+    promedioVentas: 0,
+    ventasPorTipo: {
+      efectivo: 0,
+      debito: 0,
+      credito: 0
     }
   });
-  
-  // Cargar ventas al iniciar - directamente desde el archivo JSON importado
-  useEffect(() => {
-    try {
-      // Usar directamente los datos del archivo JSON importado
-      const ventasConFechas = convertirFechasVentas(ventasIniciales);
-      setVentas(ventasConFechas);
-      console.log('Ventas cargadas directamente desde archivo JSON:', ventasConFechas.length);
-      
-      // Limpiar localStorage para asegurar que no se usen datos antiguos
-      localStorage.removeItem(VENTAS_STORAGE_KEY);
-    } catch (error) {
-      console.error('Error al cargar ventas:', error);
-      // En caso de error, intentar usar los datos iniciales directamente
-      setVentas(ventasIniciales);
-    }
-  }, []);
-  
-  // Actualizar estadísticas y guardar ventas cuando cambien
-  useEffect(() => {
-    // Guardar ventas en localStorage
-    if (Array.isArray(ventas)) {
-      guardarVentas(ventas);
-    }
-    
+
+  /**
+   * Calcula estadísticas basadas en las ventas
+   * @param {Array} ventasActuales - Array de ventas para calcular estadísticas
+   */
+  const calcularEstadisticas = useCallback((ventasActuales) => {
     // Valores por defecto si no hay ventas
-    if (!ventas || ventas.length === 0) {
+    if (!ventasActuales || ventasActuales.length === 0) {
       setEstadisticas({
         totalVentas: 0,
         promedioVentas: 0,
@@ -161,19 +92,22 @@ export const VentasProvider = ({ children }) => {
     
     try {
       // Calcular total de ventas
-      const total = ventas.reduce((sum, venta) => {
+      const total = ventasActuales.reduce((sum, venta) => {
         const monto = typeof venta.monto === 'number' ? venta.monto : 0;
         return sum + monto;
       }, 0);
       
       // Calcular promedio por venta
-      const promedio = ventas.length > 0 ? total / ventas.length : 0;
+      const promedio = ventasActuales.length > 0 ? total / ventasActuales.length : 0;
       
-      // Calcular ventas por tipo de pago con validación
+      // Calcular ventas por tipo de pago
       const porTipo = {
-        efectivo: ventas.filter(v => v.tipoPago === 'efectivo').reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0),
-        debito: ventas.filter(v => v.tipoPago === 'debito').reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0),
-        credito: ventas.filter(v => v.tipoPago === 'credito').reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0)
+        efectivo: ventasActuales.filter(v => v.tipoPago === 'efectivo')
+          .reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0),
+        debito: ventasActuales.filter(v => v.tipoPago === 'debito')
+          .reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0),
+        credito: ventasActuales.filter(v => v.tipoPago === 'credito')
+          .reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0)
       };
       
       // Actualizar el estado de estadísticas
@@ -195,146 +129,162 @@ export const VentasProvider = ({ children }) => {
         }
       });
     }
-  }, [ventas]);
-  
+  }, []);
+
+  // Cargar ventas al iniciar y configurar el polling
+  useEffect(() => {
+    // Cargar datos iniciales desde el archivo JSON
+    const ventasProcesadas = procesarVentas(ventasData);
+    setVentas(ventasProcesadas);
+    calcularEstadisticas(ventasProcesadas);
+    
+    // Configurar el polling para actualizar los datos sin recompilar
+    const handleVentasUpdate = (nuevasVentas) => {
+      const ventasActualizadas = procesarVentas(nuevasVentas);
+      setVentas(ventasActualizadas);
+      calcularEstadisticas(ventasActualizadas);
+      console.log('Datos de ventas actualizados mediante polling');
+    };
+    
+    // Iniciar el polling cada 5 segundos
+    dataPoller.startPolling('ventas', handleVentasUpdate, 5000);
+    
+    // Detener el polling cuando el componente se desmonte
+    return () => {
+      dataPoller.stopPolling('ventas');
+    };
+  }, [calcularEstadisticas]);
+
   /**
-   * Agrega una nueva venta al sistema y actualiza el estado
-   * Valida y normaliza los datos de entrada para asegurar consistencia
-   * Guarda la venta en el archivo JSON a través de la API
-   * 
-   * @param {Object} nuevaVenta - Objeto con los datos de la nueva venta
-   * @param {string} [nuevaVenta.id] - Identificador único (opcional, se genera automáticamente si no se proporciona)
-   * @param {Date|string} [nuevaVenta.fechaHora] - Fecha y hora de la venta (se usa la fecha actual si no es válida)
-   * @param {string} nuevaVenta.vendedor - Nombre del vendedor que realizó la venta
-   * @param {number} nuevaVenta.monto - Monto de la venta en pesos
-   * @param {string} nuevaVenta.tipoPago - Tipo de pago ('efectivo', 'debito' o 'credito')
+   * Agrega una nueva venta y la guarda en el archivo JSON a través de la API
+   * @param {Object} nuevaVenta - Datos de la nueva venta
    */
   const agregarVenta = useCallback(async (nuevaVenta) => {
     try {
-      // Normalizar los datos de entrada para asegurar consistencia
-      const ventaConFechaCorrecta = {
+      // Normalizar los datos de la venta
+      const ventaNormalizada = {
         ...nuevaVenta,
-        // Validar que la fecha sea un objeto Date válido, o crear una nueva
+        // Generar un ID único
+        id: `V${Math.floor(Math.random() * 10000)}`,
+        // Asegurar que la fecha sea un objeto Date
         fechaHora: nuevaVenta.fechaHora instanceof Date ? 
           nuevaVenta.fechaHora : new Date(),
-        // Generar un ID único si no se proporciona o asegurar que sea único
-        id: nuevaVenta.id || `V${Math.floor(Math.random() * 10000)}`
+        // Asegurar que el monto sea un número
+        monto: Number(nuevaVenta.monto)
       };
       
-      // Convertir la fecha a string para enviarla a la API
-      const ventaParaAPI = {
-        ...ventaConFechaCorrecta,
-        fechaHora: ventaConFechaCorrecta.fechaHora instanceof Date ? 
-          ventaConFechaCorrecta.fechaHora.toISOString() : ventaConFechaCorrecta.fechaHora
-      };
-      
-      // Guardar la venta en el archivo JSON a través de la API
-      const respuesta = await agregarVentaAPI(ventaParaAPI);
-      
-      if (respuesta.success) {
-        // Actualizar el estado local con la nueva venta
-        setVentas(ventasActuales => {
-          // Verificar si ya existe una venta con el mismo ID para evitar duplicados
-          const existeID = ventasActuales.some(v => v.id === ventaConFechaCorrecta.id);
-          if (existeID) {
-            // Si el ID ya existe, generar uno nuevo para evitar conflictos
-            ventaConFechaCorrecta.id = `V${Math.floor(Math.random() * 10000)}`;
-          }
-          // Retornar un nuevo array con todas las ventas actuales más la nueva
-          return [...ventasActuales, ventaConFechaCorrecta];
-        });
-        
-        console.log('Nueva venta agregada y guardada en el archivo JSON:', ventaConFechaCorrecta);
-      } else {
-        console.error('Error al guardar la venta en el archivo JSON');
-      }
-    } catch (error) {
-      console.error('Error al agregar venta:', error);
-    }
-  }, []); // No hay dependencias ya que no usa variables externas
-  
-  /**
-   * Actualiza los datos de una venta existente
-   * Valida y normaliza los datos actualizados para mantener la consistencia
-   * Guarda los cambios en el archivo JSON a través de la API
-   * 
-   * @param {string} id - Identificador único de la venta a actualizar
-   * @param {Object} datosActualizados - Objeto con los nuevos datos de la venta
-   * @param {Date|string} [datosActualizados.fechaHora] - Nueva fecha y hora (opcional)
-   * @param {string} [datosActualizados.vendedor] - Nuevo vendedor (opcional)
-   * @param {number} [datosActualizados.monto] - Nuevo monto (opcional)
-   * @param {string} [datosActualizados.tipoPago] - Nuevo tipo de pago (opcional)
-   */
-  const actualizarVenta = useCallback(async (id, datosActualizados) => {
-    try {
-      // Asegurarse de que la fecha sea un objeto Date para el estado local
-      const fechaHora = datosActualizados.fechaHora instanceof Date ?
-        datosActualizados.fechaHora : new Date(datosActualizados.fechaHora);
-      
-      // Preparar los datos para la API (con fecha en formato string)
-      const datosParaAPI = {
-        ...datosActualizados,
-        fechaHora: fechaHora instanceof Date ? fechaHora.toISOString() : fechaHora
-      };
-      
-      // Actualizar la venta en el archivo JSON a través de la API
-      const respuesta = await actualizarVentaAPI(id, datosParaAPI);
+      // Guardar la nueva venta en el archivo JSON a través de la API
+      const respuesta = await agregarVentaAPI(ventaNormalizada);
       
       if (respuesta.success) {
         // Actualizar el estado local
         setVentas(ventasActuales => {
-          return ventasActuales.map(venta => {
-            if (venta.id === id) {
-              return { ...venta, ...datosActualizados, fechaHora };
-            }
-            return venta;
-          });
+          const nuevasVentas = [...ventasActuales, ventaNormalizada];
+          calcularEstadisticas(nuevasVentas);
+          return nuevasVentas;
         });
         
-        console.log(`Venta ${id} actualizada y guardada en el archivo JSON:`, datosActualizados);
+        console.log('Venta agregada y guardada en el archivo JSON:', ventaNormalizada);
+        return ventaNormalizada;
+      } else {
+        console.error('Error al guardar la venta en el archivo JSON');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al agregar venta:', error);
+      return null;
+    }
+  }, [calcularEstadisticas]);
+
+  /**
+   * Actualiza una venta existente y la guarda en el archivo JSON a través de la API
+   * @param {string} id - ID de la venta a actualizar
+   * @param {Object} datosActualizados - Nuevos datos de la venta
+   */
+  const actualizarVenta = useCallback(async (id, datosActualizados) => {
+    try {
+      // Buscar la venta actual
+      const ventaActual = ventas.find(v => v.id === id);
+      
+      if (!ventaActual) {
+        console.error(`No se encontró la venta con ID ${id}`);
+        return null;
+      }
+      
+      // Normalizar los datos actualizados
+      const ventaActualizada = {
+        ...ventaActual,
+        ...datosActualizados,
+        // Asegurar que la fecha sea un objeto Date
+        fechaHora: datosActualizados.fechaHora instanceof Date ? 
+          datosActualizados.fechaHora : new Date(datosActualizados.fechaHora),
+        // Asegurar que el monto sea un número
+        monto: Number(datosActualizados.monto || ventaActual.monto)
+      };
+      
+      // Actualizar la venta en el archivo JSON a través de la API
+      const respuesta = await actualizarVentaAPI(id, ventaActualizada);
+      
+      if (respuesta.success) {
+        // Actualizar el estado local
+        setVentas(ventasActuales => {
+          const ventasActualizadas = ventasActuales.map(venta => 
+            venta.id === id ? ventaActualizada : venta
+          );
+          calcularEstadisticas(ventasActualizadas);
+          return ventasActualizadas;
+        });
+        
+        console.log(`Venta ${id} actualizada y guardada en el archivo JSON:`, ventaActualizada);
+        return ventaActualizada;
       } else {
         console.error(`Error al guardar la actualización de la venta ${id} en el archivo JSON`);
+        return null;
       }
     } catch (error) {
       console.error(`Error al actualizar venta ${id}:`, error);
+      return null;
     }
-  }, []);
-  
+  }, [ventas, calcularEstadisticas]);
+
   /**
-   * Elimina una venta del sistema
-   * Elimina la venta del archivo JSON a través de la API
+   * Elimina una venta y actualiza el archivo JSON a través de la API
    * @param {string} id - ID de la venta a eliminar
    */
   const eliminarVenta = useCallback(async (id) => {
     try {
-      // Eliminar la venta del archivo JSON a través de la API
+      // Eliminar la venta a través de la API
       const respuesta = await eliminarVentaAPI(id);
       
       if (respuesta.success) {
         // Actualizar el estado local
-        setVentas(ventasActuales => ventasActuales.filter(venta => venta.id !== id));
+        setVentas(ventasActuales => {
+          const ventasActualizadas = ventasActuales.filter(venta => venta.id !== id);
+          calcularEstadisticas(ventasActualizadas);
+          return ventasActualizadas;
+        });
+        
         console.log(`Venta ${id} eliminada y actualizada en el archivo JSON`);
+        return true;
       } else {
         console.error(`Error al eliminar la venta ${id} del archivo JSON`);
+        return false;
       }
     } catch (error) {
       console.error(`Error al eliminar venta ${id}:`, error);
+      return false;
     }
-  }, []);
-  
-  /**
-   * Objeto con todos los valores y funciones que se expondrán a través del contexto
-   * Incluye el estado actual de ventas, estadísticas calculadas y funciones para manipular ventas
-   */
+  }, [calcularEstadisticas]);
+
+  // Valor del contexto
   const value = {
-    ventas,                // Array con todas las ventas
-    estadisticas,          // Objeto con estadísticas calculadas
-    agregarVenta,          // Función para agregar una nueva venta
-    eliminarVenta,         // Función para eliminar una venta existente
-    actualizarVenta        // Función para actualizar una venta existente
+    ventas,
+    estadisticas,
+    agregarVenta,
+    actualizarVenta,
+    eliminarVenta
   };
-  
-  // Retornar el proveedor de contexto con el valor configurado
+
   return (
     <VentasContext.Provider value={value}>
       {children}

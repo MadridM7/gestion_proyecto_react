@@ -87,7 +87,7 @@
 
 /* Header principal */
 .main-header {
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   background-color: white;
@@ -95,7 +95,7 @@
   z-index: 10;
   position: relative;
   border-radius: 8px;
-  margin: 16px 16px 0;
+  margin: 10px 16px 0;
 }
 
 /* Separador entre el botón del sidebar y el título */

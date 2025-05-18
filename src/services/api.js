@@ -3,7 +3,11 @@
  * Proporciona funciones para obtener y guardar datos en los archivos JSON
  */
 
-const API_URL = 'http://localhost:3001/api';
+// Importar la configuración centralizada
+import { API_URL } from '../config';
+
+// Registrar la URL de la API para depuración
+console.log('Conectando a la API en:', API_URL);
 
 /**
  * Obtiene las ventas desde el servidor

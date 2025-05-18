@@ -1,20 +1,18 @@
 /**
  * @fileoverview Página principal del dashboard que muestra estadísticas y gráficos
  */
-import React from 'react';
-import { Row, Col, Divider, Typography } from 'antd';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import SummaryCards from '../components/dashboard/SummaryCards';
-import SalesChart from '../components/dashboard/SalesChart';
-import PaymentTypeChart from '../components/dashboard/PaymentTypeChart';
-import VentasTable from '../components/dashboard/VentasTable';
-import BotonFlotanteVenta from '../components/dashboard/BotonFlotanteVenta';
+import VentasDashboard from '../components/organisms/VentasDashboard';
+import FloatingActionButton from '../components/atoms/FloatingActionButton';
+import { ShoppingCartOutlined } from '@ant-design/icons';
+import VentaFormulario from '../components/molecules/VentaFormulario';
+import { Modal, Form, message } from 'antd';
+import { useVentas } from '../context/VentasContext';
 
 // Importar estilos CSS
 import '../styles/pages/Dashboard.css';
-import '../styles/components/dashboard/ChartPlaceholder.css';
 
-const { Title } = Typography;
 
 /**
  * Página principal del Dashboard que muestra un resumen de las métricas clave de ventas
@@ -22,40 +20,90 @@ const { Title } = Typography;
  * @returns {JSX.Element} Página de Dashboard con tarjetas de resumen, gráficos y tabla de ventas
  */
 const Dashboard = () => {
+  const { agregarVenta } = useVentas();
+  const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar si es un dispositivo móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Verificar al cargar
+    checkMobile();
+    
+    // Agregar listener para cambios de tamaño
+    window.addEventListener('resize', checkMobile);
+    
+    // Limpiar listener al desmontar
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Función para mostrar el modal de agregar venta
+  const showAddModal = () => {
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  // Función para cerrar el modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  // Función para manejar el envío del formulario
+  const handleSubmit = async (values) => {
+    try {
+      setIsSubmitting(true);
+      await agregarVenta(values);
+      message.success('Venta agregada correctamente');
+      setIsModalVisible(false);
+      form.resetFields();
+    } catch (error) {
+      console.error('Error al agregar venta:', error);
+      message.error('Error al agregar la venta');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <MainLayout currentPage="Dashboard">
-      {/* Encabezado de la página */}
-      <div className="dashboard-header">
-        <Title level={2} className="dashboard-title">Dashboard</Title>
+      <div className="dashboard-container">
+        
+        
+        <VentasDashboard 
+          showResumen={true}
+          showCharts={true}
+          showTable={false}
+        />
+        
+        {isMobile && (
+          <FloatingActionButton 
+            icon={<ShoppingCartOutlined />} 
+            onClick={showAddModal} 
+          />
+        )}
       </div>
       
-      {/* Tarjetas de resumen con métricas clave */}
-      <SummaryCards />
-      
-      <Divider className="cards-divider" />
-      
-      {/* Gráficos de ventas y tipos de pago */}
-      <Row gutter={[24, 24]} className="dashboard-charts">
-        {/* Gráfico de ventas por día */}
-        <Col xs={24} lg={12}>
-          <SalesChart />
-        </Col>
-        {/* Gráfico de distribución por tipo de pago */}
-        <Col xs={24} lg={12}>
-          <PaymentTypeChart />
-        </Col>
-      </Row>
-      
-      <Divider className="cards-divider" />
-      
-      {/* Tabla de ventas recientes */}
-      <div className="recent-sales-section">
-        <Title level={4} className="recent-sales-title">Ventas Recientes</Title>
-        <VentasTable />
-      </div>
-      
-      {/* Botón flotante para agregar nuevas ventas rápidamente */}
-      <BotonFlotanteVenta className="floating-button" />
+      <Modal
+        title="Nueva Venta"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        destroyOnClose
+      >
+        <VentaFormulario 
+          form={form} 
+          onFinish={handleSubmit} 
+          onCancel={handleCancel} 
+          loading={isSubmitting} 
+        />
+      </Modal>
     </MainLayout>
   );
 };

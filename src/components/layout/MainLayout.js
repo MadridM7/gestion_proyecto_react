@@ -2,8 +2,8 @@
  * @fileoverview Componente principal de layout que proporciona la estructura base para todas las páginas
  * Incluye un sidebar con navegación, un header con título de página y un área de contenido principal
  */
-import React, { useState } from 'react';
-import { Layout, Menu, Button, theme, Divider, Modal } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Layout, Menu, Button, theme, Divider, Modal, Form, message } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -14,7 +14,8 @@ import {
   PlusOutlined,
   ShoppingOutlined
 } from '@ant-design/icons';
-import VentaForm from '../dashboard/VentaForm';
+import VentaFormulario from '../molecules/VentaFormulario';
+import { useVentas } from '../../context/VentasContext';
 
 // Importar estilos CSS
 import '../../styles/components/layout/MainLayout.css';
@@ -33,8 +34,65 @@ const MainLayout = ({ children, currentPage }) => {
   const [collapsed, setCollapsed] = useState(false);
   // Estado para controlar la visibilidad del modal de nueva venta
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Estado para forzar la estabilidad del sidebar
+  const [sidebarLocked, setSidebarLocked] = useState(false);
+  // Estado para detectar si estamos en móvil
+  const [isMobile, setIsMobile] = useState(false);
+  // Referencia para rastrear si estamos en una operación de datos
+  const isDataOperationRef = useRef(false);
   // Obtenemos el tema actual de Ant Design
   const { token } = theme.useToken();
+  
+  // Efecto para detectar el tamaño de la pantalla
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Comprobar inicialmente
+    checkMobile();
+    
+    // Escuchar cambios de tamaño
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+  
+  // Efecto para prevenir el parpadeo del sidebar
+  useEffect(() => {
+    // Bloquear el sidebar durante las operaciones de datos
+    const lockSidebar = () => {
+      setSidebarLocked(true);
+      setTimeout(() => {
+        setSidebarLocked(false);
+      }, 1500); // Mantener bloqueado por 1.5 segundos
+    };
+    
+    // Interceptar envíos de formularios
+    const handleSubmit = () => {
+      isDataOperationRef.current = true;
+      lockSidebar();
+      setTimeout(() => {
+        isDataOperationRef.current = false;
+      }, 1000);
+    };
+    
+    document.addEventListener('submit', handleSubmit);
+    
+    // Interceptar peticiones fetch (para operaciones API)
+    const originalFetch = window.fetch;
+    window.fetch = function() {
+      handleSubmit();
+      return originalFetch.apply(this, arguments);
+    };
+    
+    return () => {
+      document.removeEventListener('submit', handleSubmit);
+      window.fetch = originalFetch;
+    };
+  }, []);
 
   /**
    * Determina la clave seleccionada en el menú basada en la página actual
@@ -93,11 +151,49 @@ const MainLayout = ({ children, currentPage }) => {
     setIsModalOpen(true);
   };
   
+  // Crear una instancia de Form para el modal de nueva venta
+  const [form] = Form.useForm();
+  
+  // Obtener el contexto de ventas
+  const { agregarVenta } = useVentas();
+  
   /**
    * Cierra el modal de nueva venta
    */
   const handleCancel = () => {
     setIsModalOpen(false);
+    form.resetFields();
+  };
+  
+  /**
+   * Maneja el envío del formulario de nueva venta
+   */
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      
+      // Convertir el monto de formato CLP a número
+      const montoNumerico = parseInt(values.monto?.replace(/\D/g, '') || 0);
+      
+      // Crear la nueva venta con los datos del formulario
+      const nuevaVenta = {
+        ...values,
+        monto: montoNumerico,
+        fechaHora: new Date().toISOString(),
+        id: `V${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`
+      };
+      
+      // Agregar la nueva venta
+      await agregarVenta(nuevaVenta);
+      
+      // Cerrar el modal y mostrar mensaje de éxito
+      setIsModalOpen(false);
+      form.resetFields();
+      message.success('Venta agregada correctamente');
+    } catch (error) {
+      console.error('Error al agregar venta:', error);
+      message.error('Error al agregar la venta');
+    }
   };
 
   return (
@@ -110,12 +206,15 @@ const MainLayout = ({ children, currentPage }) => {
         breakpoint="lg" // Punto de quiebre para dispositivos móviles
         collapsedWidth="0" // En móviles, el sidebar se oculta completamente
         onBreakpoint={(broken) => {
-          // Colapsar automáticamente en pantallas pequeñas
-          if (broken) {
+          // Colapsar automáticamente en pantallas pequeñas, pero solo si no estamos en una operación de datos
+          if (broken && !isDataOperationRef.current && !sidebarLocked) {
             setCollapsed(true);
+            setIsMobile(true);
           }
         }}
+        // Prevenir re-renders innecesarios que causan el parpadeo
         className="main-sidebar"
+        style={{ position: 'fixed', height: '100vh', zIndex: 1000 }}
       >
         {/* Logo de la aplicación */}
         <div className="app-logo">
@@ -192,7 +291,15 @@ const MainLayout = ({ children, currentPage }) => {
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => {
+              // Marcar como operación de datos para prevenir parpadeos
+              isDataOperationRef.current = true;
+              setCollapsed(!collapsed);
+              // Restablecer después de un breve periodo
+              setTimeout(() => {
+                isDataOperationRef.current = false;
+              }, 500);
+            }}
             className="collapse-button"
             aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
           />
@@ -205,11 +312,39 @@ const MainLayout = ({ children, currentPage }) => {
           className="main-content-area"
           style={{
             background: token.colorBgContainer,
+            margin: '10px 16px',
+            padding: '20px',
+            minHeight: '280px',
             borderRadius: token.borderRadiusLG,
-            borderTopLeftRadius: collapsed ? token.borderRadiusLG : '24px'
+            borderTopLeftRadius: collapsed ? token.borderRadiusLG : '24px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            overflow: 'auto'
           }}
         >
           {children}
+          {/* Botón flotante para agregar ventas en dispositivos móviles */}
+          {isMobile && (
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlusOutlined />}
+              onClick={() => handleNavigation('nueva-venta')}
+              style={{
+                position: 'fixed',
+                bottom: '20px',
+                right: '20px',
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000
+              }}
+              aria-label="Agregar nueva venta"
+            />
+          )}
         </Content>
       </Layout>
       
@@ -217,12 +352,15 @@ const MainLayout = ({ children, currentPage }) => {
       <Modal
         title="Agregar Nueva Venta"
         open={isModalOpen}
+        onOk={handleSubmit}
         onCancel={handleCancel}
-        footer={null} // Sin botones de pie de página, se manejan en el formulario
+        okText="Aceptar"
+        cancelText="Cancelar"
         destroyOnClose // Destruye el contenido al cerrarse para resetear el formulario
-        className="new-sale-modal"
+        maskClosable={false}
+        width="600px"
       >
-        <VentaForm onCancel={handleCancel} />
+        <VentaFormulario form={form} editingVenta={null} loading={false} />
       </Modal>
     </Layout>
   );

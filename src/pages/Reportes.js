@@ -2,20 +2,13 @@
  * @fileoverview Página de reportes que muestra cards con descripciones de los reportes disponibles
  * y opciones para descargarlos en diferentes formatos
  */
-import React from 'react';
-import { Row, Col, Card, Alert, Button, Space, Typography, message } from 'antd';
-import { 
-  DownloadOutlined, 
-  FileExcelOutlined, 
-  FilePdfOutlined, 
-  BarChartOutlined, 
-  PieChartOutlined, 
-  LineChartOutlined, 
-  TableOutlined, 
-  CalendarOutlined 
-} from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { message, Form } from 'antd';
 import MainLayout from '../components/layout/MainLayout';
 import { useVentas } from '../context/VentasContext';
+import { useUsuarios } from '../context/UsuariosContext';
+import moment from 'moment';
+import ReportesTemplate from '../components/templates/ReportesTemplate';
 
 // Importar datos de reportes desde el archivo JSON
 import reportesData from '../data/reportes.json';
@@ -23,17 +16,24 @@ import reportesData from '../data/reportes.json';
 // Importar estilos CSS
 import '../styles/pages/Reportes.css';
 
-// Extraemos los componentes necesarios de Typography
-const { Paragraph } = Typography;
-
 /**
  * Página de reportes y estadísticas que permite descargar informes en diferentes formatos
  * Diseñado para ser completamente responsivo en dispositivos móviles, tablets y desktops
  * @returns {JSX.Element} Página de Reportes con cards descriptivas
  */
 const Reportes = () => {
-  // Obtenemos los datos de ventas del contexto
+  // Obtenemos los datos de ventas y usuarios de los contextos
   const { ventas } = useVentas();
+  const { usuarios } = useUsuarios();
+  
+  // Estados para los selectores
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [form] = Form.useForm();
+  
+  // Estados para controlar qué selector mostrar
+  const [activeReport, setActiveReport] = useState(null);
   
   /**
    * Verifica si hay datos disponibles para generar reportes
@@ -41,154 +41,133 @@ const Reportes = () => {
    */
   const hayDatos = ventas.length > 0;
   
+  // Obtener fechas disponibles para los reportes
+  const [availableDates, setAvailableDates] = useState([]);
+  const [availableMonths, setAvailableMonths] = useState([]);
+  
+  // Efecto para procesar las fechas disponibles
+  useEffect(() => {
+    if (ventas.length > 0) {
+      // Obtener fechas únicas usando Set para eliminar duplicados
+      const uniqueDates = [...new Set(ventas.map(venta => {
+        const date = new Date(venta.fechaHora);
+        return moment(date).format('YYYY-MM-DD');
+      }))];
+      setAvailableDates(uniqueDates);
+      
+      // Obtener meses únicos usando Set para eliminar duplicados
+      const uniqueMonths = [...new Set(ventas.map(venta => {
+        const date = new Date(venta.fechaHora);
+        return moment(date).format('YYYY-MM');
+      }))];
+      setAvailableMonths(uniqueMonths);
+    }
+  }, [ventas]);
+  
+  /**
+   * Maneja la selección de un reporte
+   * @param {string} reportId - ID del reporte seleccionado
+   */
+  const handleReportSelection = (reportId) => {
+    setActiveReport(reportId);
+    // Resetear selecciones previas
+    setSelectedDate(null);
+    setSelectedMonth(null);
+    setSelectedUser(null);
+    form.resetFields();
+  };
+  
+  /**
+   * Manejador para cambios en la selección de fecha
+   * @param {moment} date - Fecha seleccionada
+   */
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  /**
+   * Manejador para cambios en la selección de mes
+   * @param {moment} month - Mes seleccionado
+   */
+  const handleMonthChange = (month) => {
+    setSelectedMonth(month);
+  };
+
+  /**
+   * Manejador para cambios en la selección de usuario
+   * @param {string} userId - ID del usuario seleccionado
+   */
+  const handleUserChange = (userId) => {
+    setSelectedUser(userId);
+  };
+  
   /**
    * Maneja la descarga de reportes en diferentes formatos
    * @param {string} reportType - Tipo de reporte a descargar
    * @param {string} format - Formato del reporte (excel, pdf, csv)
    */
   const handleDownload = (reportType, format) => {
-    // Mostrar mensaje de carga
-    message.loading(`Generando reporte de ${reportType}...`, 1)
+    // Validar que se haya seleccionado una opción si es necesario
+    if (reportType === 'ventasdiarias' && !selectedDate) {
+      message.warning('Por favor selecciona una fecha específica');
+      return;
+    }
+    
+    if (reportType === 'ventasmensual' && !selectedMonth) {
+      message.warning('Por favor selecciona un mes específico');
+      return;
+    }
+    
+    if (reportType === 'ventasporusuario' && !selectedUser) {
+      message.warning('Por favor selecciona un usuario');
+      return;
+    }
+    
+    // Construir mensaje de confirmación usando template literals
+    let confirmMessage = `Generando reporte de ${reportType}`;
+    
+    if (selectedDate && reportType === 'ventasdiarias') {
+      confirmMessage += ` para el día ${moment(selectedDate).format('DD/MM/YYYY')}`;
+    }
+    
+    if (selectedMonth && reportType === 'ventasmensual') {
+      confirmMessage += ` para el mes de ${moment(selectedMonth).format('MMMM YYYY')}`;
+    }
+    
+    if (selectedUser && reportType === 'ventasporusuario') {
+      // Usar find con arrow function para buscar el usuario por ID
+      const usuario = usuarios.find(u => u.id === selectedUser);
+      if (usuario) {
+        confirmMessage += ` para ${usuario.nombre}`;
+      }
+    }
+    
+    // Usar Promise chaining para mostrar mensajes
+    message.loading(`${confirmMessage}...`, 1)
       .then(() => {
-        // Simular éxito de descarga
-        message.success(`Reporte de ${reportType} descargado en formato ${format.toUpperCase()}`)
+        message.success(`${confirmMessage} descargado en formato ${format.toUpperCase()}`)
       });
     
     console.log(`Descargando reporte ${reportType} en formato ${format}`);
     // Aquí iría la lógica real para generar y descargar el reporte
   };
-  
-  /**
-   * Obtiene el icono correspondiente según el nombre del icono en el JSON
-   * @param {string} iconName - Nombre del icono
-   * @returns {JSX.Element} Componente de icono
-   */
-  const getIconComponent = (iconName) => {
-    const iconMap = {
-      'BarChartOutlined': <BarChartOutlined className="report-icon" style={{ fontSize: '72px' }} />,
-      'LineChartOutlined': <LineChartOutlined className="report-icon" style={{ fontSize: '72px' }} />,
-      'TableOutlined': <TableOutlined className="report-icon" style={{ fontSize: '72px' }} />,
-      'PieChartOutlined': <PieChartOutlined className="report-icon" style={{ fontSize: '72px' }} />,
-      'CalendarOutlined': <CalendarOutlined className="report-icon" style={{ fontSize: '72px' }} />,
-      'DownloadOutlined': <DownloadOutlined className="report-icon" style={{ fontSize: '72px' }} />
-    };
-    return iconMap[iconName] || <BarChartOutlined className="report-icon" style={{ fontSize: '72px' }} />;
-  };
-
-  /**
-   * Renderiza los botones de descarga para un reporte
-   * @param {string} reportId - ID del reporte
-   * @param {Array} formatos - Formatos disponibles para descarga
-   * @returns {JSX.Element} Componente con botones de descarga
-   */
-  const renderDownloadButtons = (reportId, formatos) => {
-    return (
-      <Space direction="vertical" className="download-buttons-container">
-        {formatos.includes('excel') && (
-          <Button 
-            icon={<FileExcelOutlined />} 
-            onClick={() => handleDownload(reportId, 'excel')}
-            disabled={!hayDatos}
-            block
-            className="download-button"
-            aria-label={`Descargar reporte en Excel`}
-          >
-            Descargar Excel
-          </Button>
-        )}
-        {formatos.includes('pdf') && (
-          <Button 
-            icon={<FilePdfOutlined />} 
-            onClick={() => handleDownload(reportId, 'pdf')}
-            disabled={!hayDatos}
-            block
-            className="download-button"
-            aria-label={`Descargar reporte en PDF`}
-          >
-            Descargar PDF
-          </Button>
-        )}
-        {formatos.includes('csv') && (
-          <Button 
-            icon={<DownloadOutlined />} 
-            onClick={() => handleDownload(reportId, 'csv')}
-            disabled={!hayDatos}
-            block
-            className="download-button"
-            aria-label={`Descargar datos en CSV`}
-          >
-            Descargar CSV
-          </Button>
-        )}
-      </Space>
-    );
-  };
-
-  /**
-   * Renderiza una card de reporte
-   * @param {Object} reporte - Datos del reporte
-   * @returns {JSX.Element} Componente Card de reporte
-   */
-  const renderReportCard = (reporte) => {
-    const headerClass = `report-card-header ${reporte.id.toLowerCase()}-header`;
-    
-    return (
-      <Col xs={24} md={12} lg={8} key={reporte.id}>
-        <Card 
-          hoverable
-          className="report-card"
-          cover={
-            <div className={headerClass} style={{ background: reporte.color }}>
-              {getIconComponent(reporte.icono)}
-            </div>
-          }
-        >
-          <Card.Meta
-            title={reporte.titulo}
-            description={
-              <>
-                <Paragraph>
-                  {reporte.descripcion}
-                </Paragraph>
-                {renderDownloadButtons(reporte.id.toLowerCase(), reporte.formatos)}
-              </>
-            }
-          />
-        </Card>
-      </Col>
-    );
-  };
 
   return (
     <MainLayout currentPage="Reportes">
-      {/* Encabezado de la página */}
-      <div className="reportes-header">
-        <h1 className="reportes-title">Reportes y Estadísticas</h1>
-        <p className="reportes-description">
-          Descarga informes detallados de las ventas y tendencias
-        </p>
-      </div>
-      
-      {/* Alerta condicional que se muestra solo cuando no hay datos suficientes */}
-      {!hayDatos && (
-        <Alert
-          message="No hay datos suficientes"
-          description="Los reportes están disponibles pero pueden no contener información completa hasta que haya más datos disponibles."
-          type="info"
-          showIcon
-          className="data-alert"
-        />
-      )}
-      
-      {/* Primera fila de cards de reportes */}
-      <Row gutter={[16, 16]} className="reports-row">
-        {reportesData.slice(0, 3).map(reporte => renderReportCard(reporte))}
-      </Row>
-      
-      {/* Segunda fila de cards de reportes */}
-      <Row gutter={[16, 16]} className="reports-row">
-        {reportesData.slice(3).map(reporte => renderReportCard(reporte))}
-      </Row>
+      <ReportesTemplate
+        reportes={reportesData}
+        activeReport={activeReport}
+        hayDatos={hayDatos}
+        onSelectReport={handleReportSelection}
+        onDownloadReport={handleDownload}
+        form={form}
+        availableDates={availableDates}
+        availableMonths={availableMonths}
+        usuarios={usuarios}
+        onDateChange={handleDateChange}
+        onMonthChange={handleMonthChange}
+        onUserChange={handleUserChange}
+      />
     </MainLayout>
   );
 };

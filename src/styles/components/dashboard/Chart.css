@@ -119,10 +119,30 @@
 /* Estilos para las barras */
 .recharts-rectangle {
   transition: all 0.3s ease;
-  fill: #1890ff !important;
 }
 
-.recharts-rectangle:hover {
-  fill: #40a9ff !important;
-  filter: drop-shadow(0 0 4px rgba(24, 144, 255, 0.5));
+/* Colores específicos para cada tipo de pago */
+.recharts-bar-rectangles .recharts-rectangle:nth-child(0) {
+  fill: #52c41a !important; /* Verde para Efectivo */
+}
+
+.recharts-bar-rectangles .recharts-rectangle:nth-child(0) {
+  fill: #1890ff !important; /* Azul para Débito */
+}
+
+.recharts-bar-rectangles .recharts-rectangle:nth-child(0) {
+  fill: #fa8c16 !important; /* Naranja para Crédito */
+}
+
+/* Efecto hover para las barras */
+.recharts-bar-rectangles:hover .recharts-rectangle {
+  opacity: 0.5; /* Oscurecer todas las barras */
+}
+
+.recharts-bar-rectangles .recharts-rectangle:hover {
+  opacity: 1; /* Restaurar opacidad para la barra con hover */
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+  /* Agregar un fondo gris transparente detrás de la barra */
+  stroke: rgba(200, 200, 200, 0.8);
+  stroke-width: 2px;
 }

@@ -1,1 +1,98 @@
-[]
+[
+  {
+    "id": "U1001",
+    "nombre": "Carlos Martínez",
+    "email": "carlos.martinez@empresa.cl",
+    "rol": "admin",
+    "fechaRegistro": "2024-12-15T14:30:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1002",
+    "nombre": "Ana García",
+    "email": "ana.garcia@empresa.cl",
+    "rol": "admin",
+    "fechaRegistro": "2025-01-05T09:15:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1003",
+    "nombre": "Luis Rodríguez",
+    "email": "luis.rodriguez@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-01-10T11:45:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1004",
+    "nombre": "María González",
+    "email": "maria.gonzalez@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-01-12T10:30:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1005",
+    "nombre": "Pedro Sánchez",
+    "email": "pedro.sanchez@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-01-15T14:00:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1006",
+    "nombre": "Laura Fernández",
+    "email": "laura.fernandez@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-01-18T09:45:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1007",
+    "nombre": "Roberto Torres",
+    "email": "roberto.torres@empresa.cl",
+    "rol": "supervisor",
+    "fechaRegistro": "2025-01-20T11:30:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1008",
+    "nombre": "Carmen López",
+    "email": "carmen.lopez@empresa.cl",
+    "rol": "supervisor",
+    "fechaRegistro": "2025-01-25T13:15:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1009",
+    "nombre": "Javier Morales",
+    "email": "javier.morales@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-02-01T10:00:00.000Z",
+    "activo": false
+  },
+  {
+    "id": "U1010",
+    "nombre": "Sofía Ramírez",
+    "email": "sofia.ramirez@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-02-05T09:30:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1011",
+    "nombre": "Daniel Herrera",
+    "email": "daniel.herrera@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-02-10T11:00:00.000Z",
+    "activo": true
+  },
+  {
+    "id": "U1012",
+    "nombre": "Valentina Castro",
+    "email": "valentina.castro@empresa.cl",
+    "rol": "vendedor",
+    "fechaRegistro": "2025-02-15T14:30:00.000Z",
+    "activo": false
+  }
+]

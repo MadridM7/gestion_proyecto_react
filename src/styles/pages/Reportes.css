@@ -51,20 +51,56 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilos para tarjetas activas */
+.report-card.active-report {
+  border: 2px solid #1890ff;
+  box-shadow: 0 5px 15px rgba(24, 144, 255, 0.2);
+}
+
+/* Estilos para los selectores */
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+/* Cursor pointer para las cabeceras de tarjetas */
+.report-card-header {
+  cursor: pointer;
+}
+
+/* Animación para tarjetas activas */
+@keyframes pulseActive {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+  }
+}
+
+.active-report .report-card-header {
+  animation: pulseActive 2s infinite;
+}
+
 /* Cabecera de las cards */
 .report-card-header {
   height: 160px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: white;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  position: relative;
+  justify-content: center;
+  border-radius: 8px 8px 0 0;
   overflow: hidden;
-  background-size: 400% 400%;
-  animation: gradientAnimation 15s ease infinite;
-  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.report-card-header .anticon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .report-card-header::before {

@@ -1,1 +1,162 @@
-[]
+[
+  {
+    "id": "V1001",
+    "monto": 562500,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-01T10:15:00.000Z",
+    "producto": "Smartphone Galaxy S23"
+  },
+  {
+    "id": "V1002",
+    "monto": 60750,
+    "tipoPago": "debito",
+    "vendedor": "Pedro Sánchez",
+    "fechaHora": "2025-05-01T11:30:00.000Z",
+    "producto": "Audífonos Bluetooth Sony"
+  },
+  {
+    "id": "V1003",
+    "monto": 696000,
+    "tipoPago": "credito",
+    "vendedor": "María González",
+    "fechaHora": "2025-05-02T09:45:00.000Z",
+    "producto": "Laptop Asus VivoBook"
+  },
+  {
+    "id": "V1004",
+    "monto": 156000,
+    "tipoPago": "debito",
+    "vendedor": "Luis Rodríguez",
+    "fechaHora": "2025-05-02T14:20:00.000Z",
+    "producto": "Monitor LG 27 pulgadas"
+  },
+  {
+    "id": "V1005",
+    "monto": 49000,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-03T10:05:00.000Z",
+    "producto": "Teclado Mecánico Logitech"
+  },
+  {
+    "id": "V1006",
+    "monto": 36250,
+    "tipoPago": "debito",
+    "vendedor": "Pedro Sánchez",
+    "fechaHora": "2025-05-03T16:30:00.000Z",
+    "producto": "Mouse Gamer Razer"
+  },
+  {
+    "id": "V1007",
+    "monto": 225000,
+    "tipoPago": "credito",
+    "vendedor": "María González",
+    "fechaHora": "2025-05-04T11:15:00.000Z",
+    "producto": "Tablet Samsung Tab A8"
+  },
+  {
+    "id": "V1008",
+    "monto": 123500,
+    "tipoPago": "efectivo",
+    "vendedor": "Luis Rodríguez",
+    "fechaHora": "2025-05-04T15:45:00.000Z",
+    "producto": "Impresora HP LaserJet"
+  },
+  {
+    "id": "V1009",
+    "monto": 54000,
+    "tipoPago": "debito",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-05T09:30:00.000Z",
+    "producto": "Disco Duro Externo 1TB"
+  },
+  {
+    "id": "V1010",
+    "monto": 39200,
+    "tipoPago": "efectivo",
+    "vendedor": "Pedro Sánchez",
+    "fechaHora": "2025-05-05T14:10:00.000Z",
+    "producto": "Cámara Web Logitech HD"
+  },
+  {
+    "id": "V1011",
+    "monto": 71500,
+    "tipoPago": "credito",
+    "vendedor": "María González",
+    "fechaHora": "2025-05-06T10:20:00.000Z",
+    "producto": "Router WiFi 6 TP-Link"
+  },
+  {
+    "id": "V1012",
+    "monto": 43200,
+    "tipoPago": "debito",
+    "vendedor": "Luis Rodríguez",
+    "fechaHora": "2025-05-06T16:05:00.000Z",
+    "producto": "Parlante Bluetooth JBL"
+  },
+  {
+    "id": "V1013",
+    "monto": 562500,
+    "tipoPago": "credito",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-07T11:40:00.000Z",
+    "producto": "Smartphone Galaxy S23"
+  },
+  {
+    "id": "V1014",
+    "monto": 60750,
+    "tipoPago": "efectivo",
+    "vendedor": "Pedro Sánchez",
+    "fechaHora": "2025-05-07T15:25:00.000Z",
+    "producto": "Audífonos Bluetooth Sony"
+  },
+  {
+    "id": "V1015",
+    "monto": 156000,
+    "tipoPago": "debito",
+    "vendedor": "María González",
+    "fechaHora": "2025-05-08T09:50:00.000Z",
+    "producto": "Monitor LG 27 pulgadas"
+  },
+  {
+    "id": "V1016",
+    "monto": 36250,
+    "tipoPago": "efectivo",
+    "vendedor": "Luis Rodríguez",
+    "fechaHora": "2025-05-08T14:35:00.000Z",
+    "producto": "Mouse Gamer Razer"
+  },
+  {
+    "id": "V1017",
+    "monto": 123500,
+    "tipoPago": "credito",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-09T10:55:00.000Z",
+    "producto": "Impresora HP LaserJet"
+  },
+  {
+    "id": "V1018",
+    "monto": 39200,
+    "tipoPago": "debito",
+    "vendedor": "Pedro Sánchez",
+    "fechaHora": "2025-05-09T16:15:00.000Z",
+    "producto": "Cámara Web Logitech HD"
+  },
+  {
+    "id": "V1019",
+    "monto": 225000,
+    "tipoPago": "efectivo",
+    "vendedor": "María González",
+    "fechaHora": "2025-05-10T11:05:00.000Z",
+    "producto": "Tablet Samsung Tab A8"
+  },
+  {
+    "id": "V1020",
+    "monto": 43200,
+    "tipoPago": "credito",
+    "vendedor": "Luis Rodríguez",
+    "fechaHora": "2025-05-10T15:40:00.000Z",
+    "producto": "Parlante Bluetooth JBL"
+  }
+]

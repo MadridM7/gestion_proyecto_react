@@ -1,29 +1,24 @@
+/**
+ * @fileoverview Contexto para la gestión de usuarios en la aplicación
+ * Proporciona funcionalidades para agregar, editar, eliminar usuarios.
+ * Implementa un sistema de polling para actualizar los datos sin recompilar la aplicación.
+ */
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+
+// Importar datos de usuarios desde el archivo JSON para la carga inicial
+import usuariosData from '../data/usuarios.json';
 
 // Importar servicios API
 import { 
-  obtenerUsuarios, 
-  guardarUsuarios as guardarUsuariosAPI,
   agregarUsuario as agregarUsuarioAPI,
   actualizarUsuario as actualizarUsuarioAPI,
   eliminarUsuario as eliminarUsuarioAPI 
 } from '../services/api';
 
-// Importar datos iniciales del archivo JSON
-import usuariosData from '../data/usuarios.json';
+// Importar el sistema de polling para actualización de datos sin recompilar
+import { dataPoller } from '../services/dataPoller';
 
-// Función para convertir fechas de string a objetos Date
-const procesarUsuarios = (usuarios) => {
-  return usuarios.map(usuario => ({
-    ...usuario,
-    fechaRegistro: usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : new Date(),
-    fechaCreacion: usuario.fechaCreacion ? new Date(usuario.fechaCreacion) : new Date(),
-    ultimoAcceso: usuario.ultimoAcceso ? new Date(usuario.ultimoAcceso) : new Date()
-  }));
-};
-
-// Cargar datos iniciales desde el archivo JSON
-const usuariosIniciales = procesarUsuarios(usuariosData);
+// Contexto para la gestión de usuarios
 
 // Crear el contexto de usuarios
 const UsuariosContext = createContext();
@@ -50,125 +45,131 @@ export const UsuariosProvider = ({ children }) => {
   // Estado para los usuarios
   const [usuarios, setUsuarios] = useState([]);
   
-  // Cargar usuarios desde el archivo JSON al iniciar
-  useEffect(() => {
-    const cargarUsuarios = async () => {
-      try {
-        // Intentar cargar los usuarios desde la API
-        const usuariosDesdeAPI = await obtenerUsuarios();
-        
-        if (usuariosDesdeAPI && usuariosDesdeAPI.length > 0) {
-          // Procesar las fechas
-          const usuariosProcesados = procesarUsuarios(usuariosDesdeAPI);
-          setUsuarios(usuariosProcesados);
-          console.log('Usuarios cargados desde el archivo JSON:', usuariosProcesados);
-        } else {
-          // Si no hay usuarios en la API, usar los datos iniciales
-          setUsuarios(usuariosIniciales);
-          // Guardar los datos iniciales en el archivo JSON
-          await guardarUsuariosAPI(usuariosIniciales);
-          console.log('Usuarios iniciales guardados en el archivo JSON');
-        }
-      } catch (error) {
-        console.error('Error al cargar usuarios:', error);
-        // En caso de error, usar los datos iniciales
-        setUsuarios(usuariosIniciales);
-      }
-    };
-    
-    cargarUsuarios();
-  }, []);
-  
-  // Estado para las estadísticas
+  // Estado para las estadísticas de usuarios
   const [estadisticas, setEstadisticas] = useState({
     totalUsuarios: 0,
     usuariosActivos: 0,
     porRol: {
       Administrador: 0,
-      Vendedor: 0,
-      Supervisor: 0
+      Supervisor: 0,
+      Vendedor: 0
     }
   });
   
-  // Actualizar estadísticas cuando cambien los usuarios
-  useEffect(() => {
-    // Valores por defecto si no hay usuarios
-    if (!usuarios || usuarios.length === 0) {
+  /**
+   * Calcula las estadísticas basadas en los usuarios actuales
+   * @param {Array} usuariosActuales - Lista de usuarios para calcular estadísticas
+   */
+  const calcularEstadisticas = useCallback((usuariosActuales) => {
+    if (!Array.isArray(usuariosActuales) || usuariosActuales.length === 0) {
       setEstadisticas({
         totalUsuarios: 0,
         usuariosActivos: 0,
         porRol: {
           Administrador: 0,
-          Vendedor: 0,
-          Supervisor: 0
+          Supervisor: 0,
+          Vendedor: 0
         }
       });
       return;
     }
     
-    try {
-      // Calcular total de usuarios
-      const total = usuarios.length;
+    // Calcular total de usuarios
+    const totalUsuarios = usuariosActuales.length;
+    
+    // Calcular usuarios activos
+    const usuariosActivos = usuariosActuales.filter(u => u.activo).length;
+    
+    // Calcular usuarios por rol (normalizando los roles)
+    const porRol = {
+      Administrador: 0,
+      Supervisor: 0,
+      Vendedor: 0
+    };
+    
+    usuariosActuales.forEach(usuario => {
+      // Normalizar el rol para que coincida con las categorías
+      let rolNormalizado = 'Vendedor'; // Por defecto
       
-      // Calcular usuarios activos
-      const activos = usuarios.filter(usuario => usuario.activo).length;
-      
-      // Calcular usuarios por rol
-      const porRol = {
-        Administrador: usuarios.filter(u => u.rol === 'Administrador').length,
-        Vendedor: usuarios.filter(u => u.rol === 'Vendedor').length,
-        Supervisor: usuarios.filter(u => u.rol === 'Supervisor').length
-      };
-      
-      // Actualizar el estado de estadísticas
-      setEstadisticas({
-        totalUsuarios: total,
-        usuariosActivos: activos,
-        porRol
-      });
-    } catch (error) {
-      console.error('Error al calcular estadísticas de usuarios:', error);
-      // En caso de error, establecer valores por defecto
-      setEstadisticas({
-        totalUsuarios: 0,
-        usuariosActivos: 0,
-        porRol: {
-          Administrador: 0,
-          Vendedor: 0,
-          Supervisor: 0
+      if (usuario.rol && typeof usuario.rol === 'string') {
+        const rolLower = usuario.rol.toLowerCase();
+        if (rolLower.includes('admin')) {
+          rolNormalizado = 'Administrador';
+        } else if (rolLower.includes('super')) {
+          rolNormalizado = 'Supervisor';
+        } else if (rolLower.includes('vend')) {
+          rolNormalizado = 'Vendedor';
+        } else if (rolLower.includes('invent')) {
+          rolNormalizado = 'Vendedor'; // Asignamos inventario a vendedor para simplificar
         }
-      });
-    }
-  }, [usuarios]);
-  
-  // Función para agregar un nuevo usuario y guardarlo en el archivo JSON a través de la API
+      }
+      
+      // Incrementar contador del rol correspondiente
+      if (porRol[rolNormalizado] !== undefined) {
+        porRol[rolNormalizado]++;
+      }
+    });
+    
+    // Actualizar el estado de estadísticas
+    setEstadisticas({
+      totalUsuarios,
+      usuariosActivos,
+      porRol
+    });
+  }, []);
+
+  // Cargar usuarios al iniciar y configurar el polling
+  useEffect(() => {
+    // Cargar datos iniciales desde el archivo JSON
+    setUsuarios(usuariosData);
+    console.log('Usuarios cargados desde el archivo JSON:', usuariosData.length);
+    
+    // Calcular estadísticas iniciales
+    calcularEstadisticas(usuariosData);
+    
+    // Configurar el polling para actualizar los datos sin recompilar
+    const handleUsuariosUpdate = (nuevosUsuarios) => {
+      setUsuarios(nuevosUsuarios);
+      calcularEstadisticas(nuevosUsuarios);
+      console.log('Datos de usuarios actualizados mediante polling');
+    };
+    
+    // Iniciar el polling cada 5 segundos
+    dataPoller.startPolling('usuarios', handleUsuariosUpdate, 5000);
+    
+    // Detener el polling cuando el componente se desmonte
+    return () => {
+      dataPoller.stopPolling('usuarios');
+    };
+  }, [calcularEstadisticas]);
+
+  /**
+   * Agrega un nuevo usuario al sistema y lo guarda en el archivo JSON a través de la API
+   * 
+   * @param {Object} nuevoUsuario - Datos del nuevo usuario
+   */
   const agregarUsuario = useCallback(async (nuevoUsuario) => {
     try {
-      // Asegurar que la fecha sea un objeto Date
-      const usuarioConFechaCorrecta = {
+      // Normalizar los datos del usuario
+      const usuarioNormalizado = {
         ...nuevoUsuario,
-        fechaRegistro: nuevoUsuario.fechaRegistro instanceof Date ? 
-          nuevoUsuario.fechaRegistro : new Date(),
-        // Asegurar que el ID sea único
-        id: nuevoUsuario.id || `U${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`
+        // Generar un ID único
+        id: `U${Math.floor(Math.random() * 10000)}`
       };
       
       // Guardar el nuevo usuario en el archivo JSON a través de la API
-      const respuesta = await agregarUsuarioAPI(usuarioConFechaCorrecta);
+      const respuesta = await agregarUsuarioAPI(usuarioNormalizado);
       
       if (respuesta.success) {
-        // Agregar el nuevo usuario al estado
+        // Actualizar el estado local
         setUsuarios(usuariosActuales => {
-          // Verificar si ya existe un usuario con el mismo ID
-          const existeID = usuariosActuales.some(u => u.id === usuarioConFechaCorrecta.id);
-          if (existeID) {
-            usuarioConFechaCorrecta.id = `U${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`;
-          }
-          return [...usuariosActuales, usuarioConFechaCorrecta];
+          const nuevosUsuarios = [...usuariosActuales, usuarioNormalizado];
+          // Actualizar estadísticas con los nuevos datos
+          calcularEstadisticas(nuevosUsuarios);
+          return nuevosUsuarios;
         });
-        
-        console.log('Nuevo usuario agregado y guardado en el archivo JSON:', usuarioConFechaCorrecta);
-        return usuarioConFechaCorrecta;
+        console.log('Usuario agregado y guardado en el archivo JSON:', usuarioNormalizado);
+        return usuarioNormalizado;
       } else {
         console.error('Error al guardar el usuario en el archivo JSON');
         return null;
@@ -177,9 +178,12 @@ export const UsuariosProvider = ({ children }) => {
       console.error('Error al agregar usuario:', error);
       return null;
     }
-  }, []);
-  
-  // Función para eliminar un usuario y actualizar el archivo JSON a través de la API
+  }, [calcularEstadisticas]);
+
+  /**
+   * Elimina un usuario del sistema basado en su ID
+   * @param {string} id - Identificador único del usuario a eliminar
+   */
   const eliminarUsuario = useCallback(async (id) => {
     try {
       // Eliminar el usuario a través de la API
@@ -188,26 +192,32 @@ export const UsuariosProvider = ({ children }) => {
       if (respuesta.success) {
         // Actualizar el estado local
         setUsuarios(usuariosActuales => {
-          // Filtrar el usuario a eliminar
           const usuariosActualizados = usuariosActuales.filter(usuario => usuario.id !== id);
-          console.log(`Usuario con ID ${id} eliminado y actualizado en el archivo JSON`);
+          // Actualizar estadísticas con los datos actualizados
+          calcularEstadisticas(usuariosActualizados);
           return usuariosActualizados;
         });
+        console.log(`Usuario con ID ${id} eliminado`);
         return true;
       } else {
-        console.error(`Error al eliminar el usuario con ID ${id} del archivo JSON`);
+        console.error('Error al eliminar el usuario');
         return false;
       }
     } catch (error) {
-      console.error(`Error al eliminar usuario con ID ${id}:`, error);
+      console.error('Error al eliminar usuario:', error);
       return false;
     }
-  }, []);
-  
-  // Función para actualizar un usuario y guardarlo en el archivo JSON a través de la API
+  }, [calcularEstadisticas]);
+
+  /**
+   * Actualiza los datos de un usuario existente y los guarda en el archivo JSON a través de la API
+   * 
+   * @param {string} id - Identificador único del usuario a actualizar
+   * @param {Object} datosActualizados - Objeto con los nuevos datos del usuario
+   */
   const actualizarUsuario = useCallback(async (id, datosActualizados) => {
     try {
-      // Buscar el usuario actual
+      // Buscar el usuario actual para combinar con los datos actualizados
       const usuarioActual = usuarios.find(u => u.id === id);
       
       if (!usuarioActual) {
@@ -215,14 +225,10 @@ export const UsuariosProvider = ({ children }) => {
         return null;
       }
       
-      // Crear el usuario actualizado
+      // Normalizar los datos actualizados
       const usuarioActualizado = {
         ...usuarioActual,
-        ...datosActualizados,
-        // Asegurarse de que la fecha sea válida
-        fechaRegistro: datosActualizados.fechaRegistro instanceof Date ? 
-          datosActualizados.fechaRegistro : 
-          (usuarioActual.fechaRegistro instanceof Date ? usuarioActual.fechaRegistro : new Date())
+        ...datosActualizados
       };
       
       // Actualizar el usuario en el archivo JSON a través de la API
@@ -231,15 +237,20 @@ export const UsuariosProvider = ({ children }) => {
       if (respuesta.success) {
         // Actualizar el estado local
         setUsuarios(usuariosActuales => {
-          return usuariosActuales.map(usuario => {
+          const usuariosActualizados = usuariosActuales.map(usuario => {
             if (usuario.id === id) {
               return usuarioActualizado;
             }
             return usuario;
           });
+          
+          // Actualizar estadísticas con los datos actualizados
+          calcularEstadisticas(usuariosActualizados);
+          
+          return usuariosActualizados;
         });
         
-        console.log(`Usuario con ID ${id} actualizado y guardado en el archivo JSON:`, usuarioActualizado);
+        console.log(`Usuario ${id} actualizado y guardado en el archivo JSON:`, usuarioActualizado);
         return usuarioActualizado;
       } else {
         console.error(`Error al guardar la actualización del usuario ${id} en el archivo JSON`);
@@ -249,17 +260,17 @@ export const UsuariosProvider = ({ children }) => {
       console.error(`Error al actualizar usuario ${id}:`, error);
       return null;
     }
-  }, [usuarios]);
-  
+  }, [usuarios, calcularEstadisticas]);
+
   // Valor del contexto
   const value = {
     usuarios,
     estadisticas,
     agregarUsuario,
-    eliminarUsuario,
-    actualizarUsuario
+    actualizarUsuario,
+    eliminarUsuario
   };
-  
+
   return (
     <UsuariosContext.Provider value={value}>
       {children}

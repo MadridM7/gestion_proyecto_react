@@ -1,1 +1,110 @@
-[]
+[
+  {
+    "id": "P1001",
+    "nombre": "Smartphone Galaxy S23",
+    "precioCompra": 450000,
+    "margenGanancia": 25,
+    "precioVenta": 562500,
+    "categoria": "Electrónica",
+    "stock": 15
+  },
+  {
+    "id": "P1002",
+    "nombre": "Laptop Asus VivoBook",
+    "precioCompra": 580000,
+    "margenGanancia": 20,
+    "precioVenta": 696000,
+    "categoria": "Computación",
+    "stock": 8
+  },
+  {
+    "id": "P1003",
+    "nombre": "Audífonos Bluetooth Sony",
+    "precioCompra": 45000,
+    "margenGanancia": 35,
+    "precioVenta": 60750,
+    "categoria": "Accesorios",
+    "stock": 25
+  },
+  {
+    "id": "P1004",
+    "nombre": "Monitor LG 27 pulgadas",
+    "precioCompra": 120000,
+    "margenGanancia": 30,
+    "precioVenta": 156000,
+    "categoria": "Computación",
+    "stock": 12
+  },
+  {
+    "id": "P1005",
+    "nombre": "Teclado Mecánico Logitech",
+    "precioCompra": 35000,
+    "margenGanancia": 40,
+    "precioVenta": 49000,
+    "categoria": "Accesorios",
+    "stock": 20
+  },
+  {
+    "id": "P1006",
+    "nombre": "Mouse Gamer Razer",
+    "precioCompra": 25000,
+    "margenGanancia": 45,
+    "precioVenta": 36250,
+    "categoria": "Accesorios",
+    "stock": 18
+  },
+  {
+    "id": "P1007",
+    "nombre": "Tablet Samsung Tab A8",
+    "precioCompra": 180000,
+    "margenGanancia": 25,
+    "precioVenta": 225000,
+    "categoria": "Electrónica",
+    "stock": 10
+  },
+  {
+    "id": "P1008",
+    "nombre": "Impresora HP LaserJet",
+    "precioCompra": 95000,
+    "margenGanancia": 30,
+    "precioVenta": 123500,
+    "categoria": "Oficina",
+    "stock": 7
+  },
+  {
+    "id": "P1009",
+    "nombre": "Disco Duro Externo 1TB",
+    "precioCompra": 40000,
+    "margenGanancia": 35,
+    "precioVenta": 54000,
+    "categoria": "Almacenamiento",
+    "stock": 22
+  },
+  {
+    "id": "P1010",
+    "nombre": "Cámara Web Logitech HD",
+    "precioCompra": 28000,
+    "margenGanancia": 40,
+    "precioVenta": 39200,
+    "categoria": "Accesorios",
+    "stock": 15
+  },
+  {
+    "id": "P1011",
+    "nombre": "Router WiFi 6 TP-Link",
+    "precioCompra": 55000,
+    "margenGanancia": 30,
+    "precioVenta": 71500,
+    "categoria": "Redes",
+    "stock": 9
+  },
+  {
+    "id": "P1012",
+    "nombre": "Parlante Bluetooth JBL",
+    "precioCompra": 32000,
+    "margenGanancia": 35,
+    "precioVenta": 43200,
+    "categoria": "Audio",
+    "stock": 14
+  }
+]

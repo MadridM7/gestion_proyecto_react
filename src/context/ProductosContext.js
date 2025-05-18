@@ -1,10 +1,12 @@
 /**
  * @fileoverview Contexto para la gestión de productos en la aplicación
- * Proporciona funcionalidades para agregar, editar, eliminar y filtrar productos.
+ * Proporciona funcionalidades para agregar, editar, eliminar productos,
+ * así como calcular precios de venta basados en costos y márgenes.
+ * Implementa un sistema de polling para actualizar los datos sin recompilar la aplicación.
  */
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
-// Importar datos de productos desde el archivo JSON
+// Importar datos de productos desde el archivo JSON para la carga inicial
 import productosData from '../data/productos.json';
 
 // Importar servicios API
@@ -13,6 +15,11 @@ import {
   actualizarProducto as actualizarProductoAPI,
   eliminarProducto as eliminarProductoAPI 
 } from '../services/api';
+
+// Importar el sistema de polling para actualización de datos sin recompilar
+import { dataPoller } from '../services/dataPoller';
+
+// Contexto para la gestión de productos
 
 // Crear el contexto de productos
 const ProductosContext = createContext();
@@ -30,41 +37,35 @@ export const useProductos = () => {
 };
 
 /**
- * Proveedor del contexto de productos que maneja el estado global de productos
- * y proporciona funciones para manipular este estado en toda la aplicación.
- * 
+ * Proveedor del contexto de productos
  * @param {Object} props - Propiedades del componente
- * @param {React.ReactNode} props.children - Componentes hijos que tendrán acceso al contexto
- * @returns {JSX.Element} Proveedor de contexto que envuelve la aplicación o componentes
+ * @param {React.ReactNode} props.children - Componentes hijos
+ * @returns {JSX.Element} Proveedor de contexto
  */
 export const ProductosProvider = ({ children }) => {
-  // Clave para guardar los productos en localStorage
-  const PRODUCTOS_STORAGE_KEY = 'dashboard-productos';
-  
-  /**
-   * Estado principal que almacena todos los productos de la aplicación
-   * @type {Array} Array de objetos de producto con propiedades id, nombre, precioCompra, margenGanancia, precioVenta
-   */
+  // Estado para los productos
   const [productos, setProductos] = useState([]);
   
-  // Cargar productos al iniciar la aplicación - directamente desde el archivo JSON importado
+  // Cargar productos al iniciar y configurar el polling
   useEffect(() => {
-    try {
-      // Usar directamente los datos del archivo JSON importado
-      setProductos(productosData);
-      console.log('Productos cargados directamente desde archivo JSON:', productosData.length);
-      
-      // Limpiar localStorage para asegurar que no se usen datos antiguos
-      localStorage.removeItem(PRODUCTOS_STORAGE_KEY);
-    } catch (error) {
-      console.error('Error al cargar productos:', error);
-      // En caso de error, intentar usar los datos iniciales directamente
-      setProductos(productosData);
-    }
+    // Cargar datos iniciales desde el archivo JSON
+    setProductos(productosData);
+    console.log('Productos cargados desde el archivo JSON:', productosData.length);
+    
+    // Configurar el polling para actualizar los datos sin recompilar
+    const handleProductosUpdate = (nuevosProductos) => {
+      setProductos(nuevosProductos);
+      console.log('Datos de productos actualizados mediante polling');
+    };
+    
+    // Iniciar el polling cada 5 segundos
+    dataPoller.startPolling('productos', handleProductosUpdate, 5000);
+    
+    // Detener el polling cuando el componente se desmonte
+    return () => {
+      dataPoller.stopPolling('productos');
+    };
   }, []);
-  
-  // Utilizamos localStorage solo como respaldo en caso de fallos en la API
-  // Esta funcionalidad se maneja directamente en las funciones de agregar, actualizar y eliminar
 
   /**
    * Agrega un nuevo producto al sistema y lo guarda en el archivo JSON a través de la API
@@ -193,22 +194,18 @@ export const ProductosProvider = ({ children }) => {
       return 0;
     }
     
-    // Calcular el monto del margen
-    const montoMargen = precioCompraNum * (margenGananciaNum / 100);
-    
-    // Precio de venta = Precio de compra + Monto del margen
-    return precioCompraNum + montoMargen;
+    return precioCompraNum * (1 + margenGananciaNum / 100);
   }, []);
-  
-  // Valor del contexto que se proporcionará a los componentes
+
+  // Valor del contexto
   const value = {
     productos,
     agregarProducto,
-    eliminarProducto,
     actualizarProducto,
+    eliminarProducto,
     calcularPrecioVenta
   };
-  
+
   return (
     <ProductosContext.Provider value={value}>
       {children}
