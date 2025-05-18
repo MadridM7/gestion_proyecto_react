@@ -2,6 +2,8 @@
 
 Una aplicación web moderna para la gestión de ventas, desarrollada con React y Ant Design, optimizada para el formato monetario chileno (CLP). Ofrece una interfaz de usuario mejorada con gráficos interactivos y un diseño intuitivo. Todos los datos se guardan directamente en archivos JSON, lo que permite una persistencia de datos sin necesidad de una base de datos externa.
 
+**Última actualización: Mayo 2025** - Implementación de tarjetas dinámicas en el dashboard y mejoras en la visualización de gráficos.
+
 ## Índice
 
 - [Características](#características)
@@ -14,8 +16,9 @@ Una aplicación web moderna para la gestión de ventas, desarrollada con React y
 
 ## Características
 
-- 📊 **Dashboard interactivo** con gráficos de área y barras personalizados
-- 🏈 **Tarjetas de reportes** con iconos mejorados y efectos visuales
+- 📊 **Dashboard interactivo** con gráficos de área y barras personalizados con efectos de hover
+- 🏈 **Tarjetas dinámicas** que se generan automáticamente basándose en los datos de dashboard.json
+- 🌈 **Gráficos con colores personalizados** para cada tipo de pago con efectos visuales mejorados
 - 💰 **Formato monetario chileno (CLP)** con separadores de miles
 - 📱 **Diseño responsive** para dispositivos móviles y escritorio
 - 💾 **Persistencia de datos** con archivos JSON
@@ -99,11 +102,23 @@ npm run build
 
 ### Dashboard Principal Mejorado
 
-- **Tarjetas de Resumen**: Muestran métricas clave como ventas totales, promedio diario y ventas por tipo de pago, con iconos distintivos y colores temáticos.
-- **Gráficos Interactivos**: 
+- **Tarjetas Dinámicas**: 
+  - Se generan automáticamente basándose en los datos del archivo dashboard.json
+  - Cualquier adición o eliminación en el JSON se refleja inmediatamente en el dashboard
+  - Organizadas en filas de tres tarjetas para una visualización óptima
+  - Cada tarjeta muestra métricas clave con iconos distintivos y colores temáticos
+
+- **Gráficos Interactivos Mejorados**: 
   - **Gráfico de Área**: Visualización de ventas por día de la semana con degradados y efectos visuales.
-  - **Gráfico de Barras**: Distribución de ventas por tipo de pago con colores personalizados para cada categoría.
-- **Tabla de Ventas Mejorada**: Visualización de ventas con etiquetas de colores para los tipos de pago y mejor formato de datos.
+  - **Gráfico de Barras de Tipo de Pago**: 
+    - Colores personalizados para cada tipo de pago: verde para Efectivo, azul para Débito y naranja para Crédito
+    - Efectos de hover que oscurecen las barras no seleccionadas y resaltan la barra sobre la que está el cursor
+    - Tooltips mejorados que muestran información detallada sobre cada tipo de pago
+
+- **Interfaz de Usuario Optimizada**:
+  - Diseño limpio sin títulos redundantes en las tablas de usuarios y productos
+  - Botones de acción colocados junto a los campos de búsqueda para un acceso más rápido
+  - Visualización de ventas con etiquetas de colores para los tipos de pago y mejor formato de datos
 
 ### Gestión de Ventas
 
@@ -155,31 +170,47 @@ react-dashboard-ui/
 │à-- public/               # Archivos públicos y estáticos
 │à-- server/               # Archivos relacionados con el servidor
 │à-- src/                  # Código fuente de la aplicación React
-│   │à-- components/           # Componentes reutilizables
-│   │   │à-- dashboard/        # Componentes del dashboard (gráficos, tablas, cards)
-│   │   │à-- layout/           # Componentes de estructura (header, sidebar)
-│   │   │à-- charts/           # Componentes de gráficos y visualizaciones
-│   │   │à-- reportes/         # Componentes para la sección de reportes
-│   │   │à-- usuarios/         # Componentes para la gestión de usuarios
+│   │à-- components/           # Componentes reutilizables (Arquitectura Atomic Design)
+│   │   │à-- atoms/            # Componentes atómicos (botones, inputs, iconos)
+│   │   │à-- molecules/        # Componentes moleculares (grupos de átomos)
+│   │   │   │à-- Card.js          # Componente de tarjeta reutilizable
+│   │   │   │à-- SearchInput.js   # Componente de búsqueda
+│   │   │à-- organisms/         # Componentes organismos (secciones complejas)
+│   │   │   │à-- DataTable.js      # Tabla de datos genérica
+│   │   │   │à-- SummaryCards.js   # Tarjetas dinámicas del dashboard
+│   │   │   │à-- PaymentTypeChart.js # Gráfico de tipos de pago
+│   │   │   │à-- WeeklySalesChart.js # Gráfico de ventas semanales
+│   │   │   │à-- ProductosDataTable.js # Tabla de productos
+│   │   │   │à-- UsuariosDataTable.js # Tabla de usuarios
+│   │   │   │à-- VentasDataTable.js  # Tabla de ventas
+│   │   │à-- templates/         # Plantillas de páginas
+│   │   │   │à-- DashboardTemplate.js # Plantilla del dashboard
+│   │   │   │à-- VentasTemplate.js    # Plantilla de ventas
+│   │   │   │à-- ProductosTemplate.js # Plantilla de productos
+│   │   │   │à-- UsuariosTemplate.js  # Plantilla de usuarios
 │   │à-- context/              # Contextos de React para gestión de estado
-│   │   │à-- VentasContext.js   # Contexto para la gestión de ventas
+│   │   │à-- VentasContext.js    # Contexto para la gestión de ventas
 │   │   │à-- ProductosContext.js # Contexto para la gestión de productos
-│   │   │à-- UsuariosContext.js # Contexto para la gestión de usuarios
+│   │   │à-- UsuariosContext.js  # Contexto para la gestión de usuarios
 │   │à-- data/                 # Archivos JSON con datos de la aplicación
-│   │   │à-- ventas.json        # Datos de ventas
-│   │   │à-- productos.json     # Datos de productos
-│   │   │à-- usuarios.json      # Datos de usuarios
-│   │   │à-- dashboard.json     # Datos para el dashboard
+│   │   │à-- ventas.json        # Datos de ventas con registros de transacciones
+│   │   │à-- productos.json     # Catálogo de productos con precios y descripciones
+│   │   │à-- usuarios.json      # Información de usuarios del sistema
+│   │   │à-- dashboard.json     # Configuración de tarjetas y métricas del dashboard
 │   │à-- pages/                # Páginas principales de la aplicación
 │   │   │à-- Dashboard.js       # Página principal del dashboard
 │   │   │à-- Ventas.js          # Página de gestión de ventas
 │   │   │à-- Productos.js       # Página de gestión de productos
 │   │   │à-- Usuarios.js        # Página de gestión de usuarios
-│   │   │à-- Reportes.js        # Página de reportes
 │   │à-- services/             # Servicios para comunicación con el servidor
 │   │   │à-- api.js             # Funciones para comunicación con la API
 │   │à-- styles/               # Archivos CSS y estilos
+│   │   │à-- components/        # Estilos específicos para componentes
+│   │   │   │à-- dashboard/      # Estilos para componentes del dashboard
+│   │   │   │   │à-- Chart.css    # Estilos para gráficos con efectos de hover
+│   │   │   │   │à-- Card.css     # Estilos para tarjetas del dashboard
 │   │à-- utils/                # Utilidades y funciones auxiliares
+│   │   │à-- formatters.js      # Funciones para formateo de datos (CLP, fechas)
 │   │à-- App.js                # Componente principal de la aplicación
 │   │à-- index.js              # Punto de entrada de React
 │à-- server.js              # Servidor Express para la API
