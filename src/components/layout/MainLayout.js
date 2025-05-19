@@ -220,8 +220,7 @@ const MainLayout = ({ children, currentPage }) => {
         <div className="app-logo">
           <span className="logo-icon">📊</span>
           <span className="logo-text">
-            <span className="logo-text-main">VentaSoft</span>
-            <span className="logo-text-sub">Analytics Pro</span>
+            <span className="logo-text-main">VenTrack</span>
           </span>
         </div>
         

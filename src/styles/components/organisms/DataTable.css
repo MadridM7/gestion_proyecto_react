@@ -16,3 +16,7 @@
 .data-table-search.with-extra {
   width: calc(100% - 200px);
 }
+
+.search-extra-container {
+  margin-left: 5px;
+}

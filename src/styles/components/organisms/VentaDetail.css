@@ -1,0 +1,86 @@
+/**
+ * Estilos para el componente VentaDetail
+ */
+
+.venta-detail-card {
+  height: 100%;
+}
+
+.venta-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.venta-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.venta-descriptions {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.venta-productos-list {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.venta-detail-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+  background-color: #40a9ff;
+}
+
+.venta-producto-item {
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.venta-producto-nombre {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.venta-producto-cantidad,
+.venta-producto-precio {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.venta-producto-subtotal {
+  margin-top: 4px;
+  font-weight: 500;
+  color: #1890ff;
+}
+
+.venta-notas {
+  padding: 8px;
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 4px;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .venta-detail-card {
+    margin-top: 16px;
+  }
+}

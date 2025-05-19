@@ -6,15 +6,22 @@ import { ShoppingOutlined } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
-import ActionButtons from '../molecules/ActionButtons';
 
 /**
  * Componente organismo para la tabla de productos
  * @param {Object} props - Propiedades del componente
+ * @param {Node} props.searchExtra - Elementos adicionales para mostrar junto al buscador
+ * @param {Function} props.onRowClick - Función para manejar el clic en una fila
+ * @param {string} props.categoriaFiltro - Categoría para filtrar los productos
  * @returns {JSX.Element} Tabla de productos con funcionalidades de búsqueda y filtrado
  */
-const ProductosDataTable = ({ onEdit, searchExtra }) => {
-  const { productos, eliminarProducto } = useProductos();
+const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro }) => {
+  const { productos } = useProductos();
+  
+  // Aplicar filtro por categoría si existe
+  const productosFiltrados = categoriaFiltro
+    ? productos.filter(p => p.categoria === categoriaFiltro)
+    : productos;
   
   // Columnas para la tabla
   const columns = [
@@ -31,49 +38,39 @@ const ProductosDataTable = ({ onEdit, searchExtra }) => {
       sorter: (a, b) => a.nombre.localeCompare(b.nombre)
     },
     {
-      title: 'Precio Compra',
-      dataIndex: 'precioCompra',
-      key: 'precioCompra',
-      render: (valor) => `$${valor.toLocaleString('es-CL')}`,
-      sorter: (a, b) => a.precioCompra - b.precioCompra
+      title: 'Categoría',
+      dataIndex: 'categoria',
+      key: 'categoria',
+      render: (categoria) => categoria || 'Sin categoría',
+      sorter: (a, b) => (a.categoria || '').localeCompare(b.categoria || '')
     },
     {
-      title: 'Margen',
-      dataIndex: 'margenGanancia',
-      key: 'margenGanancia',
-      render: (valor) => `${valor}%`,
-      sorter: (a, b) => a.margenGanancia - b.margenGanancia
-    },
-    {
-      title: 'Precio Venta',
+      title: 'Precio',
       dataIndex: 'precioVenta',
       key: 'precioVenta',
-      render: (valor) => `$${valor.toLocaleString('es-CL')}`,
+      render: (valor) => `$${Number(valor).toLocaleString('es-CL')}`,
       sorter: (a, b) => a.precioVenta - b.precioVenta
-    },
-    {
-      title: 'Acciones',
-      key: 'acciones',
-      render: (_, record) => (
-        <ActionButtons 
-          onEdit={onEdit} 
-          onDelete={eliminarProducto} 
-          record={record} 
-          deleteConfirmTitle="¿Estás seguro de eliminar este producto?"
-          deleteConfirmDescription="Esta acción no se puede deshacer y eliminará todos los datos asociados a este producto."
-        />
-      )
     }
   ];
   
+  // Configuración para manejar el clic en una fila
+  const onRow = (record) => ({
+    onClick: () => {
+      if (onRowClick) {
+        onRowClick(record);
+      }
+    },
+    style: { cursor: 'pointer' }
+  });
+
   return (
     <DataTable 
       columns={columns} 
-      dataSource={productos} 
+      dataSource={productosFiltrados} 
       loading={false}
       rowKey="id"
-      searchPlaceholder="Buscar por nombre, categoría o etiquetas..."
-      searchFields={['nombre', 'categoria', 'etiquetas']}
+      searchPlaceholder="Buscar por nombre o categoría..."
+      searchFields={['nombre', 'categoria']}
       pagination={{ 
         pageSize: 10, 
         showSizeChanger: true, 
@@ -82,13 +79,16 @@ const ProductosDataTable = ({ onEdit, searchExtra }) => {
       scroll={{ x: 'max-content' }}
       size="middle"
       searchExtra={searchExtra}
+      onRow={onRow}
+      className="productos-data-table"
     />
   );
 };
 
 ProductosDataTable.propTypes = {
-  onEdit: PropTypes.func,
-  searchExtra: PropTypes.node
+  searchExtra: PropTypes.node,
+  onRowClick: PropTypes.func,
+  categoriaFiltro: PropTypes.string
 };
 
 export default ProductosDataTable;

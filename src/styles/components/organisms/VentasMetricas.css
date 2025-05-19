@@ -1,0 +1,29 @@
+/**
+ * Estilos para el componente VentasMetricas
+ */
+
+.ventas-metricas {
+  margin-bottom: 16px;
+}
+
+.metrica-card {
+  height: 100%;
+  transition: all 0.3s;
+}
+
+.metrica-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metrica-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .metrica-card {
+    margin-bottom: 8px;
+  }
+}

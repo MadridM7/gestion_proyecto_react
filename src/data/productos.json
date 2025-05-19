@@ -5,8 +5,7 @@
     "precioCompra": 450000,
     "margenGanancia": 25,
     "precioVenta": 562500,
-    "categoria": "Electrónica",
-    "stock": 15
+    "categoria": "Electrónica"
   },
   {
     "id": "P1002",
@@ -14,17 +13,16 @@
     "precioCompra": 580000,
     "margenGanancia": 20,
     "precioVenta": 696000,
-    "categoria": "Computación",
-    "stock": 8
+    "categoria": "Computación"
   },
   {
     "id": "P1003",
     "nombre": "Audífonos Bluetooth Sony",
-    "precioCompra": 45000,
+    "precioCompra": 10000,
     "margenGanancia": 35,
-    "precioVenta": 60750,
+    "precioVenta": 13500,
     "categoria": "Accesorios",
-    "stock": 25
+    "ventasTotales": 0
   },
   {
     "id": "P1004",
@@ -32,8 +30,7 @@
     "precioCompra": 120000,
     "margenGanancia": 30,
     "precioVenta": 156000,
-    "categoria": "Computación",
-    "stock": 12
+    "categoria": "Computación"
   },
   {
     "id": "P1005",
@@ -41,8 +38,7 @@
     "precioCompra": 35000,
     "margenGanancia": 40,
     "precioVenta": 49000,
-    "categoria": "Accesorios",
-    "stock": 20
+    "categoria": "Accesorios"
   },
   {
     "id": "P1006",
@@ -50,8 +46,7 @@
     "precioCompra": 25000,
     "margenGanancia": 45,
     "precioVenta": 36250,
-    "categoria": "Accesorios",
-    "stock": 18
+    "categoria": "Accesorios"
   },
   {
     "id": "P1007",
@@ -59,8 +54,7 @@
     "precioCompra": 180000,
     "margenGanancia": 25,
     "precioVenta": 225000,
-    "categoria": "Electrónica",
-    "stock": 10
+    "categoria": "Electrónica"
   },
   {
     "id": "P1008",
@@ -68,8 +62,7 @@
     "precioCompra": 95000,
     "margenGanancia": 30,
     "precioVenta": 123500,
-    "categoria": "Oficina",
-    "stock": 7
+    "categoria": "Oficina"
   },
   {
     "id": "P1009",
@@ -77,8 +70,7 @@
     "precioCompra": 40000,
     "margenGanancia": 35,
     "precioVenta": 54000,
-    "categoria": "Almacenamiento",
-    "stock": 22
+    "categoria": "Almacenamiento"
   },
   {
     "id": "P1010",
@@ -86,8 +78,7 @@
     "precioCompra": 28000,
     "margenGanancia": 40,
     "precioVenta": 39200,
-    "categoria": "Accesorios",
-    "stock": 15
+    "categoria": "Accesorios"
   },
   {
     "id": "P1011",
@@ -95,8 +86,7 @@
     "precioCompra": 55000,
     "margenGanancia": 30,
     "precioVenta": 71500,
-    "categoria": "Redes",
-    "stock": 9
+    "categoria": "Redes"
   },
   {
     "id": "P1012",
@@ -104,7 +94,6 @@
     "precioCompra": 32000,
     "margenGanancia": 35,
     "precioVenta": 43200,
-    "categoria": "Audio",
-    "stock": 14
+    "categoria": "Audio"
   }
 ]

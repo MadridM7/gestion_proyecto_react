@@ -20,7 +20,9 @@ const VentasDashboard = ({
   onEdit,
   showTable = true,
   showResumen = true,
-  showCharts = true
+  showCharts = true,
+  dataSource,
+  onRowClick
 }) => {
   // En una implementación completa, aquí se cargarían datos adicionales si fuera necesario
   
@@ -49,6 +51,8 @@ const VentasDashboard = ({
           <VentasDataTable 
             onEdit={onEdit} 
             showTitle={true}
+            dataSource={dataSource}
+            onRowClick={onRowClick}
             pageSize={10}
           />
         </Card>
@@ -61,7 +65,9 @@ VentasDashboard.propTypes = {
   onEdit: PropTypes.func,
   showTable: PropTypes.bool,
   showResumen: PropTypes.bool,
-  showCharts: PropTypes.bool
+  showCharts: PropTypes.bool,
+  dataSource: PropTypes.array,
+  onRowClick: PropTypes.func
 };
 
 export default VentasDashboard;

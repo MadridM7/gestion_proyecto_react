@@ -2,10 +2,14 @@
  * @fileoverview Template para la página de productos
  */
 import React, { useState } from 'react';
-import { Card, Modal, Form, message, Button } from 'antd';
+import { Card, Modal, Form, message, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
 import PropTypes from 'prop-types';
+import ProductosStats from '../organisms/ProductosStats';
+import ProductosFilters from '../molecules/ProductosFilters';
+import ProductoDetail from '../organisms/ProductoDetail';
+import '../../styles/components/templates/ProductosTemplate.css';
 
 /**
  * Componente template para la página de productos
@@ -21,6 +25,7 @@ const ProductosTemplate = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingProducto, setEditingProducto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedProducto, setSelectedProducto] = useState(null);
 
   // Función para mostrar el modal de nuevo producto
   const showModal = () => {
@@ -78,16 +83,53 @@ const ProductosTemplate = ({
     </Button>
   );
 
+  // Estado para almacenar la categoría seleccionada
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+
+  // Manejar cambio de filtro por categoría
+  const handleFilterChange = (categoria) => {
+    // Guardar la categoría seleccionada en el estado
+    setCategoriaSeleccionada(categoria);
+    
+    // Actualizar la vista de detalles si hay un producto seleccionado
+    // que no pertenece a la categoría seleccionada
+    if (categoria && selectedProducto && selectedProducto.categoria !== categoria) {
+      setSelectedProducto(null);
+    }
+  };
+
+  // Manejar selección de producto
+  const handleProductoSelect = (producto) => {
+    setSelectedProducto(producto);
+  };
+
   return (
     <div className="productos-template">
-      <Card>
-        {ProductosDataTable && (
-          <ProductosDataTable 
-            onEdit={showEditModal} 
-            searchExtra={addButton}
-          />
-        )}
-      </Card>
+      {/* Estadísticas de productos */}
+      <ProductosStats />
+      
+      <Row gutter={[16, 16]} className="productos-content">
+        <Col xs={24} lg={16}>
+          <Card>
+            {ProductosDataTable && (
+              <ProductosDataTable 
+                searchExtra={
+                  <div className="search-actions-container">
+                    <ProductosFilters onFilterChange={handleFilterChange} />
+                    {addButton}
+                  </div>
+                }
+                categoriaFiltro={categoriaSeleccionada}
+                onRowClick={handleProductoSelect}
+              />
+            )}
+          </Card>
+        </Col>
+        
+        <Col xs={24} lg={8}>
+          <ProductoDetail producto={selectedProducto} onEdit={showEditModal} />
+        </Col>
+      </Row>
       
       {/* Modal para agregar/editar producto */}
       {ProductoFormulario && (

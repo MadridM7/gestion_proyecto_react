@@ -1,0 +1,34 @@
+/**
+ * Estilos para el componente ProductosTemplate
+ */
+
+.productos-template {
+  margin-bottom: 24px;
+}
+
+.productos-content {
+  margin-top: 16px;
+}
+
+.search-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-actions-container .productos-filters {
+  margin-bottom: 0;
+  margin-right: 8px;
+}
+
+@media (max-width: 992px) {
+  .productos-content [class*='ant-col'] + [class*='ant-col'] {
+    margin-top: 16px;
+  }
+  
+  .search-actions-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

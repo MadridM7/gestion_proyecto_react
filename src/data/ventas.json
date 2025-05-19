@@ -133,7 +133,8 @@
     "tipoPago": "credito",
     "vendedor": "Laura Fernández",
     "fechaHora": "2025-05-09T10:55:00.000Z",
-    "producto": "Impresora HP LaserJet"
+    "producto": "Impresora HP LaserJet",
+    "productos": []
   },
   {
     "id": "V1018",
@@ -145,18 +146,20 @@
   },
   {
     "id": "V1019",
-    "monto": 225000,
+    "monto": 22500,
     "tipoPago": "efectivo",
     "vendedor": "María González",
     "fechaHora": "2025-05-10T11:05:00.000Z",
-    "producto": "Tablet Samsung Tab A8"
+    "producto": "Tablet Samsung Tab A8",
+    "productos": []
   },
   {
     "id": "V1020",
     "monto": 43200,
     "tipoPago": "credito",
-    "vendedor": "Luis Rodríguez",
+    "vendedor": "Carlos Mendoza",
     "fechaHora": "2025-05-10T15:40:00.000Z",
-    "producto": "Parlante Bluetooth JBL"
+    "producto": "Parlante Bluetooth JBL",
+    "productos": []
   }
 ]

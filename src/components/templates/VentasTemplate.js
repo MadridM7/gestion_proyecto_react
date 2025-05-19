@@ -2,13 +2,14 @@
  * @fileoverview Template para la página de ventas
  */
 import React, { useState } from 'react';
-import { Card, Modal, Form, message, Tabs } from 'antd';
-import { DashboardOutlined, TableOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Card, Modal, Form, message, Row, Col } from 'antd';
 import { useVentas } from '../../context/VentasContext';
 import PropTypes from 'prop-types';
+import VentasMetricas from '../organisms/VentasMetricas';
+import VentasFilters from '../molecules/VentasFilters';
+import VentaDetail from '../organisms/VentaDetail';
+import VentasDataTable from '../organisms/VentasDataTable';
 import '../../styles/components/templates/VentasTemplate.css';
-
-const { TabPane } = Tabs;
 
 /**
  * Componente template para la página de ventas
@@ -17,22 +18,16 @@ const { TabPane } = Tabs;
  */
 const VentasTemplate = ({ 
   isMobile = false, 
-  FormularioVenta, 
-  VentasDashboard 
+  FormularioVenta 
 }) => {
   const { agregarVenta, actualizarVenta } = useVentas();
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingVenta, setEditingVenta] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedVenta, setSelectedVenta] = useState(null);
 
-  // Función para mostrar el modal de agregar venta
-  const showAddModal = () => {
-    setEditingVenta(null);
-    form.resetFields();
-    setIsModalVisible(true);
-  };
+  // Función para mostrar el modal de nueva venta (eliminada por no ser utilizada)
 
   // Función para mostrar el modal de editar venta
   const showEditModal = (venta) => {
@@ -81,91 +76,70 @@ const VentasTemplate = ({
     }
   };
 
-  // Botón flotante para agregar ventas
-  const renderFloatingButton = () => (
-    <div className="floating-button-container">
-      <button 
-        onClick={showAddModal}
-        className="floating-add-button"
-      >
-        <ShoppingCartOutlined />
-      </button>
-    </div>
-  );
+  // Botón para agregar nueva venta (eliminado por solicitud del usuario)
+
+  // Estado para almacenar el vendedor seleccionado
+  const [vendedorSeleccionado, setVendedorSeleccionado] = useState(null);
+
+  // Manejar cambio de filtro por vendedor
+  const handleFilterChange = (vendedor) => {
+    // Guardar el vendedor seleccionado en el estado
+    setVendedorSeleccionado(vendedor);
+    
+    // Actualizar la vista de detalles si hay una venta seleccionada
+    // que no pertenece al vendedor seleccionado
+    if (vendedor && selectedVenta && selectedVenta.vendedor !== vendedor) {
+      setSelectedVenta(null);
+    }
+  };
+
+  // Manejar selección de venta
+  const handleVentaSelect = (venta) => {
+    setSelectedVenta(venta);
+  };
 
   return (
     <div className="ventas-template">      
+      {/* Métricas de ventas */}
+      <VentasMetricas />
       
-      <Tabs 
-        activeKey={activeTab} 
-        onChange={setActiveTab}
-        className="ventas-tabs"
-      >
-        <TabPane
-          tab={
-            <span>
-              <DashboardOutlined />
-              Dashboard
-            </span>
-          }
-          key="dashboard"
-        >
-          {VentasDashboard && (
-            <VentasDashboard onEdit={showEditModal} />
-          )}
-        </TabPane>
-        
-        <TabPane
-          tab={
-            <span>
-              <TableOutlined />
-              Listado de Ventas
-            </span>
-          }
-          key="table"
-        >
-          <Card 
-            title="Ventas"
-            className="ventas-card"
-            extra={isMobile ? null : (
-              <button 
-                onClick={showAddModal}
-                className="add-sale-button"
-              >
-                <ShoppingCartOutlined />
-                <span>Nueva Venta</span>
-              </button>
-            )}
-          >
-            {VentasDashboard && (
-              <VentasDashboard 
-                onEdit={showEditModal} 
-                showResumen={false}
-                showCharts={false}
-              />
-            )}
+      <Row gutter={[16, 16]} className="ventas-content">
+        <Col xs={24} lg={16}>
+          <Card>
+            <VentasDataTable 
+              searchExtra={
+                <div className="search-actions-container">
+                  <VentasFilters onFilterChange={handleFilterChange} />
+                </div>
+              }
+              vendedorFiltro={vendedorSeleccionado}
+              onRowClick={handleVentaSelect}
+              onEdit={showEditModal}
+            />
           </Card>
-        </TabPane>
-      </Tabs>
-      
-      {/* Botón flotante para agregar ventas (solo en móvil) */}
-      {isMobile && renderFloatingButton()}
+        </Col>
+        
+        <Col xs={24} lg={8}>
+          <VentaDetail venta={selectedVenta} onEdit={showEditModal} />
+        </Col>
+      </Row>
       
       {/* Modal para agregar/editar venta */}
       {FormularioVenta && (
         <Modal
-          title={editingVenta ? 'Editar Venta' : 'Agregar Venta'}
+          title={editingVenta ? 'Editar Venta' : 'Nueva Venta'}
           open={isModalVisible}
           onOk={handleSubmit}
           onCancel={handleCancel}
           confirmLoading={isSubmitting}
           destroyOnClose
           maskClosable={false}
-          width={isMobile ? '95%' : '600px'}
+          width="600px"
         >
           <FormularioVenta 
             form={form} 
             editingVenta={editingVenta} 
+            loading={isSubmitting}
           />
         </Modal>
       )}
@@ -175,8 +149,7 @@ const VentasTemplate = ({
 
 VentasTemplate.propTypes = {
   isMobile: PropTypes.bool,
-  FormularioVenta: PropTypes.elementType,
-  VentasDashboard: PropTypes.elementType
+  FormularioVenta: PropTypes.elementType
 };
 
 export default VentasTemplate;

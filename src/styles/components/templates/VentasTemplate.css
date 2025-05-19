@@ -2,24 +2,35 @@
  * Estilos para el componente VentasTemplate
  */
 
-.ventas-template-container {
-  padding: 20px;
-}
-
-.ventas-template-header {
-  margin-bottom: 20px;
-}
-
-.ventas-template-title {
-  margin-bottom: 8px;
-}
-
-.ventas-template-description {
+.ventas-template {
   margin-bottom: 24px;
 }
 
-.ventas-template-actions {
-  margin-bottom: 20px;
+.ventas-content {
+  margin-top: 16px;
+}
+
+.search-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-actions-container .ventas-filters {
+  margin-bottom: 0;
+  margin-right: 8px;
+}
+
+@media (max-width: 992px) {
+  .ventas-content [class*='ant-col'] + [class*='ant-col'] {
+    margin-top: 16px;
+  }
+  
+  .search-actions-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
 .floating-button-container {

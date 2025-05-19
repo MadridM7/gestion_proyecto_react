@@ -2,23 +2,47 @@
  * Estilos para el componente VentasDataTable
  */
 
-.ventas-data-table-filters {
+.ventas-data-table-container {
   width: 100%;
+}
+
+.ventas-table-header {
   margin-bottom: 16px;
 }
 
-.ventas-data-table-actions {
+.search-filter-wrapper {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: flex-start;
+  gap: 16px;
 }
 
-.ventas-data-table-search {
-  width: 100%;
+.ventas-search-input {
+  width: 250px;
 }
 
-/* Cuando hay elementos extra junto al buscador */
-.ventas-data-table-search.with-extra {
-  width: calc(100% - 200px);
+/* Estilo para el contenedor de filtros */
+.search-extra-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Asegurar que el filtro esté en la misma línea */
+.search-actions-container {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 16px;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .search-filter-wrapper {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .ventas-search-input {
+    width: 60%;
+  }
 }

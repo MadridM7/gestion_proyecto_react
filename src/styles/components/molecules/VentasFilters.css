@@ -1,0 +1,17 @@
+/**
+ * Estilos para el componente VentasFilters
+ */
+
+.ventas-filters {
+  margin-bottom: 16px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-buttons .ant-btn {
+  margin-bottom: 8px;
+}

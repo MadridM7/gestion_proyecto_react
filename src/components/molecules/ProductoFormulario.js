@@ -3,7 +3,7 @@
  */
 import React, { useEffect } from 'react';
 import { Form, Input, InputNumber } from 'antd';
-import { DollarOutlined, ShoppingOutlined, PercentageOutlined } from '@ant-design/icons';
+import { DollarOutlined, ShoppingOutlined, PercentageOutlined, TagOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 
 /**
@@ -83,6 +83,18 @@ const ProductoFormulario = ({
           prefix={<ShoppingOutlined />} 
           placeholder="Nombre del producto" 
           maxLength={100}
+        />
+      </Form.Item>
+      
+      {/* Categoría del producto */}
+      <Form.Item
+        name="categoria"
+        label="Categoría"
+      >
+        <Input 
+          prefix={<TagOutlined />} 
+          placeholder="Categoría del producto" 
+          maxLength={50}
         />
       </Form.Item>
       

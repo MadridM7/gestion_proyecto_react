@@ -1,66 +1,54 @@
 /**
  * @fileoverview Tabla de datos para la gestión de ventas
  */
-import React, { useState, useEffect } from 'react';
-import { Table, Space } from 'antd';
+import React from 'react';
+import { UserOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
 import moment from 'moment';
-import SearchInput from '../atoms/SearchInput';
-import StatusTag from '../atoms/StatusTag';
-import ActionButtons from '../molecules/ActionButtons';
 import PropTypes from 'prop-types';
+import DataTable from './DataTable';
 import '../../styles/components/organisms/VentasDataTable.css';
 
 /**
  * Componente organismo para la tabla de ventas
  * @param {Object} props - Propiedades del componente
+ * @param {Node} props.searchExtra - Elementos adicionales para mostrar junto al buscador
+ * @param {Function} props.onRowClick - Función para manejar el clic en una fila
+ * @param {string} props.vendedorFiltro - Vendedor para filtrar las ventas
  * @returns {JSX.Element} Tabla de ventas con funcionalidades de búsqueda y filtrado
  */
-const VentasDataTable = ({ onEdit }) => {
-  const { ventas, eliminarVenta } = useVentas();
-  const [filteredData, setFilteredData] = useState([]);
-  const [searchText, setSearchText] = useState('');
-  const [loading] = useState(false);
+const VentasDataTable = ({ 
+  searchExtra, 
+  onRowClick, 
+  vendedorFiltro
+}) => {
+  const { ventas } = useVentas();
   
-  // Actualizar los datos filtrados cuando cambien las ventas
-  useEffect(() => {
-    if (Array.isArray(ventas)) {
-      setFilteredData(ventas);
-    } else {
-      setFilteredData([]);
-    }
-  }, [ventas]);
+  // Aplicar filtro por vendedor si existe
+  const ventasFiltradas = vendedorFiltro
+    ? ventas.filter(v => v.vendedor === vendedorFiltro)
+    : ventas;
   
-  // Función para manejar la búsqueda global
-  const handleSearch = (value) => {
-    setSearchText(value);
-    
-    if (!value) {
-      setFilteredData(ventas);
-      return;
-    }
-    
-    const searchLower = value.toLowerCase();
-    const filtered = ventas.filter(venta => {
-      return (
-        venta.id.toLowerCase().includes(searchLower) ||
-        venta.vendedor.toLowerCase().includes(searchLower) ||
-        venta.tipoPago.toLowerCase().includes(searchLower) ||
-        venta.monto.toString().includes(searchLower)
-      );
-    });
-    
-    setFilteredData(filtered);
-  };
-  
-  // Definición de columnas de la tabla
+  // Definición de columnas de la tabla (simplificada a solo vendedor, monto y fecha)
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => a.id.localeCompare(b.id),
-      responsive: ['md']
+      title: 'Vendedor',
+      dataIndex: 'vendedor',
+      key: 'vendedor',
+      render: (vendedor) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <UserOutlined style={{ marginRight: 8, color: '#1890ff' }} />
+          {vendedor}
+        </div>
+      ),
+      sorter: (a, b) => a.vendedor.localeCompare(b.vendedor)
+    },
+    {
+      title: 'Monto',
+      dataIndex: 'monto',
+      key: 'monto',
+      render: (monto) => `$${Number(monto).toLocaleString('es-CL')}`,
+      sorter: (a, b) => a.monto - b.monto
     },
     {
       title: 'Fecha',
@@ -69,78 +57,46 @@ const VentasDataTable = ({ onEdit }) => {
       render: (fechaHora) => moment(fechaHora).format('DD/MM/YYYY HH:mm'),
       sorter: (a, b) => new Date(a.fechaHora) - new Date(b.fechaHora),
       defaultSortOrder: 'descend'
-    },
-    {
-      title: 'Vendedor',
-      dataIndex: 'vendedor',
-      key: 'vendedor',
-      sorter: (a, b) => a.vendedor.localeCompare(b.vendedor)
-    },
-    {
-      title: 'Tipo de Pago',
-      dataIndex: 'tipoPago',
-      key: 'tipoPago',
-      render: (tipoPago) => {
-        const statusMap = {
-          'Efectivo': { status: 'success', text: 'Efectivo' },
-          'Tarjeta': { status: 'processing', text: 'Tarjeta' },
-          'Transferencia': { status: 'default', text: 'Transferencia' }
-        };
-        
-        const { status, text } = statusMap[tipoPago] || { status: 'default', text: tipoPago };
-        return <StatusTag status={status} text={text} />;
-      },
-      responsive: ['md']
-    },
-    {
-      title: 'Monto',
-      dataIndex: 'monto',
-      key: 'monto',
-      render: (monto) => `$${monto.toLocaleString('es-CL')}`,
-      sorter: (a, b) => a.monto - b.monto
-    },
-    {
-      title: 'Acciones',
-      key: 'acciones',
-      render: (_, record) => (
-        <ActionButtons 
-          onEdit={onEdit} 
-          onDelete={eliminarVenta} 
-          record={record} 
-        />
-      )
     }
   ];
   
+  // Configuración para manejar el clic en una fila
+  const onRow = (record) => ({
+    onClick: () => {
+      if (onRowClick) {
+        onRowClick(record);
+      }
+    },
+    style: { cursor: 'pointer' }
+  });
+
   return (
-    <div className="ventas-table-container">
-      <Space direction="vertical" className="ventas-data-table-filters">
-        <SearchInput 
-          placeholder="Buscar por ID, vendedor, tipo de pago o monto..." 
-          value={searchText} 
-          onChange={handleSearch} 
-        />
-      </Space>
-      
-      <Table 
-        columns={columns} 
-        dataSource={filteredData} 
-        rowKey="id" 
-        loading={loading}
-        pagination={{ 
-          pageSize: 10, 
-          showSizeChanger: true, 
-          showTotal: (total) => `Total: ${total} ventas` 
-        }}
-        scroll={{ x: 'max-content' }}
-        size="middle"
-      />
-    </div>
+    <DataTable 
+      columns={columns} 
+      dataSource={ventasFiltradas} 
+      loading={false}
+      rowKey="id"
+      searchPlaceholder="Buscar por vendedor o monto..."
+      searchFields={['vendedor', 'monto']}
+      pagination={{ 
+        pageSize: 10, 
+        showSizeChanger: true, 
+        showTotal: (total) => `Total: ${total} ventas` 
+      }}
+      scroll={{ x: 'max-content' }}
+      size="middle"
+      searchExtra={searchExtra}
+      onRow={onRow}
+      className="ventas-data-table"
+    />
   );
 };
 
 VentasDataTable.propTypes = {
-  onEdit: PropTypes.func
+  searchExtra: PropTypes.node,
+  onRowClick: PropTypes.func,
+  showTitle: PropTypes.bool,
+  vendedorFiltro: PropTypes.string
 };
 
 export default VentasDataTable;
