@@ -1,0 +1,11 @@
+/**
+ * Estilos para el componente UsuariosStats
+ */
+
+.usuarios-stats-row {
+  margin-bottom: 16px;
+}
+
+.usuarios-stats-section {
+  margin-top: 16px;
+}

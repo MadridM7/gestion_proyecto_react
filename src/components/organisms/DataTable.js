@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 import PropTypes from 'prop-types';
 import SearchInput from '../atoms/SearchInput';
+import '../../styles/components/organisms/DataTable.css';
 
 /**
  * Componente organismo para tablas de datos estandarizadas
@@ -77,12 +78,12 @@ const DataTable = ({
     <div className={`data-table-container ${className}`}>
       {/* Barra de búsqueda con elementos adicionales */}
       {showSearch && searchFields.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div className="data-table-header">
           <SearchInput 
             placeholder={searchPlaceholder} 
             value={searchText} 
             onChange={handleSearch} 
-            style={{ width: searchExtra ? 'calc(100% - 200px)' : '100%' }}
+            className={`data-table-search ${searchExtra ? 'with-extra' : ''}`}
           />
           {searchExtra && (
             <div className="search-extra-container">

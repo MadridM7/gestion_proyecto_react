@@ -1,0 +1,24 @@
+/**
+ * Estilos para el componente VentasDataTable
+ */
+
+.ventas-data-table-filters {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.ventas-data-table-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ventas-data-table-search {
+  width: 100%;
+}
+
+/* Cuando hay elementos extra junto al buscador */
+.ventas-data-table-search.with-extra {
+  width: calc(100% - 200px);
+}

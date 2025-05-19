@@ -16,6 +16,7 @@ import {
 import DownloadButton from '../atoms/DownloadButton';
 import DateSelector from '../atoms/DateSelector';
 import UserSelector from '../atoms/UserSelector';
+import '../../styles/components/molecules/ReportCard.css';
 
 const { Paragraph } = Typography;
 
@@ -39,24 +40,15 @@ const ReportCard = ({
 }) => {
   // Función para obtener el componente de icono basado en el nombre
   const getIconComponent = (iconName) => {
-    const iconStyle = { 
-      fontSize: '64px', 
-      color: 'white',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      height: '100%'
-    };
     
     const iconMap = {
-      'BarChartOutlined': <BarChartOutlined style={iconStyle} />,
-      'PieChartOutlined': <PieChartOutlined style={iconStyle} />,
-      'LineChartOutlined': <LineChartOutlined style={iconStyle} />,
-      'TableOutlined': <TableOutlined style={iconStyle} />,
-      'CalendarOutlined': <CalendarOutlined style={iconStyle} />,
-      'UserOutlined': <UserOutlined style={iconStyle} />,
-      'DownloadOutlined': <DownloadOutlined style={iconStyle} />
+      'BarChartOutlined': <BarChartOutlined className="report-card-icon" />,
+      'PieChartOutlined': <PieChartOutlined className="report-card-icon" />,
+      'LineChartOutlined': <LineChartOutlined className="report-card-icon" />,
+      'TableOutlined': <TableOutlined className="report-card-icon" />,
+      'CalendarOutlined': <CalendarOutlined className="report-card-icon" />,
+      'UserOutlined': <UserOutlined className="report-card-icon" />,
+      'DownloadOutlined': <DownloadOutlined className="report-card-icon" />
     };
     
     return iconMap[iconName] || null;
@@ -123,7 +115,7 @@ const ReportCard = ({
       className={`report-card ${isActive ? 'active-report' : ''}`}
       cover={
         <div 
-          className={headerClass} 
+          className={`${headerClass} report-card-icon-container`} 
           style={{ background: reporte.color }}
           onClick={() => onSelect(reporte.id.toLowerCase())}
         >
@@ -140,7 +132,7 @@ const ReportCard = ({
             </Paragraph>
             
             {/* Formulario para seleccionar opciones específicas */}
-            <Form form={form} layout="vertical" style={{ marginBottom: '16px' }}>
+            <Form form={form} layout="vertical" className="report-card-form">
               {renderSelector()}
             </Form>
             

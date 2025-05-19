@@ -1,0 +1,39 @@
+/**
+ * Estilos comunes para toda la aplicación
+ */
+
+/* Espaciado vertical común */
+.mt-16 {
+  margin-top: 16px;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+/* Estilos para contenedores flexibles */
+.flex-container {
+  display: flex;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-center {
+  align-items: center;
+}
+
+/* Estilos para anchos */
+.w-100 {
+  width: 100%;
+}
+
+.w-calc-100-minus-200 {
+  width: calc(100% - 200px);
+}
+
+/* Estilos para texto */
+.text-center {
+  text-align: center;
+}

@@ -6,6 +6,7 @@ import { Card, Modal, Form, message, Tabs } from 'antd';
 import { DashboardOutlined, TableOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
 import PropTypes from 'prop-types';
+import '../../styles/components/templates/VentasTemplate.css';
 
 const { TabPane } = Tabs;
 
@@ -82,23 +83,10 @@ const VentasTemplate = ({
 
   // Botón flotante para agregar ventas
   const renderFloatingButton = () => (
-    <div style={{ position: 'fixed', right: 24, bottom: 24, zIndex: 1000 }}>
+    <div className="floating-button-container">
       <button 
         onClick={showAddModal}
-        style={{
-          width: 56,
-          height: 56,
-          borderRadius: 28,
-          backgroundColor: '#1890ff',
-          color: 'white',
-          border: 'none',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: '22px'
-        }}
+        className="floating-add-button"
       >
         <ShoppingCartOutlined />
       </button>
@@ -142,18 +130,7 @@ const VentasTemplate = ({
             extra={isMobile ? null : (
               <button 
                 onClick={showAddModal}
-                style={{
-                  padding: '0 15px',
-                  height: 32,
-                  borderRadius: 4,
-                  backgroundColor: '#1890ff',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5
-                }}
+                className="add-sale-button"
               >
                 <ShoppingCartOutlined />
                 <span>Nueva Venta</span>

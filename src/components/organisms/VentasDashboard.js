@@ -9,6 +9,7 @@ import SalesChart from './SalesChart';
 import PaymentTypeChart from './PaymentTypeChart';
 import PropTypes from 'prop-types';
 import '../../styles/pages/Dashboard.css';
+import '../../styles/components/organisms/VentasDashboard.css';
 
 /**
  * Componente organismo para el dashboard de ventas
@@ -32,7 +33,7 @@ const VentasDashboard = ({
       
       {/* Gráficos */}
       {showCharts && (
-        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Row gutter={[16, 16]} className="ventas-dashboard-row">
           <Col xs={24} lg={12}>
             <SalesChart />
           </Col>
@@ -44,7 +45,7 @@ const VentasDashboard = ({
       
       {/* Tabla de ventas */}
       {showTable && (
-        <Card className="dashboard-card" style={{ marginTop: 16 }}>
+        <Card className="dashboard-card">
           <VentasDataTable 
             onEdit={onEdit} 
             showTitle={true}

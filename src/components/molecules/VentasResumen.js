@@ -10,6 +10,7 @@ import {
   RiseOutlined 
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import '../../styles/components/molecules/VentasResumen.css';
 
 /**
  * Componente molecular para mostrar resúmenes de ventas

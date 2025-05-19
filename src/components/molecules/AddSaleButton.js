@@ -5,6 +5,7 @@ import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import FloatingActionButton from '../atoms/FloatingActionButton';
 import PropTypes from 'prop-types';
+import '../../styles/components/molecules/AddSaleButton.css';
 
 /**
  * Componente molecular para agregar ventas con un botón flotante
@@ -12,18 +13,8 @@ import PropTypes from 'prop-types';
  * @returns {JSX.Element} Botón flotante para agregar ventas
  */
 const AddSaleButton = ({ onClick, isMobile = true }) => {
-  // Estilos específicos según el dispositivo
-  const buttonStyle = isMobile 
-    ? { 
-        bottom: '24px', 
-        right: '24px',
-        zIndex: 1050 // Mayor que el sidebar para evitar problemas de superposición
-      } 
-    : { 
-        bottom: '24px', 
-        right: '24px',
-        zIndex: 1000
-      };
+  // Usamos clases CSS en lugar de estilos inline
+  const deviceClass = isMobile ? 'mobile' : 'desktop';
 
   return (
     <FloatingActionButton
@@ -31,8 +22,8 @@ const AddSaleButton = ({ onClick, isMobile = true }) => {
       onClick={onClick}
       tooltip="Agregar Venta"
       type="primary"
-      style={buttonStyle}
-      className="add-sale-button"
+      className={`add-sale-button ${deviceClass}`}
+      isMobile={isMobile}
     />
   );
 };

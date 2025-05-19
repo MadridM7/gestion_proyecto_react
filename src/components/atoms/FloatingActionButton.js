@@ -4,6 +4,7 @@
 import React from 'react';
 import { Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
+import '../../styles/components/atoms/FloatingActionButton.css';
 
 /**
  * Componente atómico para botones flotantes de acción
@@ -18,16 +19,11 @@ const FloatingActionButton = ({
   shape = 'circle',
   size = 'large',
   style = {},
-  className = ''
+  className = '',
+  isMobile = false
 }) => {
-  const defaultStyle = {
-    position: 'fixed',
-    bottom: '24px',
-    right: '24px',
-    zIndex: 1000,
-    boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-    ...style
-  };
+  // Combinamos las clases CSS para permitir personalización
+  const buttonClassName = `floating-action-button ${className} ${isMobile ? 'mobile' : ''}`;
 
   const button = (
     <Button
@@ -36,8 +32,8 @@ const FloatingActionButton = ({
       icon={icon}
       onClick={onClick}
       size={size}
-      style={defaultStyle}
-      className={`floating-action-button ${className}`}
+      style={style} // Mantenemos style para personalizaciones adicionales
+      className={buttonClassName}
     />
   );
 
@@ -61,7 +57,8 @@ FloatingActionButton.propTypes = {
   shape: PropTypes.string,
   size: PropTypes.string,
   style: PropTypes.object,
-  className: PropTypes.string
+  className: PropTypes.string,
+  isMobile: PropTypes.bool
 };
 
 export default FloatingActionButton;

@@ -1,0 +1,11 @@
+/**
+ * Estilos para el componente VentasDashboard
+ */
+
+.ventas-dashboard-row {
+  margin-top: 16px;
+}
+
+.dashboard-card {
+  margin-top: 16px;
+}

@@ -15,7 +15,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: 1000;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
@@ -85,6 +85,15 @@
   transition: all 0.2s;
 }
 
+/* Ajuste de margen cuando el sidebar está colapsado o expandido */
+.main-content-wrapper.collapsed {
+  margin-left: 0;
+}
+
+.main-content-wrapper.expanded {
+  margin-left: 200px;
+}
+
 /* Header principal */
 .main-header {
   padding: 0 16px;
@@ -129,9 +138,24 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   overflow: auto;
+  background-color: #fff;
+}
+
+/* Ajuste de borde superior izquierdo cuando el sidebar está colapsado */
+.main-content-area.sidebar-collapsed {
+  border-top-left-radius: 8px;
+}
+
+.main-content-area.sidebar-expanded {
+  border-top-left-radius: 24px;
 }
 
 /* Estilos para el modal de nueva venta */
 .new-sale-modal .ant-modal-footer {
   display: none;
+}
+
+/* Botón de nueva venta en el sidebar */
+.sidebar-new-sale-button {
+  width: 100%;
 }

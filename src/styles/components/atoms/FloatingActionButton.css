@@ -1,0 +1,16 @@
+/**
+ * Estilos para el componente FloatingActionButton
+ */
+
+.floating-action-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+/* Variante para dispositivos móviles con mayor z-index */
+.floating-action-button.mobile {
+  z-index: 1050;
+}

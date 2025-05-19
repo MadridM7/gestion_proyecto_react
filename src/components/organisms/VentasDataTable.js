@@ -9,6 +9,7 @@ import SearchInput from '../atoms/SearchInput';
 import StatusTag from '../atoms/StatusTag';
 import ActionButtons from '../molecules/ActionButtons';
 import PropTypes from 'prop-types';
+import '../../styles/components/organisms/VentasDataTable.css';
 
 /**
  * Componente organismo para la tabla de ventas
@@ -113,7 +114,7 @@ const VentasDataTable = ({ onEdit }) => {
   
   return (
     <div className="ventas-table-container">
-      <Space direction="vertical" style={{ width: '100%', marginBottom: 16 }}>
+      <Space direction="vertical" className="ventas-data-table-filters">
         <SearchInput 
           placeholder="Buscar por ID, vendedor, tipo de pago o monto..." 
           value={searchText} 

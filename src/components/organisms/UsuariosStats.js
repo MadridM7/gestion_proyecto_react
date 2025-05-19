@@ -5,6 +5,7 @@ import React from 'react';
 import { Row, Col, Card, Statistic, Progress } from 'antd';
 import { UserOutlined, TeamOutlined, IdcardOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useUsuarios } from '../../context/UsuariosContext';
+import '../../styles/components/organisms/UsuariosStats.css';
 
 /**
  * Componente organismo para mostrar estadísticas de usuarios
@@ -31,7 +32,7 @@ const UsuariosStats = () => {
   return (
     <div>
       {/* Primera fila: Total y Activos */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]} className="usuarios-stats-row">
         <Col xs={24} md={12}>
           <Card hoverable>
             <Statistic
@@ -40,7 +41,7 @@ const UsuariosStats = () => {
               prefix={<TeamOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
-            <div style={{ marginTop: 16 }}>
+            <div className="usuarios-stats-section">
               <Progress 
                 percent={100} 
                 status="active" 
@@ -60,7 +61,7 @@ const UsuariosStats = () => {
               valueStyle={{ color: '#52c41a' }}
               suffix={`/ ${estadisticas.totalUsuarios}`}
             />
-            <div style={{ marginTop: 16 }}>
+            <div className="usuarios-stats-section">
               <Progress 
                 percent={porcentajeActivos} 
                 status="active" 
@@ -82,7 +83,7 @@ const UsuariosStats = () => {
               valueStyle={{ color: '#f5222d' }}
               suffix={`(${calcularPorcentajeRol('Administrador')}%)`}
             />
-            <div style={{ marginTop: 16 }}>
+            <div className="usuarios-stats-section">
               <Progress 
                 percent={calcularPorcentajeRol('Administrador')} 
                 status="active" 
@@ -101,7 +102,7 @@ const UsuariosStats = () => {
               valueStyle={{ color: '#722ed1' }}
               suffix={`(${calcularPorcentajeRol('Vendedor')}%)`}
             />
-            <div style={{ marginTop: 16 }}>
+            <div className="usuarios-stats-section">
               <Progress 
                 percent={calcularPorcentajeRol('Vendedor')} 
                 status="active" 
@@ -120,7 +121,7 @@ const UsuariosStats = () => {
               valueStyle={{ color: '#faad14' }}
               suffix={`(${calcularPorcentajeRol('Supervisor')}%)`}
             />
-            <div style={{ marginTop: 16 }}>
+            <div className="usuarios-stats-section">
               <Progress 
                 percent={calcularPorcentajeRol('Supervisor')} 
                 status="active" 

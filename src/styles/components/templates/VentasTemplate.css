@@ -1,0 +1,58 @@
+/**
+ * Estilos para el componente VentasTemplate
+ */
+
+.ventas-template-container {
+  padding: 20px;
+}
+
+.ventas-template-header {
+  margin-bottom: 20px;
+}
+
+.ventas-template-title {
+  margin-bottom: 8px;
+}
+
+.ventas-template-description {
+  margin-bottom: 24px;
+}
+
+.ventas-template-actions {
+  margin-bottom: 20px;
+}
+
+.floating-button-container {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1000;
+}
+
+.floating-add-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+}
+
+.add-sale-button {
+  padding: 0 15px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

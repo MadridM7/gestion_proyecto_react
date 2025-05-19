@@ -14,7 +14,6 @@ import Usuarios from './pages/Usuarios';
 import Productos from './pages/Productos';
 
 // Importar estilos
-import './App.css';
 import 'antd/dist/reset.css';
 
 function App() {

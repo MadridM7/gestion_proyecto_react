@@ -15,6 +15,7 @@ import {
   ShoppingOutlined
 } from '@ant-design/icons';
 import VentaFormulario from '../molecules/VentaFormulario';
+import AddSaleButton from '../molecules/AddSaleButton';
 import { useVentas } from '../../context/VentasContext';
 
 // Importar estilos CSS
@@ -40,8 +41,8 @@ const MainLayout = ({ children, currentPage }) => {
   const [isMobile, setIsMobile] = useState(false);
   // Referencia para rastrear si estamos en una operación de datos
   const isDataOperationRef = useRef(false);
-  // Obtenemos el tema actual de Ant Design
-  const { token } = theme.useToken();
+  // Inicializamos el tema de Ant Design (ya no necesitamos el token directamente)
+  theme.useToken();
   
   // Efecto para detectar el tamaño de la pantalla
   useEffect(() => {
@@ -214,7 +215,6 @@ const MainLayout = ({ children, currentPage }) => {
         }}
         // Prevenir re-renders innecesarios que causan el parpadeo
         className="main-sidebar"
-        style={{ position: 'fixed', height: '100vh', zIndex: 1000 }}
       >
         {/* Logo de la aplicación */}
         <div className="app-logo">
@@ -231,7 +231,7 @@ const MainLayout = ({ children, currentPage }) => {
             type="primary" 
             icon={<PlusOutlined />}
             onClick={() => handleNavigation('nueva-venta')}
-            style={{ width: '100%' }}
+            className="sidebar-new-sale-button"
             size="middle"
           >
             {/* Texto condicional según el estado del sidebar */}
@@ -283,8 +283,7 @@ const MainLayout = ({ children, currentPage }) => {
       </Sider>
       {/* Contenido principal que se ajusta al estado del sidebar */}
       <Layout 
-        className="main-content-wrapper"
-        style={{ marginLeft: collapsed ? 0 : 200 }}
+        className={`main-content-wrapper ${collapsed ? 'collapsed' : 'expanded'}`}
       >
         {/* Header fijo con botón para colapsar/expandir el sidebar */}
         <Header className="main-header">
@@ -309,40 +308,14 @@ const MainLayout = ({ children, currentPage }) => {
         
         {/* Área de contenido principal donde se renderiza el contenido específico de cada página */}
         <Content
-          className="main-content-area"
-          style={{
-            background: token.colorBgContainer,
-            margin: '10px 16px',
-            padding: '20px',
-            minHeight: '280px',
-            borderRadius: token.borderRadiusLG,
-            borderTopLeftRadius: collapsed ? token.borderRadiusLG : '24px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-            overflow: 'auto'
-          }}
+          className={`main-content-area ${collapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}
         >
           {children}
           {/* Botón flotante para agregar ventas en dispositivos móviles */}
           {isMobile && (
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
+            <AddSaleButton
               onClick={() => handleNavigation('nueva-venta')}
-              style={{
-                position: 'fixed',
-                bottom: '20px',
-                right: '20px',
-                width: '60px',
-                height: '60px',
-                borderRadius: '50%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                zIndex: 1000
-              }}
-              aria-label="Agregar nueva venta"
+              isMobile={true}
             />
           )}
         </Content>

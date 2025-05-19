@@ -1,0 +1,19 @@
+/**
+ * Estilos para el componente AddSaleButton
+ */
+
+/* Los estilos base se heredan de FloatingActionButton */
+
+/* Variante para dispositivos móviles */
+.add-sale-button.mobile {
+  bottom: 24px;
+  right: 24px;
+  z-index: 1050; /* Mayor que el sidebar para evitar problemas de superposición */
+}
+
+/* Variante para dispositivos de escritorio */
+.add-sale-button.desktop {
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
