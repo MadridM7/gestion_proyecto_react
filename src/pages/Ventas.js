@@ -1,10 +1,11 @@
 /**
  * @fileoverview Página de gestión de ventas con estructura Atomic Design
  */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import VentasTemplate from '../components/templates/VentasTemplate';
 import VentaFormulario from '../components/molecules/VentaFormulario';
+import useIsMobile from '../hooks/useIsMobile';
 
 // Importar estilos CSS
 import '../styles/pages/Ventas.css';
@@ -14,25 +15,7 @@ import '../styles/pages/Ventas.css';
  * @returns {JSX.Element} Página de Ventas
  */
 const Ventas = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Detectar si es un dispositivo móvil
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    // Verificar al cargar
-    checkMobile();
-    
-    // Agregar listener para cambios de tamaño
-    window.addEventListener('resize', checkMobile);
-    
-    // Limpiar listener al desmontar
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
+  const isMobile = useIsMobile();
 
   return (
     <MainLayout currentPage="Ventas">

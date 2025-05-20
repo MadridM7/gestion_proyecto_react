@@ -25,16 +25,29 @@ const FloatingActionButton = ({
   // Combinamos las clases CSS para permitir personalización
   const buttonClassName = `floating-action-button ${className} ${isMobile ? 'mobile' : ''}`;
 
+  // Aplicamos estilos adicionales para móvil si es necesario
+  const mobileStyles = isMobile ? {
+    width: '56px',
+    height: '56px',
+    borderRadius: '50%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...style
+  } : style;
+
   const button = (
-    <Button
-      type={type}
-      shape={shape}
-      icon={icon}
-      onClick={onClick}
-      size={size}
-      style={style} // Mantenemos style para personalizaciones adicionales
-      className={buttonClassName}
-    />
+    <div className="floating-button-container">
+      <Button
+        type={type}
+        shape={shape}
+        icon={icon}
+        onClick={onClick}
+        size={size}
+        style={mobileStyles}
+        className={buttonClassName}
+      />
+    </div>
   );
 
   // Si hay tooltip, envolver el botón con un componente Tooltip

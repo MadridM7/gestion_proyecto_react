@@ -26,9 +26,10 @@ const { Option } = Select;
  * @param {Object} props - Propiedades del componente
  * @param {Object} props.venta - Datos de la venta a mostrar
  * @param {Function} props.onEdit - Función para editar la venta
+ * @param {boolean} props.inMobileModal - Indica si el componente se muestra en un modal móvil
  * @returns {JSX.Element} Componente de detalles de la venta
  */
-const VentaDetail = ({ venta, onEdit }) => {
+const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
   const { eliminarVenta, actualizarVenta } = useVentas();
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
@@ -162,18 +163,17 @@ const VentaDetail = ({ venta, onEdit }) => {
 
   return (
     <Card 
-      title={<div className="venta-detail-title"><ShoppingCartOutlined /> {isEditing ? 'Editar Venta' : 'Detalles de la Venta'}</div>}
+      title={!inMobileModal ? <div className="venta-detail-title"><ShoppingCartOutlined /> {isEditing ? 'Editar Venta' : 'Detalles de la Venta'}</div> : null}
       className="venta-detail-card"
       extra={
         venta && (
-          <div className="venta-detail-actions">
+          <div className={`venta-detail-actions ${inMobileModal ? 'mobile-centered' : ''}`}>
             {isEditing ? (
-              <>
+              <div className="venta-action-buttons">
                 <Button 
                   icon={<SaveOutlined />} 
                   type="primary"
                   onClick={handleSave}
-                  style={{ marginRight: 8 }}
                 >
                   Guardar
                 </Button>
@@ -183,14 +183,13 @@ const VentaDetail = ({ venta, onEdit }) => {
                 >
                   Cancelar
                 </Button>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="venta-action-buttons">
                 <Button 
                   icon={<EditOutlined />} 
                   type="primary"
                   onClick={handleEdit}
-                  style={{ marginRight: 8 }}
                 >
                   Editar
                 </Button>
@@ -208,7 +207,7 @@ const VentaDetail = ({ venta, onEdit }) => {
                     Eliminar
                   </Button>
                 </Popconfirm>
-              </>
+              </div>
             )}
           </div>
         )

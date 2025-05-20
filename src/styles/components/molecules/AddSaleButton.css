@@ -9,6 +9,15 @@
   bottom: 24px;
   right: 24px;
   z-index: 1050; /* Mayor que el sidebar para evitar problemas de superposición */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: none;
 }
 
 /* Variante para dispositivos de escritorio */

@@ -13,9 +13,10 @@ import DataTable from './DataTable';
  * @param {Node} props.searchExtra - Elementos adicionales para mostrar junto al buscador
  * @param {Function} props.onRowClick - Función para manejar el clic en una fila
  * @param {string} props.categoriaFiltro - Categoría para filtrar los productos
+ * @param {boolean} props.isMobile - Indica si el componente se muestra en versión móvil
  * @returns {JSX.Element} Tabla de productos con funcionalidades de búsqueda y filtrado
  */
-const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro }) => {
+const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile = false }) => {
   const { productos } = useProductos();
   
   // Aplicar filtro por categoría si existe
@@ -81,6 +82,7 @@ const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro }) => {
       searchExtra={searchExtra}
       onRow={onRow}
       className="productos-data-table"
+      isMobile={isMobile}
     />
   );
 };
@@ -88,7 +90,8 @@ const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro }) => {
 ProductosDataTable.propTypes = {
   searchExtra: PropTypes.node,
   onRowClick: PropTypes.func,
-  categoriaFiltro: PropTypes.string
+  categoriaFiltro: PropTypes.string,
+  isMobile: PropTypes.bool
 };
 
 export default ProductosDataTable;

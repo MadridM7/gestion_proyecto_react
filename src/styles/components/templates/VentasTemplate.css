@@ -25,11 +25,20 @@
   .ventas-content [class*='ant-col'] + [class*='ant-col'] {
     margin-top: 16px;
   }
+}
+
+@media (max-width: 768px) {
+  .mobile-search-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+  }
   
-  .search-actions-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .mobile-search-container .ventas-filters {
+    margin-bottom: 0;
   }
 }
 

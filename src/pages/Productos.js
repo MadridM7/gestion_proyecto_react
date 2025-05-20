@@ -6,6 +6,7 @@ import MainLayout from '../components/layout/MainLayout';
 import ProductosTemplate from '../components/templates/ProductosTemplate';
 import ProductosDataTable from '../components/organisms/ProductosDataTable';
 import ProductoFormulario from '../components/molecules/ProductoFormulario';
+import useIsMobile from '../hooks/useIsMobile';
 import '../styles/pages/Productos.css';
 
 /**
@@ -14,11 +15,14 @@ import '../styles/pages/Productos.css';
  * @returns {JSX.Element} Página de Productos
  */
 const Productos = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <MainLayout currentPage="Productos">
       <ProductosTemplate 
         ProductosDataTable={ProductosDataTable}
         ProductoFormulario={ProductoFormulario}
+        isMobile={isMobile}
       />
     </MainLayout>
   );

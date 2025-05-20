@@ -3,6 +3,7 @@
  */
 import React, { useState } from 'react';
 import { Card, Modal, Form, message, Row, Col } from 'antd';
+import { ShoppingCartOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
 import PropTypes from 'prop-types';
 import VentasMetricas from '../organisms/VentasMetricas';
@@ -26,6 +27,7 @@ const VentasTemplate = ({
   const [editingVenta, setEditingVenta] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedVenta, setSelectedVenta] = useState(null);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
   // Función para mostrar el modal de nueva venta (eliminada por no ser utilizada)
 
@@ -96,6 +98,16 @@ const VentasTemplate = ({
   // Manejar selección de venta
   const handleVentaSelect = (venta) => {
     setSelectedVenta(venta);
+    
+    // Si estamos en móvil, mostrar el modal con los detalles
+    if (isMobile && venta) {
+      setIsDetailModalVisible(true);
+    }
+  };
+  
+  // Cerrar el modal de detalles
+  const handleDetailModalClose = () => {
+    setIsDetailModalVisible(false);
   };
 
   return (
@@ -107,9 +119,10 @@ const VentasTemplate = ({
         <Col xs={24} lg={16}>
           <Card>
             <VentasDataTable 
+              isMobile={isMobile}
               searchExtra={
-                <div className="search-actions-container">
-                  <VentasFilters onFilterChange={handleFilterChange} />
+                <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
+                  <VentasFilters onFilterChange={handleFilterChange} isMobile={isMobile} />
                 </div>
               }
               vendedorFiltro={vendedorSeleccionado}
@@ -119,9 +132,12 @@ const VentasTemplate = ({
           </Card>
         </Col>
         
-        <Col xs={24} lg={8}>
-          <VentaDetail venta={selectedVenta} onEdit={showEditModal} />
-        </Col>
+        {/* En versión desktop mostramos los detalles en la columna lateral */}
+        {!isMobile && (
+          <Col xs={24} lg={8}>
+            <VentaDetail venta={selectedVenta} onEdit={showEditModal} />
+          </Col>
+        )}
       </Row>
       
       {/* Modal para agregar/editar venta */}
@@ -139,8 +155,22 @@ const VentasTemplate = ({
           <FormularioVenta 
             form={form} 
             editingVenta={editingVenta} 
-            loading={isSubmitting}
           />
+        </Modal>
+      )}
+
+      {/* Modal para mostrar detalles en versión móvil */}
+      {isMobile && (
+        <Modal
+          title={<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShoppingCartOutlined /> Detalles de la Venta</div>}
+          open={isDetailModalVisible}
+          onCancel={handleDetailModalClose}
+          footer={null}
+          width="95%"
+          style={{ top: 0 }}
+          bodyStyle={{ padding: '16px', maxHeight: '80vh', overflowY: 'auto' }}
+        >
+          <VentaDetail venta={selectedVenta} onEdit={showEditModal} inMobileModal={true} />
         </Modal>
       )}
     </div>

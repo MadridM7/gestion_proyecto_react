@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 /**
  * Componente atómico para entrada de búsqueda
  * @param {Object} props - Propiedades del componente
+ * @param {boolean} props.isMobile - Indica si el componente se muestra en versión móvil
  * @returns {JSX.Element} Componente de entrada de búsqueda
  */
 const SearchInput = ({ 
@@ -16,7 +17,9 @@ const SearchInput = ({
   value, 
   onChange, 
   allowClear = true,
-  style = {}
+  style = {},
+  isMobile = false,
+  className = ''
 }) => {
   return (
     <Input
@@ -26,6 +29,7 @@ const SearchInput = ({
       prefix={<SearchOutlined />}
       allowClear={allowClear}
       style={{ width: '100%', ...style }}
+      className={`search-input ${isMobile ? 'mobile-search-input' : ''} ${className}`}
     />
   );
 };
@@ -35,7 +39,9 @@ SearchInput.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   allowClear: PropTypes.bool,
-  style: PropTypes.object
+  style: PropTypes.object,
+  isMobile: PropTypes.bool,
+  className: PropTypes.string
 };
 
 export default SearchInput;

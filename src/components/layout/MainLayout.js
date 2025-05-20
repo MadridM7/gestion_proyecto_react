@@ -117,10 +117,15 @@ const MainLayout = ({ children, currentPage }) => {
   };
 
   /**
-   * Maneja la navegación entre páginas al hacer clic en los ítems del menú
-   * @param {string} key - Clave del ítem del menú seleccionado
+   * Maneja la navegación a diferentes páginas
+   * @param {string} key - Clave del menú seleccionado
    */
   const handleNavigation = (key) => {
+    // Cerrar el sidebar en versión móvil al navegar
+    if (isMobile && !collapsed) {
+      setCollapsed(true);
+    }
+    
     switch (key) {
       case '1':
         window.location.href = '/';
@@ -205,7 +210,8 @@ const MainLayout = ({ children, currentPage }) => {
         collapsible 
         collapsed={collapsed}
         breakpoint="lg" // Punto de quiebre para dispositivos móviles
-        collapsedWidth="0" // En móviles, el sidebar se oculta completamente
+        collapsedWidth={0} // El sidebar se oculta completamente cuando está colapsado
+        width={isMobile ? 250 : 200} // Ancho del sidebar expandido
         onBreakpoint={(broken) => {
           // Colapsar automáticamente en pantallas pequeñas, pero solo si no estamos en una operación de datos
           if (broken && !isDataOperationRef.current && !sidebarLocked) {
@@ -215,6 +221,10 @@ const MainLayout = ({ children, currentPage }) => {
         }}
         // Prevenir re-renders innecesarios que causan el parpadeo
         className="main-sidebar"
+        style={{ 
+          // Asegurarse de que el sidebar esté por encima del contenido en móviles
+          zIndex: isMobile ? 1001 : 1000 
+        }}
       >
         {/* Logo de la aplicación */}
         <div className="app-logo">
@@ -283,6 +293,12 @@ const MainLayout = ({ children, currentPage }) => {
       {/* Contenido principal que se ajusta al estado del sidebar */}
       <Layout 
         className={`main-content-wrapper ${collapsed ? 'collapsed' : 'expanded'}`}
+        onClick={(e) => {
+          // Cerrar el sidebar al hacer clic en el overlay (solo en versión móvil)
+          if (isMobile && !collapsed && e.target.classList.contains('main-content-wrapper')) {
+            setCollapsed(true);
+          }
+        }}
       >
         {/* Header fijo con botón para colapsar/expandir el sidebar */}
         <Header className="main-header">

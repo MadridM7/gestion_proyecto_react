@@ -2,15 +2,41 @@
  * Estilos para el componente FloatingActionButton
  */
 
-.floating-action-button {
+.floating-button-container {
   position: fixed;
-  bottom: 24px;
+  bottom: 40px;
   right: 24px;
   z-index: 1000;
+}
+
+.floating-action-button {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.floating-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25), 0 5px 10px rgba(0, 0, 0, 0.22);
+}
+
+.floating-action-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Variante para dispositivos móviles con mayor z-index */
 .floating-action-button.mobile {
   z-index: 1050;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor para dispositivos móviles */
+.floating-button-container .floating-action-button.mobile {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }

@@ -15,3 +15,36 @@
 .filter-buttons .ant-btn {
   margin-bottom: 8px;
 }
+
+/* Estilos para la versión móvil */
+.mobile-filter-select {
+  font-size: 14px;
+}
+
+.mobile-filter-select .ant-select-selector {
+  height: 32px !important;
+  padding: 0 8px !important;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-filter-select .ant-select-selection-item {
+  padding-right: 20px !important;
+  line-height: 32px;
+}
+
+.mobile-filter-select .ant-select-arrow {
+  right: 8px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .productos-filters {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  
+  .productos-filters .ant-select {
+    border-radius: 6px;
+  }
+}

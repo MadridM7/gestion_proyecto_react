@@ -15,15 +15,21 @@ import '../../styles/components/molecules/AddSaleButton.css';
 const AddSaleButton = ({ onClick, isMobile = true }) => {
   // Usamos clases CSS en lugar de estilos inline
   const deviceClass = isMobile ? 'mobile' : 'desktop';
+  
+  // Configuración del botón según el dispositivo
+  const buttonConfig = {
+    icon: <PlusOutlined style={{ fontSize: isMobile ? '24px' : '16px' }} />,
+    onClick,
+    tooltip: isMobile ? "" : "Agregar Venta", // No mostrar tooltip en móvil
+    type: "primary",
+    className: `add-sale-button ${deviceClass}`,
+    isMobile,
+    size: isMobile ? 'large' : 'middle'
+  };
 
   return (
     <FloatingActionButton
-      icon={<PlusOutlined />}
-      onClick={onClick}
-      tooltip="Agregar Venta"
-      type="primary"
-      className={`add-sale-button ${deviceClass}`}
-      isMobile={isMobile}
+      {...buttonConfig}
     />
   );
 };

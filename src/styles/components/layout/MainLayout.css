@@ -19,6 +19,7 @@
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
 /* Logo de la aplicación */
@@ -88,10 +89,50 @@
 /* Ajuste de margen cuando el sidebar está colapsado o expandido */
 .main-content-wrapper.collapsed {
   margin-left: 0;
+  transition: margin-left 0.3s ease;
 }
 
 .main-content-wrapper.expanded {
   margin-left: 200px;
+  transition: margin-left 0.3s ease;
+}
+
+/* En dispositivos móviles, el contenido no se redimensiona y el sidebar aparece por encima */
+@media (max-width: 768px) {
+  .main-content-wrapper.expanded {
+    margin-left: 0;
+  }
+  
+  /* Sidebar en móvil */
+  .main-sidebar {
+    width: 250px !important;
+    transform: translateX(0);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Cuando el sidebar está colapsado en móvil */
+  .ant-layout-sider-collapsed.main-sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+  
+  /* Overlay para cuando el sidebar está abierto */
+  .main-content-wrapper.expanded::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 }
 
 /* Header principal */

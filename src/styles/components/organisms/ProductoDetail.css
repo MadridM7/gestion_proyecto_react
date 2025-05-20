@@ -45,8 +45,86 @@
   color: #666;
 }
 
+.producto-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.producto-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.producto-action-buttons .ant-btn {
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .producto-detail-card {
-    margin-top: 16px;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .producto-detail-content {
+    padding: 0;
+  }
+  
+  .producto-descriptions {
+    width: 100%;
+  }
+  
+  .producto-descriptions .ant-descriptions-item-label,
+  .producto-descriptions .ant-descriptions-item-content {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .producto-detail-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .producto-detail-actions.mobile-centered {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+  
+  .producto-action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  .producto-action-buttons .ant-btn {
+    flex: 1;
+    max-width: 160px;
+  }
+  
+  .producto-action-buttons .ant-popconfirm {
+    flex: 1;
+    max-width: 160px;
+  }
+  
+  .producto-action-buttons .ant-popconfirm .ant-btn {
+    width: 100%;
+  }
+  
+  .producto-action-buttons .ant-popconfirm .ant-btn {
+    width: 100%;
+  }
+  
+  .producto-edit-form .ant-form-item {
+    margin-bottom: 12px;
+  }
+  
+  .producto-edit-form .ant-form-item-label > label {
+    font-size: 14px;
   }
 }

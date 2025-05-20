@@ -11,9 +11,10 @@ import '../../styles/components/molecules/ProductosFilters.css';
  * Componente para filtros rápidos de productos
  * @param {Object} props - Propiedades del componente
  * @param {Function} props.onFilterChange - Función a ejecutar cuando cambia el filtro
+ * @param {boolean} props.isMobile - Indica si el componente se muestra en versión móvil
  * @returns {JSX.Element} Componente de filtros rápidos
  */
-const ProductosFilters = ({ onFilterChange }) => {
+const ProductosFilters = ({ onFilterChange, isMobile = false }) => {
   const { productos } = useProductos();
   const [categorias, setCategorias] = useState([]);
   const [filtroActivo, setFiltroActivo] = useState('todos');
@@ -41,12 +42,13 @@ const ProductosFilters = ({ onFilterChange }) => {
   return (
     <div className="productos-filters">
       <Select
-        placeholder="Filtrar por categoría"
+        placeholder={isMobile ? "Categoría" : "Filtrar por categoría"}
         value={filtroActivo}
         onChange={handleChange}
         options={options}
-        style={{ width: 180 }}
+        style={{ width: isMobile ? 120 : 180 }}
         suffixIcon={<TagOutlined />}
+        className={isMobile ? 'mobile-filter-select' : ''}
       />
     </div>
   );

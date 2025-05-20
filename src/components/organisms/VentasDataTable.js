@@ -15,12 +15,14 @@ import '../../styles/components/organisms/VentasDataTable.css';
  * @param {Node} props.searchExtra - Elementos adicionales para mostrar junto al buscador
  * @param {Function} props.onRowClick - Función para manejar el clic en una fila
  * @param {string} props.vendedorFiltro - Vendedor para filtrar las ventas
+ * @param {boolean} props.isMobile - Indica si el componente se muestra en versión móvil
  * @returns {JSX.Element} Tabla de ventas con funcionalidades de búsqueda y filtrado
  */
 const VentasDataTable = ({ 
   searchExtra, 
   onRowClick, 
-  vendedorFiltro
+  vendedorFiltro,
+  isMobile = false
 }) => {
   const { ventas } = useVentas();
   
@@ -88,6 +90,7 @@ const VentasDataTable = ({
       searchExtra={searchExtra}
       onRow={onRow}
       className="ventas-data-table"
+      isMobile={isMobile}
     />
   );
 };
@@ -96,7 +99,8 @@ VentasDataTable.propTypes = {
   searchExtra: PropTypes.node,
   onRowClick: PropTypes.func,
   showTitle: PropTypes.bool,
-  vendedorFiltro: PropTypes.string
+  vendedorFiltro: PropTypes.string,
+  isMobile: PropTypes.bool
 };
 
 export default VentasDataTable;

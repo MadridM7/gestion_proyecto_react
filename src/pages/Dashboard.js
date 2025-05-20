@@ -1,11 +1,9 @@
 /**
  * @fileoverview Página principal del dashboard que muestra estadísticas y gráficos
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import VentasDashboard from '../components/organisms/VentasDashboard';
-import FloatingActionButton from '../components/atoms/FloatingActionButton';
-import { ShoppingCartOutlined } from '@ant-design/icons';
 import VentaFormulario from '../components/molecules/VentaFormulario';
 import { Modal, Form, message } from 'antd';
 import { useVentas } from '../context/VentasContext';
@@ -24,31 +22,6 @@ const Dashboard = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Detectar si es un dispositivo móvil
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    // Verificar al cargar
-    checkMobile();
-    
-    // Agregar listener para cambios de tamaño
-    window.addEventListener('resize', checkMobile);
-    
-    // Limpiar listener al desmontar
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
-
-  // Función para mostrar el modal de agregar venta
-  const showAddModal = () => {
-    form.resetFields();
-    setIsModalVisible(true);
-  };
 
   // Función para cerrar el modal
   const handleCancel = () => {
@@ -81,13 +54,6 @@ const Dashboard = () => {
           showCharts={true}
           showTable={false}
         />
-        
-        {isMobile && (
-          <FloatingActionButton 
-            icon={<ShoppingCartOutlined />} 
-            onClick={showAddModal} 
-          />
-        )}
       </div>
       
       <Modal

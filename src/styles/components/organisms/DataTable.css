@@ -20,3 +20,39 @@
 .search-extra-container {
   margin-left: 5px;
 }
+
+/* Estilos para la versión móvil */
+.mobile-search-input input {
+  height: 32px;
+  font-size: 14px;
+}
+
+.mobile-search-input .ant-input-affix-wrapper {
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 11px;
+}
+
+.mobile-search-input .ant-input-affix-wrapper .ant-input-prefix,
+.mobile-search-input .ant-input-affix-wrapper .ant-input-suffix {
+  font-size: 16px;
+}
+
+.mobile-search-input .ant-input-affix-wrapper .ant-input-clear-icon {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .data-table-search.with-extra {
+    width: calc(100% - 130px);
+    flex-grow: 1;
+  }
+  
+  .data-table-header {
+    margin-bottom: 12px;
+  }
+  
+  .data-table-search {
+    margin-right: 8px;
+  }
+}

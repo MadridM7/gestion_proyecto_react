@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { Card, Modal, Form, message, Button, Row, Col } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
 import PropTypes from 'prop-types';
 import ProductosStats from '../organisms/ProductosStats';
@@ -18,7 +18,8 @@ import '../../styles/components/templates/ProductosTemplate.css';
  */
 const ProductosTemplate = ({ 
   ProductosDataTable, 
-  ProductoFormulario 
+  ProductoFormulario,
+  isMobile = false
 }) => {
   const { agregarProducto, actualizarProducto } = useProductos();
   const [form] = Form.useForm();
@@ -26,6 +27,7 @@ const ProductosTemplate = ({
   const [editingProducto, setEditingProducto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState(null);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
   // Función para mostrar el modal de nuevo producto
   const showModal = () => {
@@ -78,8 +80,9 @@ const ProductosTemplate = ({
       type="primary" 
       icon={<PlusOutlined />} 
       onClick={showModal}
+      className={isMobile ? 'mobile-icon-only-button' : ''}
     >
-      Nuevo Producto
+      {!isMobile && 'Nuevo Producto'}
     </Button>
   );
 
@@ -101,6 +104,16 @@ const ProductosTemplate = ({
   // Manejar selección de producto
   const handleProductoSelect = (producto) => {
     setSelectedProducto(producto);
+    
+    // Si estamos en móvil, mostrar el modal con los detalles
+    if (isMobile && producto) {
+      setIsDetailModalVisible(true);
+    }
+  };
+  
+  // Cerrar el modal de detalles
+  const handleDetailModalClose = () => {
+    setIsDetailModalVisible(false);
   };
 
   return (
@@ -113,9 +126,10 @@ const ProductosTemplate = ({
           <Card>
             {ProductosDataTable && (
               <ProductosDataTable 
+                isMobile={isMobile}
                 searchExtra={
-                  <div className="search-actions-container">
-                    <ProductosFilters onFilterChange={handleFilterChange} />
+                  <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
+                    <ProductosFilters onFilterChange={handleFilterChange} isMobile={isMobile} />
                     {addButton}
                   </div>
                 }
@@ -126,9 +140,12 @@ const ProductosTemplate = ({
           </Card>
         </Col>
         
-        <Col xs={24} lg={8}>
-          <ProductoDetail producto={selectedProducto} onEdit={showEditModal} />
-        </Col>
+        {/* En versión desktop mostramos los detalles en la columna lateral */}
+        {!isMobile && (
+          <Col xs={24} lg={8}>
+            <ProductoDetail producto={selectedProducto} onEdit={showEditModal} />
+          </Col>
+        )}
       </Row>
       
       {/* Modal para agregar/editar producto */}
@@ -148,6 +165,21 @@ const ProductosTemplate = ({
             producto={editingProducto} 
             loading={isSubmitting}
           />
+        </Modal>
+      )}
+
+      {/* Modal para mostrar detalles en versión móvil */}
+      {isMobile && (
+        <Modal
+          title={<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><ShoppingOutlined /> Detalles del Producto</div>}
+          open={isDetailModalVisible}
+          onCancel={handleDetailModalClose}
+          footer={null}
+          width="95%"
+          style={{ top: 0 }}
+          bodyStyle={{ padding: '16px', maxHeight: '80vh', overflowY: 'auto' }}
+        >
+          <ProductoDetail producto={selectedProducto} onEdit={showEditModal} inMobileModal={true} />
         </Modal>
       )}
     </div>

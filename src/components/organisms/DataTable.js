@@ -28,7 +28,8 @@ const DataTable = ({
   className = '',
   title,
   footer,
-  searchExtra // Elemento adicional para mostrar junto al buscador
+  searchExtra, // Elemento adicional para mostrar junto al buscador
+  isMobile = false
 }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -84,6 +85,7 @@ const DataTable = ({
             value={searchText} 
             onChange={handleSearch} 
             className={`data-table-search ${searchExtra ? 'with-extra' : ''}`}
+            isMobile={isMobile}
           />
           {searchExtra && (
             <div className="search-extra-container">
@@ -118,6 +120,8 @@ DataTable.propTypes = {
   rowKey: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   searchPlaceholder: PropTypes.string,
   searchFields: PropTypes.arrayOf(PropTypes.string),
+  searchExtra: PropTypes.node,
+  isMobile: PropTypes.bool,
   pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   scroll: PropTypes.object,
   size: PropTypes.string,

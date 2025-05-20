@@ -11,9 +11,10 @@ import '../../styles/components/molecules/VentasFilters.css';
  * Componente para filtros de ventas
  * @param {Object} props - Propiedades del componente
  * @param {Function} props.onFilterChange - Función a ejecutar cuando cambia el filtro
+ * @param {boolean} props.isMobile - Indica si el componente se muestra en versión móvil
  * @returns {JSX.Element} Componente de filtros
  */
-const VentasFilters = ({ onFilterChange }) => {
+const VentasFilters = ({ onFilterChange, isMobile = false }) => {
   const { ventas } = useVentas();
   const [vendedores, setVendedores] = useState([]);
   const [filtroActivo, setFiltroActivo] = useState('todos');
@@ -41,12 +42,13 @@ const VentasFilters = ({ onFilterChange }) => {
   return (
     <div className="ventas-filters">
       <Select
-        placeholder="Filtrar por vendedor"
+        placeholder={isMobile ? "Vendedor" : "Filtrar por vendedor"}
         value={filtroActivo}
         onChange={handleChange}
         options={options}
-        style={{ width: 180 }}
+        style={{ width: isMobile ? 120 : 180 }}
         suffixIcon={<UserOutlined />}
+        className={isMobile ? 'mobile-filter-select' : ''}
       />
     </div>
   );

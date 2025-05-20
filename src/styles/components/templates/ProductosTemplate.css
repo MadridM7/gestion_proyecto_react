@@ -31,4 +31,26 @@
     align-items: flex-start;
     gap: 8px;
   }
+  
+  .search-actions-container.mobile-search-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .mobile-icon-only-button {
+    min-width: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .mobile-icon-only-button .anticon {
+    font-size: 16px;
+    margin: 0;
+  }
 }
