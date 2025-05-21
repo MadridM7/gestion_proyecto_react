@@ -122,7 +122,7 @@ export const UsuariosProvider = ({ children }) => {
   useEffect(() => {
     // Cargar datos iniciales desde el archivo JSON
     setUsuarios(usuariosData);
-    console.log('Usuarios cargados desde el archivo JSON:', usuariosData.length);
+    // Usuarios cargados inicialmente
     
     // Calcular estadísticas iniciales
     calcularEstadisticas(usuariosData);
@@ -131,7 +131,7 @@ export const UsuariosProvider = ({ children }) => {
     const handleUsuariosUpdate = (nuevosUsuarios) => {
       setUsuarios(nuevosUsuarios);
       calcularEstadisticas(nuevosUsuarios);
-      console.log('Datos de usuarios actualizados mediante polling');
+      // Datos actualizados silenciosamente
     };
     
     // Iniciar el polling cada 5 segundos
@@ -168,14 +168,14 @@ export const UsuariosProvider = ({ children }) => {
           calcularEstadisticas(nuevosUsuarios);
           return nuevosUsuarios;
         });
-        console.log('Usuario agregado y guardado en el archivo JSON:', usuarioNormalizado);
+        // Usuario agregado exitosamente
         return usuarioNormalizado;
       } else {
-        console.error('Error al guardar el usuario en el archivo JSON');
+        // Error al guardar el usuario
         return null;
       }
     } catch (error) {
-      console.error('Error al agregar usuario:', error);
+      // Capturar error silenciosamente
       return null;
     }
   }, [calcularEstadisticas]);
@@ -197,14 +197,13 @@ export const UsuariosProvider = ({ children }) => {
           calcularEstadisticas(usuariosActualizados);
           return usuariosActualizados;
         });
-        console.log(`Usuario con ID ${id} eliminado`);
+        // Usuario eliminado exitosamente
         return true;
       } else {
-        console.error('Error al eliminar el usuario');
-        return false;
+        // Error al eliminar el usuario
       }
     } catch (error) {
-      console.error('Error al eliminar usuario:', error);
+      // Capturar error silenciosamente
       return false;
     }
   }, [calcularEstadisticas]);
@@ -221,7 +220,7 @@ export const UsuariosProvider = ({ children }) => {
       const usuarioActual = usuarios.find(u => u.id === id);
       
       if (!usuarioActual) {
-        console.error(`No se encontró el usuario con ID ${id}`);
+        // Usuario no encontrado
         return null;
       }
       
@@ -250,14 +249,14 @@ export const UsuariosProvider = ({ children }) => {
           return usuariosActualizados;
         });
         
-        console.log(`Usuario ${id} actualizado y guardado en el archivo JSON:`, usuarioActualizado);
+        // Usuario actualizado exitosamente
         return usuarioActualizado;
       } else {
-        console.error(`Error al guardar la actualización del usuario ${id} en el archivo JSON`);
+        // Error al guardar la actualización
         return null;
       }
     } catch (error) {
-      console.error(`Error al actualizar usuario ${id}:`, error);
+      // Capturar error silenciosamente
       return null;
     }
   }, [usuarios, calcularEstadisticas]);

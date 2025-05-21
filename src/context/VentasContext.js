@@ -117,7 +117,7 @@ export const VentasProvider = ({ children }) => {
         ventasPorTipo: porTipo
       });
     } catch (error) {
-      console.error('Error al calcular estadísticas:', error);
+      // Capturar error silenciosamente
       // En caso de error, establecer valores por defecto
       setEstadisticas({
         totalVentas: 0,
@@ -143,7 +143,7 @@ export const VentasProvider = ({ children }) => {
       const ventasActualizadas = procesarVentas(nuevasVentas);
       setVentas(ventasActualizadas);
       calcularEstadisticas(ventasActualizadas);
-      console.log('Datos de ventas actualizados mediante polling');
+      // Datos actualizados silenciosamente
     };
     
     // Iniciar el polling cada 5 segundos
@@ -184,14 +184,14 @@ export const VentasProvider = ({ children }) => {
           return nuevasVentas;
         });
         
-        console.log('Venta agregada y guardada en el archivo JSON:', ventaNormalizada);
+        // Venta agregada exitosamente
         return ventaNormalizada;
       } else {
-        console.error('Error al guardar la venta en el archivo JSON');
+        // Error al guardar la venta
         return null;
       }
     } catch (error) {
-      console.error('Error al agregar venta:', error);
+      // Capturar error silenciosamente
       return null;
     }
   }, [calcularEstadisticas]);
@@ -235,14 +235,14 @@ export const VentasProvider = ({ children }) => {
           return ventasActualizadas;
         });
         
-        console.log(`Venta ${id} actualizada y guardada en el archivo JSON:`, ventaActualizada);
+        // Venta actualizada exitosamente
         return ventaActualizada;
       } else {
-        console.error(`Error al guardar la actualización de la venta ${id} en el archivo JSON`);
+        // Error al guardar la actualización
         return null;
       }
     } catch (error) {
-      console.error(`Error al actualizar venta ${id}:`, error);
+      // Capturar error silenciosamente
       return null;
     }
   }, [ventas, calcularEstadisticas]);
@@ -264,14 +264,14 @@ export const VentasProvider = ({ children }) => {
           return ventasActualizadas;
         });
         
-        console.log(`Venta ${id} eliminada y actualizada en el archivo JSON`);
+        // Venta eliminada exitosamente
         return true;
       } else {
-        console.error(`Error al eliminar la venta ${id} del archivo JSON`);
+        // Error al eliminar la venta
         return false;
       }
     } catch (error) {
-      console.error(`Error al eliminar venta ${id}:`, error);
+      // Capturar error silenciosamente
       return false;
     }
   }, [calcularEstadisticas]);

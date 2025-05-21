@@ -3,7 +3,7 @@
  */
 import React, { useEffect } from 'react';
 import { Form, Input, Select, Switch, DatePicker } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, CalendarOutlined, TeamOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
@@ -65,13 +65,17 @@ const UsuarioFormulario = ({
         label="Nombre completo"
         rules={[
           { required: true, message: 'Por favor ingresa el nombre del usuario' },
-          { min: 3, message: 'El nombre debe tener al menos 3 caracteres' }
+          { min: 3, message: 'El nombre debe tener al menos 3 caracteres' },
+          { max: 100, message: 'El nombre no puede exceder los 100 caracteres' },
+          { pattern: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/, message: 'El nombre solo debe contener letras, espacios y puntos' }
         ]}
+        tooltip={{ title: 'Nombre completo del usuario (3-100 caracteres)', icon: <InfoCircleOutlined /> }}
       >
         <Input 
           prefix={<UserOutlined />} 
           placeholder="Nombre completo" 
           maxLength={100}
+          showCount
         />
       </Form.Item>
       
@@ -80,8 +84,14 @@ const UsuarioFormulario = ({
         name="rol"
         label="Rol"
         rules={[{ required: true, message: 'Por favor selecciona un rol' }]}
+        tooltip={{ title: 'Nivel de acceso y permisos del usuario en el sistema', icon: <InfoCircleOutlined /> }}
       >
-        <Select placeholder="Selecciona un rol">
+        <Select 
+          placeholder="Selecciona un rol"
+          suffixIcon={<TeamOutlined />}
+          showSearch
+          optionFilterProp="children"
+        >
           {roles.map(rol => (
             <Option key={rol.value} value={rol.value}>{rol.label}</Option>
           ))}
@@ -93,11 +103,14 @@ const UsuarioFormulario = ({
         name="fechaRegistro"
         label="Fecha de registro"
         rules={[{ required: true, message: 'Por favor selecciona la fecha de registro' }]}
+        tooltip={{ title: 'Fecha en que el usuario fue registrado en el sistema', icon: <InfoCircleOutlined /> }}
       >
         <DatePicker 
           style={{ width: '100%' }} 
           format="DD/MM/YYYY"
           placeholder="Selecciona una fecha"
+          suffixIcon={<CalendarOutlined />}
+          disabledDate={(current) => current && current > moment().endOf('day')}
         />
       </Form.Item>
       
@@ -106,6 +119,7 @@ const UsuarioFormulario = ({
         name="activo"
         label="Estado"
         valuePropName="checked"
+        tooltip={{ title: 'Determina si el usuario puede acceder al sistema', icon: <InfoCircleOutlined /> }}
       >
         <Switch 
           checkedChildren="Activo" 

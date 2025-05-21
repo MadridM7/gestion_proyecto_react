@@ -39,7 +39,7 @@ const ReportesTemplate = ({
         availableMonths={availableMonths}
         usuarios={usuarios}
         onDateChange={onDateChange}
-        onMonthChange={onUserChange}
+        onMonthChange={onMonthChange}
         onUserChange={onUserChange}
       />
     </div>

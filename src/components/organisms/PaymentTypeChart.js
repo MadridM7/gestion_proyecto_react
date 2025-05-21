@@ -1,9 +1,9 @@
 /**
- * @fileoverview Componente de gráfico de distribución por tipo de pago
+ * @fileoverview Componente de gráfico de distribución por tipo de pago mejorado con visualización moderna
  */
 import React, { useState } from 'react';
 import { Card, Radio, Space } from 'antd';
-import { Cell } from 'recharts';
+import { Cell, LabelList } from 'recharts';
 import {
   BarChart,
   Bar,
@@ -55,8 +55,6 @@ const PaymentTypeChart = () => {
     let ventasFiltradas = [];
     const hoy = new Date();
     
-    console.log(`Procesando ${ventas.length} ventas para el periodo ${periodo} en gráfico de tipos de pago`);
-    
     switch (periodo) {
       case 'dia':
         // Ventas del día actual
@@ -103,8 +101,6 @@ const PaymentTypeChart = () => {
         ventasFiltradas = ventas;
     }
     
-    console.log(`Ventas filtradas para el periodo ${periodo}: ${ventasFiltradas.length}`);
-    
     // Calcular totales por tipo de pago para las ventas filtradas
     let totalEfectivo = 0;
     let totalDebito = 0;
@@ -139,23 +135,70 @@ const PaymentTypeChart = () => {
    */
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const color = payload[0].payload.fill;
       return (
-        <div className="custom-tooltip">
-          <p className="tooltip-label">{`${label}`}</p>
-          <p className="tooltip-value">
-            <span className="tooltip-name">Total:</span>
-            <span className="tooltip-amount">{formatCLP(payload[0].value)}</span>
-          </p>
+        <div className="custom-tooltip payment-tooltip">
+          <p className="tooltip-title">{`${label}`}</p>
+          <div className="tooltip-content">
+            <div className="tooltip-item">
+              <div className="tooltip-indicator" style={{ backgroundColor: color }}></div>
+              <span className="tooltip-name">Total:</span>
+              <span className="tooltip-amount">{formatCLP(payload[0].value)}</span>
+            </div>
+            <div className="tooltip-percentage">
+              {Math.round((payload[0].value / totalVentas) * 100)}% del total
+            </div>
+          </div>
         </div>
       );
     }
     return null;
   };
+  
+  // Calcular el total de ventas para los porcentajes
+  const datos = procesarDatosTipoPago();
+  const totalVentas = datos.reduce((sum, item) => sum + item.monto, 0);
+
+  // Función para formatear etiquetas de porcentaje
+  const renderCustomizedLabel = (props) => {
+    const { x, y, width, height, value } = props;
+    const percentage = Math.round((value / totalVentas) * 100);
+    
+    // Solo mostrar etiqueta si el porcentaje es significativo
+    if (percentage < 3) return null;
+    
+    return (
+      <g>
+        <text 
+          x={x + width / 2} 
+          y={y + height / 2} 
+          fill="#FFFFFF" 
+          textAnchor="middle" 
+          dominantBaseline="middle" 
+          fontWeight="bold"
+          fontSize="14"
+        >
+          {`${percentage}%`}
+        </text>
+        <text 
+          x={x + width / 2} 
+          y={y + height / 2 + 20} 
+          fill="#FFFFFF" 
+          textAnchor="middle" 
+          dominantBaseline="middle" 
+          fontSize="12"
+          opacity="0.9"
+        >
+          {formatCLP(value)}
+        </text>
+      </g>
+    );
+  };
 
   return (
     <Card
       title="Distribución por Tipo de Pago"
-      className="chart-card"
+      className="chart-card payment-chart-card"
       extra={
         <Space>
           <Radio.Group value={periodo} onChange={handlePeriodoChange} buttonStyle="solid" size="small">
@@ -168,39 +211,50 @@ const PaymentTypeChart = () => {
     >
       <ResponsiveContainer width="100%" height={350}>
         <BarChart
-          data={procesarDatosTipoPago()}
+          data={datos}
           margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
           barSize={80}
+          barGap={4}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <defs>
+            {datos.map((entry, index) => (
+              <linearGradient key={`gradient-${index}`} id={`colorGradient${index}`} x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor={entry.fill} stopOpacity={0.8}/>
+                <stop offset="100%" stopColor={entry.fill} stopOpacity={1}/>
+              </linearGradient>
+            ))}
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
           <XAxis
             dataKey="name"
-            label={{
-              value: 'Tipo de Pago',
-              position: 'insideBottomRight',
-              offset: -10
-            }}
+            axisLine={{ stroke: '#E0E0E0' }}
+            tickLine={false}
+            tick={{ fill: '#666666', fontSize: 12, fontWeight: 'bold' }}
           />
           <YAxis
             tickFormatter={formatCLP}
-            label={{
-              angle: -90,
-              position: 'insideLeft',
-              style: { textAnchor: 'middle' }
-            }}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#666666', fontSize: 12 }}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip 
+            content={<CustomTooltip />} 
+            cursor={{ fill: 'rgba(240, 240, 240, 0.3)' }}
+          />
           <Bar
             dataKey="monto"
-            name="Monto"
-            radius={[4, 4, 0, 0]}
-            fillOpacity={0.9}
-            fill="#52c41a" // Color por defecto (no debería verse)
+            name="Monto por tipo de pago"
+            radius={[6, 6, 0, 0]}
           >
-            {procesarDatosTipoPago().map((entry, index) => (
+            <LabelList 
+              dataKey="monto" 
+              position="center" 
+              content={renderCustomizedLabel}
+            />
+            {datos.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
-                fill={entry.fill} 
+                fill={`url(#colorGradient${index})`}
                 className={`payment-type-cell-${index}`}
               />
             ))}

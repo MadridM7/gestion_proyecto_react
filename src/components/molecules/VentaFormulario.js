@@ -2,8 +2,8 @@
  * @fileoverview Formulario para agregar o editar ventas
  */
 import React, { useCallback, useEffect } from 'react';
-import { Form, Input, Select } from 'antd';
-import { DollarOutlined } from '@ant-design/icons';
+import { Form, Input, Select, InputNumber } from 'antd';
+import { DollarOutlined, UserOutlined, CreditCardOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 
 const { Option } = Select;
@@ -23,15 +23,14 @@ const VentaFormulario = ({
     return `V${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
   }, []);
   
-  // Función para formatear el monto en CLP
-  const formatearMontoCLP = (e) => {
-    const value = e.target.value;
-    // Eliminar todos los puntos y caracteres no numéricos
-    const numero = value.replace(/\D/g, '');
-    // Formatear con puntos como separadores de miles
-    if (numero) {
-      const formateado = Number(numero).toLocaleString('es-CL');
-      form.setFieldsValue({ monto: formateado });
+  // Función para validar y formatear el monto en CLP
+  const handleMontoChange = (value) => {
+    if (value !== null && value !== undefined) {
+      // Asegurarse de que el valor sea positivo
+      const montoPositivo = Math.max(0, value);
+      // Redondear al entero más cercano
+      const montoRedondeado = Math.round(montoPositivo);
+      form.setFieldsValue({ monto: montoRedondeado });
     }
   };
   
@@ -54,14 +53,15 @@ const VentaFormulario = ({
     if (editingVenta) {
       form.setFieldsValue({
         ...editingVenta,
-        monto: Number(editingVenta.monto).toLocaleString('es-CL')
+        monto: Number(editingVenta.monto)
       });
     } else {
       form.resetFields();
       form.setFieldsValue({
         id: generateId(),
         tipoPago: 'efectivo',
-        vendedor: 'Laura Fernández'
+        vendedor: 'Laura Fernández',
+        monto: 0
       });
     }
   }, [editingVenta, form, generateId]);
@@ -84,12 +84,20 @@ const VentaFormulario = ({
       <Form.Item
         name="monto"
         label="Monto"
-        rules={[{ required: true, message: 'Por favor ingresa el monto' }]}
+        rules={[
+          { required: true, message: 'Por favor ingresa el monto' },
+          { type: 'number', min: 0, message: 'El monto debe ser mayor o igual a 0' }
+        ]}
       >
-        <Input
-          prefix={<DollarOutlined />}
+        <InputNumber
+          style={{ width: '100%' }}
+          formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+          parser={value => value.replace(/\$\s?|(\.*)|(,*)/g, '')}
           placeholder="Ingresa el monto"
-          onChange={formatearMontoCLP}
+          onChange={handleMontoChange}
+          min={0}
+          precision={0}
+          prefix={<DollarOutlined />}
           suffix="CLP"
         />
       </Form.Item>
@@ -100,7 +108,12 @@ const VentaFormulario = ({
         label="Tipo de pago"
         rules={[{ required: true, message: 'Por favor selecciona el tipo de pago' }]}
       >
-        <Select placeholder="Selecciona el tipo de pago">
+        <Select 
+          placeholder="Selecciona el tipo de pago"
+          suffixIcon={<CreditCardOutlined />}
+          showSearch
+          optionFilterProp="children"
+        >
           {tiposPago.map(tipo => (
             <Option key={tipo.value} value={tipo.value}>{tipo.label}</Option>
           ))}
@@ -113,7 +126,12 @@ const VentaFormulario = ({
         label="Nombre del usuario"
         rules={[{ required: true, message: 'Por favor selecciona el usuario' }]}
       >
-        <Select placeholder="Selecciona el usuario">
+        <Select 
+          placeholder="Selecciona el usuario"
+          suffixIcon={<UserOutlined />}
+          showSearch
+          optionFilterProp="children"
+        >
           {usuarios.map(usuario => (
             <Option key={usuario.value} value={usuario.value}>{usuario.label}</Option>
           ))}

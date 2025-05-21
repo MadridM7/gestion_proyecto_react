@@ -16,6 +16,10 @@
   gap: 16px;
 }
 
+.productos-card .ant-card-head {
+  background-color: #f0f5ff;
+}
+
 .search-actions-container .productos-filters {
   margin-bottom: 0;
   margin-right: 8px;

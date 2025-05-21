@@ -40,7 +40,6 @@ const ReportCard = ({
 }) => {
   // Función para obtener el componente de icono basado en el nombre
   const getIconComponent = (iconName) => {
-    
     const iconMap = {
       'BarChartOutlined': <BarChartOutlined className="report-card-icon" />,
       'PieChartOutlined': <PieChartOutlined className="report-card-icon" />,

@@ -2,43 +2,68 @@
 
 /* Tarjeta del gráfico */
 .chart-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
   margin-bottom: 24px;
   height: 100%;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.chart-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
 .chart-card .ant-card-head {
   border-bottom: 1px solid #f0f0f0;
-  padding: 0 16px;
+  padding: 16px 20px;
+  background-color: #fafafa;
 }
 
 .chart-card .ant-card-head-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.85);
 }
 
-.chart-period {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
+.chart-card .ant-card-body {
+  padding: 20px;
+}
+
+/* Estilos específicos para cada tipo de gráfico */
+.sales-chart-card .ant-card-head {
+  background: linear-gradient(to right, #e6f7ff, #f0f5ff);
+}
+
+.payment-chart-card .ant-card-head {
+  background: linear-gradient(to right, #f6ffed, #fcffe6);
+}
+
+/* Contenedor de carga */
+.chart-loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 350px;
+  width: 100%;
 }
 
 /* Contenedor del gráfico */
 .chart-container {
   width: 100%;
-  height: 300px;
+  height: 350px;
   margin-bottom: 16px;
 }
 
 /* Estilos para las leyendas */
 .recharts-legend-wrapper {
   padding: 8px 16px !important;
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
   border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   border: 1px solid #f0f0f0 !important;
 }
 
@@ -49,14 +74,23 @@
 }
 
 .recharts-legend-item {
-  padding: 4px 8px !important;
+  padding: 4px 12px !important;
   margin: 0 8px !important;
+}
+
+.chart-legend-item {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.75) !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 .recharts-legend-item-text {
   font-weight: 600 !important;
   font-size: 14px !important;
-  color: rgba(0, 0, 0, 0.85) !important;
+  color: rgba(0, 0, 0, 0.75) !important;
 }
 
 /* Estilos para los ejes */
@@ -76,26 +110,45 @@
 /* Estilos para los tooltips personalizados */
 .custom-tooltip {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  padding: 14px 18px;
   border: 1px solid #f0f0f0;
+  min-width: 180px;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-.tooltip-label {
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tooltip-title {
   font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 8px;
+  font-size: 15px;
+  margin-bottom: 10px;
   color: rgba(0, 0, 0, 0.85);
   border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
 }
 
-.tooltip-value {
+.tooltip-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tooltip-item {
+  display: flex;
   align-items: center;
   margin: 4px 0;
+}
+
+.tooltip-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
 .tooltip-name {
@@ -107,12 +160,30 @@
 .tooltip-amount {
   font-weight: bold;
   color: #1890ff;
+  margin-left: auto;
+}
+
+.tooltip-percentage {
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.5);
+  text-align: right;
+  font-style: italic;
+}
+
+/* Estilos específicos para cada tipo de tooltip */
+.sales-tooltip .tooltip-title {
+  color: #1890ff;
+}
+
+.payment-tooltip .tooltip-title {
+  color: #52c41a;
 }
 
 /* Estilos para las líneas de cuadrícula */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(0, 0, 0, 0.1) !important;
+  stroke: rgba(0, 0, 0, 0.06) !important;
   stroke-dasharray: 3 3 !important;
 }
 
@@ -121,28 +192,38 @@
   transition: all 0.3s ease;
 }
 
-/* Colores específicos para cada tipo de pago */
-.recharts-bar-rectangles .recharts-rectangle:nth-child(0) {
-  fill: #52c41a !important; /* Verde para Efectivo */
-}
-
-.recharts-bar-rectangles .recharts-rectangle:nth-child(0) {
-  fill: #1890ff !important; /* Azul para Débito */
-}
-
-.recharts-bar-rectangles .recharts-rectangle:nth-child(0) {
-  fill: #fa8c16 !important; /* Naranja para Crédito */
-}
-
 /* Efecto hover para las barras */
-.recharts-bar-rectangles:hover .recharts-rectangle {
-  opacity: 0.5; /* Oscurecer todas las barras */
+.recharts-bar-rectangles .recharts-rectangle:hover {
+  filter: brightness(1.1) drop-shadow(0 0 6px rgba(0, 0, 0, 0.2));
+  cursor: pointer;
 }
 
-.recharts-bar-rectangles .recharts-rectangle:hover {
-  opacity: 1; /* Restaurar opacidad para la barra con hover */
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
-  /* Agregar un fondo gris transparente detrás de la barra */
-  stroke: rgba(200, 200, 200, 0.8);
-  stroke-width: 2px;
+/* Estilos para las áreas */
+.recharts-area-curve {
+  filter: drop-shadow(0 2px 4px rgba(24, 144, 255, 0.2));
+}
+
+/* Estilos para los puntos activos */
+.recharts-active-dot {
+  filter: drop-shadow(0 0 6px rgba(24, 144, 255, 0.5));
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .chart-card .ant-card-head-title {
+    font-size: 16px;
+  }
+  
+  .chart-card .ant-card-head {
+    padding: 12px 16px;
+  }
+  
+  .chart-card .ant-card-body {
+    padding: 16px;
+  }
+  
+  .custom-tooltip {
+    padding: 10px 14px;
+    min-width: 150px;
+  }
 }

@@ -6,8 +6,7 @@
 // Importar la configuración centralizada
 import { API_URL } from '../config';
 
-// Registrar la URL de la API para depuración
-console.log('Conectando a la API en:', API_URL);
+// URL de la API configurada en config.js
 
 /**
  * Obtiene las ventas desde el servidor
@@ -21,7 +20,7 @@ export const obtenerVentas = async () => {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error en obtenerVentas:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -47,7 +46,7 @@ export const guardarVentas = async (ventas) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en guardarVentas:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -73,7 +72,7 @@ export const agregarVenta = async (venta) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en agregarVenta:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -100,7 +99,7 @@ export const actualizarVenta = async (id, venta) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en actualizarVenta:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -125,7 +124,7 @@ export const eliminarVenta = async (id) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en eliminarVenta:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -142,7 +141,7 @@ export const obtenerProductos = async () => {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error en obtenerProductos:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -168,7 +167,7 @@ export const guardarProductos = async (productos) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en guardarProductos:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -194,7 +193,7 @@ export const agregarProducto = async (producto) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en agregarProducto:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -221,7 +220,7 @@ export const actualizarProducto = async (id, producto) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en actualizarProducto:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -246,7 +245,7 @@ export const eliminarProducto = async (id) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en eliminarProducto:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -263,7 +262,7 @@ export const obtenerUsuarios = async () => {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error en obtenerUsuarios:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -289,7 +288,7 @@ export const guardarUsuarios = async (usuarios) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en guardarUsuarios:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -315,7 +314,7 @@ export const agregarUsuario = async (usuario) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en agregarUsuario:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -342,7 +341,7 @@ export const actualizarUsuario = async (id, usuario) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en actualizarUsuario:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };
@@ -367,7 +366,7 @@ export const eliminarUsuario = async (id) => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error en eliminarUsuario:', error);
+    // Capturar error silenciosamente
     throw error;
   }
 };

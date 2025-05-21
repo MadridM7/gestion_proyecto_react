@@ -21,6 +21,10 @@
   margin-right: 8px;
 }
 
+.ventas-card .ant-card-head {
+  background-color: #f0f5ff;
+}
+
 @media (max-width: 992px) {
   .ventas-content [class*='ant-col'] + [class*='ant-col'] {
     margin-top: 16px;

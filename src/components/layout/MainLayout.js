@@ -179,7 +179,14 @@ const MainLayout = ({ children, currentPage }) => {
       const values = await form.validateFields();
       
       // Convertir el monto de formato CLP a número
-      const montoNumerico = parseInt(values.monto?.replace(/\D/g, '') || 0);
+      let montoNumerico = 0;
+      if (typeof values.monto === 'string') {
+        // Si es string (formato con separadores), quitar caracteres no numéricos
+        montoNumerico = parseInt(values.monto.replace(/\D/g, '') || 0);
+      } else if (typeof values.monto === 'number') {
+        // Si ya es un número, usarlo directamente
+        montoNumerico = values.monto;
+      }
       
       // Crear la nueva venta con los datos del formulario
       const nuevaVenta = {

@@ -5,7 +5,8 @@
     "precioCompra": 450000,
     "margenGanancia": 25,
     "precioVenta": 562500,
-    "categoria": "Electrónica"
+    "categoria": "Electrónica",
+    "ventasTotales": 0
   },
   {
     "id": "P1002",
@@ -13,7 +14,8 @@
     "precioCompra": 580000,
     "margenGanancia": 20,
     "precioVenta": 696000,
-    "categoria": "Computación"
+    "categoria": "Computación",
+    "ventasTotales": 0
   },
   {
     "id": "P1003",
@@ -46,7 +48,8 @@
     "precioCompra": 25000,
     "margenGanancia": 45,
     "precioVenta": 36250,
-    "categoria": "Accesorios"
+    "categoria": "Accesorios",
+    "ventasTotales": 0
   },
   {
     "id": "P1007",
@@ -73,14 +76,6 @@
     "categoria": "Almacenamiento"
   },
   {
-    "id": "P1010",
-    "nombre": "Cámara Web Logitech HD",
-    "precioCompra": 28000,
-    "margenGanancia": 40,
-    "precioVenta": 39200,
-    "categoria": "Accesorios"
-  },
-  {
     "id": "P1011",
     "nombre": "Router WiFi 6 TP-Link",
     "precioCompra": 55000,
@@ -95,5 +90,13 @@
     "margenGanancia": 35,
     "precioVenta": 43200,
     "categoria": "Audio"
+  },
+  {
+    "nombre": "Lo que sea",
+    "categoria": "aaaa",
+    "precioCompra": 1000,
+    "margenGanancia": 30,
+    "precioVenta": 1300,
+    "id": "P2479"
   }
 ]

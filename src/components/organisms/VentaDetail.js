@@ -2,7 +2,7 @@
  * @fileoverview Componente para mostrar detalles de una venta o editarla
  */
 import React, { useState } from 'react';
-import { Card, Descriptions, Tag, Divider, Empty, Timeline, Button, Popconfirm, message, Form, Input, Select } from 'antd';
+import { Card, Descriptions, Tag, Divider, Empty, Timeline, Button, Popconfirm, message, Form, Input, Select, InputNumber } from 'antd';
 import { 
   ShoppingCartOutlined, 
   UserOutlined, 
@@ -50,7 +50,7 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
     setIsEditing(true);
     form.setFieldsValue({
       ...venta,
-      monto: venta.monto ? venta.monto.toString() : '0'
+      monto: venta.monto ? Number(venta.monto) : 0
     });
   };
   
@@ -64,8 +64,8 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-      // Convertir el monto de formato CLP a número
-      const montoNumerico = values.monto ? Number(values.monto.replace(/\D/g, '')) : 0;
+      // El monto ya viene como número desde el InputNumber
+      const montoNumerico = values.monto || 0;
       
       // Preparar los datos actualizados
       const datosActualizados = {
@@ -91,15 +91,14 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
     }
   };
   
-  // Función para formatear el monto en CLP
-  const formatearMontoCLP = (e) => {
-    const value = e.target.value;
-    // Eliminar todos los puntos y caracteres no numéricos
-    const numero = value.replace(/\D/g, '');
-    // Formatear con puntos como separadores de miles
-    if (numero) {
-      const formateado = Number(numero).toLocaleString('es-CL');
-      form.setFieldsValue({ monto: formateado });
+  // Función para validar y formatear el monto en CLP
+  const handleMontoChange = (value) => {
+    if (value !== null && value !== undefined) {
+      // Asegurarse de que el valor sea positivo
+      const montoPositivo = Math.max(0, value);
+      // Redondear al entero más cercano
+      const montoRedondeado = Math.round(montoPositivo);
+      form.setFieldsValue({ monto: montoRedondeado });
     }
   };
   if (!venta) {
@@ -164,7 +163,7 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
   return (
     <Card 
       title={!inMobileModal ? <div className="venta-detail-title"><ShoppingCartOutlined /> {isEditing ? 'Editar Venta' : 'Detalles de la Venta'}</div> : null}
-      className="venta-detail-card"
+      className="venta-detail-card ventas-card"
       extra={
         venta && (
           <div className={`venta-detail-actions ${inMobileModal ? 'mobile-centered' : ''}`}>
@@ -232,8 +231,14 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
               name="vendedor"
               label="Vendedor"
               rules={[{ required: true, message: 'Por favor selecciona el vendedor' }]}
+              help="Persona que realizó la venta"
             >
-              <Select placeholder="Selecciona el vendedor">
+              <Select 
+                placeholder="Selecciona el vendedor"
+                suffixIcon={<UserOutlined />}
+                showSearch
+                optionFilterProp="children"
+              >
                 {usuarios.map(usuario => (
                   <Option key={usuario.value} value={usuario.value}>{usuario.label}</Option>
                 ))}
@@ -243,12 +248,21 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
             <Form.Item
               name="monto"
               label="Monto"
-              rules={[{ required: true, message: 'Por favor ingresa el monto' }]}
+              rules={[
+                { required: true, message: 'Por favor ingresa el monto' },
+                { type: 'number', min: 0, message: 'El monto debe ser mayor o igual a 0' }
+              ]}
+              help="Monto de la venta (valor numérico positivo)"
             >
-              <Input
-                prefix={<DollarOutlined />}
+              <InputNumber
+                style={{ width: '100%' }}
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                parser={value => value.replace(/\$\s?|(\.*)/g, '')}
                 placeholder="Ingresa el monto"
-                onChange={formatearMontoCLP}
+                onChange={handleMontoChange}
+                min={0}
+                precision={0}
+                prefix={<DollarOutlined />}
                 suffix="CLP"
               />
             </Form.Item>
@@ -257,8 +271,14 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
               name="tipoPago"
               label="Tipo de Pago"
               rules={[{ required: true, message: 'Por favor selecciona el tipo de pago' }]}
+              help="Método de pago utilizado"
             >
-              <Select placeholder="Selecciona el tipo de pago">
+              <Select 
+                placeholder="Selecciona el tipo de pago"
+                suffixIcon={<CreditCardOutlined />}
+                showSearch
+                optionFilterProp="children"
+              >
                 {tiposPago.map(tipo => (
                   <Option key={tipo.value} value={tipo.value}>{tipo.label}</Option>
                 ))}
@@ -268,8 +288,17 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
             <Form.Item
               name="notas"
               label="Notas"
+              help="Información adicional sobre la venta (opcional)"
+              rules={[
+                { max: 500, message: 'Las notas no pueden exceder los 500 caracteres' }
+              ]}
             >
-              <Input.TextArea rows={4} placeholder="Notas adicionales sobre la venta" />
+              <Input.TextArea 
+                rows={4} 
+                placeholder="Notas adicionales sobre la venta" 
+                maxLength={500}
+                showCount
+              />
             </Form.Item>
           </Form>
         ) : (

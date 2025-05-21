@@ -32,9 +32,7 @@ const SummaryCards = () => {
   // Actualizar los valores de las tarjetas con datos reales
   useEffect(() => {
     if (!ventas || ventas.length === 0) return;
-
-    console.log(`Actualizando tarjetas de resumen con ${ventas.length} ventas`);
-
+    
     // Calcular totales por tipo de pago
     const totalesPorTipoPago = ventas.reduce((acc, venta) => {
       // Verificar que la venta tiene tipo de pago y monto válidos

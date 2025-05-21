@@ -1,0 +1,114 @@
+/**
+ * Estilos para el componente UsuarioDetail
+ */
+
+.usuario-detail-card {
+  height: 100%;
+}
+
+.usuario-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.usuario-detail-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.usuario-descriptions {
+  margin-bottom: 16px;
+}
+
+.usuario-detail-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usuario-detail-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.usuario-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.usuario-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.usuario-action-buttons .ant-btn {
+  margin: 0;
+}
+
+.usuario-edit-form {
+  padding: 8px 0;
+}
+
+.usuario-edit-form .ant-form-item-label > label {
+  font-weight: 500;
+  color: #595959;
+}
+
+/* Estilos para el modo de edición */
+.usuario-edit-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .usuario-detail-card {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .usuario-detail-content {
+    padding: 0;
+  }
+  
+  .usuario-descriptions {
+    width: 100%;
+  }
+  
+  .usuario-descriptions .ant-descriptions-item-label,
+  .usuario-descriptions .ant-descriptions-item-content {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .usuario-detail-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .usuario-detail-actions.mobile-centered {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+  
+  .usuario-action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+  }
+  
+  .usuario-edit-form {
+    padding: 16px 8px;
+  }
+  
+  .usuario-edit-form .ant-form-item {
+    margin-bottom: 12px;
+  }
+}

@@ -2,12 +2,11 @@
  * @fileoverview Tabla de datos para la gestión de usuarios
  */
 import React from 'react';
-import { Tag, Switch, Tooltip } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Tag } from 'antd';
+import { UserOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useUsuarios } from '../../context/UsuariosContext';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
-import ActionButtons from '../molecules/ActionButtons';
 import moment from 'moment';
 
 /**
@@ -15,24 +14,11 @@ import moment from 'moment';
  * @param {Object} props - Propiedades del componente
  * @returns {JSX.Element} Tabla de usuarios con funcionalidades de búsqueda y filtrado
  */
-const UsuariosDataTable = ({ onEdit, searchExtra }) => {
-  const { usuarios, eliminarUsuario, actualizarUsuario } = useUsuarios();
+const UsuariosDataTable = ({ searchExtra, onRowClick, isMobile = false }) => {
+  const { usuarios } = useUsuarios();
   
-  // Manejar cambio de estado activo/inactivo
-  const handleActivoChange = (checked, record) => {
-    actualizarUsuario(record.id, { activo: checked });
-  };
-  
-  // Columnas para la tabla
+  // Columnas para la tabla (simplificadas a nombre, rol y fecha registro)
   const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 80,
-      sorter: (a, b) => a.id.localeCompare(b.id),
-      responsive: ['md']
-    },
     {
       title: 'Nombre',
       dataIndex: 'nombre',
@@ -44,12 +30,6 @@ const UsuariosDataTable = ({ onEdit, searchExtra }) => {
         </div>
       ),
       sorter: (a, b) => a.nombre.localeCompare(b.nombre)
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-      sorter: (a, b) => a.email.localeCompare(b.email)
     },
     {
       title: 'Rol',
@@ -70,51 +50,31 @@ const UsuariosDataTable = ({ onEdit, searchExtra }) => {
         { text: 'Vendedor', value: 'vendedor' },
         { text: 'Supervisor', value: 'supervisor' }
       ],
-      onFilter: (value, record) => record.rol === value,
-      responsive: ['md']
+      onFilter: (value, record) => record.rol === value
     },
     {
       title: 'Fecha Registro',
       dataIndex: 'fechaRegistro',
       key: 'fechaRegistro',
-      render: (fechaRegistro) => moment(fechaRegistro).format('DD/MM/YYYY'),
-      sorter: (a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro),
-      responsive: ['lg']
-    },
-    {
-      title: 'Activo',
-      dataIndex: 'activo',
-      key: 'activo',
-      render: (activo, record) => (
-        <Tooltip title={activo ? 'Desactivar usuario' : 'Activar usuario'}>
-          <Switch
-            checked={activo}
-            onChange={(checked) => handleActivoChange(checked, record)}
-            checkedChildren="Activo"
-            unCheckedChildren="Inactivo"
-          />
-        </Tooltip>
+      render: (fechaRegistro) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <CalendarOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+          {moment(fechaRegistro).format('DD/MM/YYYY')}
+        </div>
       ),
-      filters: [
-        { text: 'Activo', value: true },
-        { text: 'Inactivo', value: false }
-      ],
-      onFilter: (value, record) => record.activo === value
-    },
-    {
-      title: 'Acciones',
-      key: 'acciones',
-      render: (_, record) => (
-        <ActionButtons 
-          onEdit={onEdit} 
-          onDelete={eliminarUsuario} 
-          record={record} 
-          deleteConfirmTitle="¿Estás seguro de eliminar este usuario?"
-          deleteConfirmDescription="Esta acción no se puede deshacer y eliminará todos los datos asociados a este usuario."
-        />
-      )
+      sorter: (a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro)
     }
   ];
+  
+  // Configuración para hacer las filas clickeables
+  const onRow = (record) => ({
+    onClick: () => {
+      if (onRowClick) {
+        onRowClick(record);
+      }
+    },
+    style: { cursor: 'pointer' }
+  });
   
   return (
     <DataTable 
@@ -122,8 +82,8 @@ const UsuariosDataTable = ({ onEdit, searchExtra }) => {
       dataSource={usuarios} 
       loading={false}
       rowKey="id"
-      searchPlaceholder="Buscar por ID, nombre, email o rol..."
-      searchFields={['id', 'nombre', 'email', 'rol']}
+      searchPlaceholder="Buscar por nombre o rol..."
+      searchFields={['nombre', 'rol']}
       pagination={{ 
         pageSize: 10, 
         showSizeChanger: true, 
@@ -132,13 +92,16 @@ const UsuariosDataTable = ({ onEdit, searchExtra }) => {
       scroll={{ x: 'max-content' }}
       size="middle"
       searchExtra={searchExtra}
+      onRow={onRow}
+      rowClassName="clickable-row"
     />
   );
 };
 
 UsuariosDataTable.propTypes = {
-  onEdit: PropTypes.func,
-  searchExtra: PropTypes.node
+  searchExtra: PropTypes.node,
+  onRowClick: PropTypes.func,
+  isMobile: PropTypes.bool
 };
 
 export default UsuariosDataTable;

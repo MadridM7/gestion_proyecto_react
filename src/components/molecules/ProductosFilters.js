@@ -2,8 +2,8 @@
  * @fileoverview Componente para filtros rápidos de productos
  */
 import React, { useState, useEffect } from 'react';
-import { Select } from 'antd';
-import { TagOutlined } from '@ant-design/icons';
+import { Select, Tooltip } from 'antd';
+import { TagOutlined, FilterOutlined } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
 import '../../styles/components/molecules/ProductosFilters.css';
 
@@ -41,15 +41,31 @@ const ProductosFilters = ({ onFilterChange, isMobile = false }) => {
   
   return (
     <div className="productos-filters">
-      <Select
-        placeholder={isMobile ? "Categoría" : "Filtrar por categoría"}
-        value={filtroActivo}
-        onChange={handleChange}
-        options={options}
-        style={{ width: isMobile ? 120 : 180 }}
-        suffixIcon={<TagOutlined />}
-        className={isMobile ? 'mobile-filter-select' : ''}
-      />
+      <Tooltip title="Filtrar productos por categoría" placement="topLeft">
+        <Select
+          placeholder={isMobile ? "Categoría" : "Filtrar por categoría"}
+          value={filtroActivo}
+          onChange={handleChange}
+          options={options}
+          style={{ width: isMobile ? 120 : 180 }}
+          suffixIcon={<TagOutlined />}
+          className={isMobile ? 'mobile-filter-select' : ''}
+          showSearch
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+          dropdownRender={(menu) => (
+            <>
+              <div style={{ padding: '4px 8px', display: 'flex', alignItems: 'center' }}>
+                <FilterOutlined style={{ marginRight: 8 }} />
+                <span>Seleccione una categoría</span>
+              </div>
+              {menu}
+            </>
+          )}
+        />
+      </Tooltip>
     </div>
   );
 };

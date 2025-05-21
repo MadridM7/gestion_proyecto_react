@@ -12,7 +12,8 @@ import {
   SaveOutlined,
   CloseCircleOutlined,
   DollarOutlined,
-  // TagOutlined no se utiliza
+  TagOutlined,
+  PercentageOutlined,
   NumberOutlined
 } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
@@ -49,16 +50,17 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
     setIsEditing(true);
     form.setFieldsValue({
       ...producto,
-      precioCompra: producto.precioCompra ? new Intl.NumberFormat('es-CL').format(producto.precioCompra) : '',
-      precioVenta: producto.precioVenta ? new Intl.NumberFormat('es-CL').format(producto.precioVenta) : ''
+      precioCompra: producto.precioCompra || 0,
+      precioVenta: producto.precioVenta || 0,
+      margenGanancia: producto.margenGanancia || 30
     });
   };
   
   const handleSave = () => {
     form.validateFields().then(values => {
-      // Limpiar formatos de precios para guardar solo los números
-      const precioCompra = values.precioCompra ? parseInt(values.precioCompra.replace(/\D/g, ''), 10) : 0;
-      const precioVenta = values.precioVenta ? parseInt(values.precioVenta.replace(/\D/g, ''), 10) : 0;
+      // Los valores ya vienen como números desde los InputNumber
+      const precioCompra = values.precioCompra || 0;
+      const precioVenta = values.precioVenta || 0;
       const margenGanancia = values.margenGanancia || 0;
       
       const productoActualizado = {
@@ -82,21 +84,37 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
     });
   };
   
-  // Función para formatear precios en formato CLP
-  const formatearPrecioCLP = (e, campo) => {
-    const valor = e.target.value.replace(/[^0-9]/g, '');
-    if (valor) {
-      const valorFormateado = new Intl.NumberFormat('es-CL').format(valor);
-      form.setFieldsValue({
-        [campo]: valorFormateado
-      });
+  // Manejar cambios en el precio de compra
+  const handlePrecioCompraChange = (value) => {
+    if (value !== null && value !== undefined) {
+      // Asegurarse de que el valor sea positivo
+      const precioPositivo = Math.max(0, value);
+      form.setFieldsValue({ precioCompra: precioPositivo });
       
-      // Si se está editando el precio de compra y hay un margen, calcular el precio de venta
-      if (campo === 'precioCompra') {
-        const margen = form.getFieldValue('margenGanancia');
-        if (margen) {
-          calcularPrecioVenta(parseInt(valor, 10), margen);
-        }
+      const margenGanancia = form.getFieldValue('margenGanancia') || 30;
+      calcularPrecioVenta(precioPositivo, margenGanancia);
+    }
+  };
+  
+  // Manejar cambios en el precio de venta
+  const handlePrecioVentaChange = (value) => {
+    if (value !== null && value !== undefined) {
+      // Asegurarse de que el valor sea positivo
+      const precioPositivo = Math.max(0, value);
+      form.setFieldsValue({ precioVenta: Math.round(precioPositivo) });
+    }
+  };
+  
+  // Manejar cambios en el margen de ganancia
+  const handleMargenChange = (value) => {
+    if (value !== null && value !== undefined) {
+      // Asegurarse de que el valor esté en el rango correcto
+      const margenAjustado = Math.max(0, Math.min(100, value));
+      form.setFieldsValue({ margenGanancia: margenAjustado });
+      
+      const precioCompra = form.getFieldValue('precioCompra');
+      if (precioCompra) {
+        calcularPrecioVenta(precioCompra, margenAjustado);
       }
     }
   };
@@ -105,9 +123,8 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
   const calcularPrecioVenta = (precioCompra, margen) => {
     if (precioCompra && margen) {
       const precioVenta = Math.round(precioCompra * (1 + margen / 100));
-      const precioVentaFormateado = new Intl.NumberFormat('es-CL').format(precioVenta);
       form.setFieldsValue({
-        precioVenta: precioVentaFormateado
+        precioVenta: precioVenta
       });
     }
   };
@@ -155,7 +172,7 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
   return (
     <Card 
       title={!inMobileModal ? <div className="producto-detail-title"><ShoppingOutlined /> {isEditing ? 'Editar Producto' : 'Detalles del Producto'}</div> : null}
-      className="producto-detail-card"
+      className="producto-detail-card productos-card"
       extra={
         producto && (
           <div className={`producto-detail-actions ${inMobileModal ? 'mobile-centered' : ''}`}>
@@ -221,17 +238,34 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
             <Form.Item
               name="nombre"
               label="Nombre"
-              rules={[{ required: true, message: 'Por favor ingresa el nombre del producto' }]}
+              rules={[
+                { required: true, message: 'Por favor ingresa el nombre del producto' },
+                { min: 3, message: 'El nombre debe tener al menos 3 caracteres' },
+                { max: 100, message: 'El nombre no puede exceder los 100 caracteres' },
+                { pattern: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s.,\-_()]+$/, message: 'El nombre contiene caracteres no permitidos' }
+              ]}
+              help="Nombre descriptivo del producto (3-100 caracteres)"
             >
-              <Input placeholder="Nombre del producto" />
+              <Input 
+                placeholder="Nombre del producto" 
+                prefix={<ShoppingOutlined />}
+                maxLength={100}
+                showCount
+              />
             </Form.Item>
             
             <Form.Item
               name="categoria"
               label="Categoría"
               rules={[{ required: true, message: 'Por favor selecciona la categoría' }]}
+              help="Categoría a la que pertenece el producto"
             >
-              <Select placeholder="Selecciona la categoría">
+              <Select 
+                placeholder="Selecciona la categoría"
+                showSearch
+                optionFilterProp="children"
+                suffixIcon={<TagOutlined />}
+              >
                 {categorias.map(categoria => (
                   <Option key={categoria.value} value={categoria.value}>{categoria.label}</Option>
                 ))}
@@ -241,12 +275,21 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
             <Form.Item
               name="precioCompra"
               label="Precio de Compra"
-              rules={[{ required: true, message: 'Por favor ingresa el precio de compra' }]}
+              rules={[
+                { required: true, message: 'Por favor ingresa el precio de compra' },
+                { type: 'number', min: 0, message: 'El precio debe ser mayor o igual a 0' }
+              ]}
+              help="Precio al que se adquiere el producto (valor numérico positivo)"
             >
-              <Input
-                prefix={<DollarOutlined />}
+              <InputNumber
+                style={{ width: '100%' }}
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                parser={value => value.replace(/\$\s?|(\.*)/g, '')}
                 placeholder="Precio de compra"
-                onChange={(e) => formatearPrecioCLP(e, 'precioCompra')}
+                onChange={handlePrecioCompraChange}
+                min={0}
+                precision={0}
+                prefix={<DollarOutlined />}
                 suffix="CLP"
               />
             </Form.Item>
@@ -254,26 +297,43 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
             <Form.Item
               name="margenGanancia"
               label="Margen de Ganancia (%)"
-              rules={[{ required: true, message: 'Por favor ingresa el margen de ganancia' }]}
+              rules={[
+                { required: true, message: 'Por favor ingresa el margen de ganancia' },
+                { type: 'number', min: 0, max: 100, message: 'El margen debe estar entre 0 y 100%' }
+              ]}
+              help="Porcentaje de ganancia sobre el precio de compra (0-100%)"
             >
               <InputNumber
+                style={{ width: '100%' }}
                 min={0}
                 max={100}
+                formatter={value => `${value}%`}
+                parser={value => value.replace('%', '')}
                 placeholder="Margen de ganancia"
-                style={{ width: '100%' }}
-                suffix="%"
+                onChange={handleMargenChange}
+                precision={1}
+                prefix={<PercentageOutlined />}
               />
             </Form.Item>
             
             <Form.Item
               name="precioVenta"
               label="Precio de Venta"
-              rules={[{ required: true, message: 'Por favor ingresa el precio de venta' }]}
+              rules={[
+                { required: true, message: 'Por favor ingresa el precio de venta' },
+                { type: 'number', min: 0, message: 'El precio debe ser mayor o igual a 0' }
+              ]}
+              help="Precio final de venta al público (calculado automáticamente, pero puede modificarse)"
             >
-              <Input
-                prefix={<DollarOutlined />}
+              <InputNumber
+                style={{ width: '100%' }}
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                parser={value => value.replace(/\$\s?|(\.*)/g, '')}
                 placeholder="Precio de venta"
-                onChange={(e) => formatearPrecioCLP(e, 'precioVenta')}
+                onChange={handlePrecioVentaChange}
+                min={0}
+                precision={0}
+                prefix={<DollarOutlined />}
                 suffix="CLP"
               />
             </Form.Item>

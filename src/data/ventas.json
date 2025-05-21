@@ -155,11 +155,62 @@
   },
   {
     "id": "V1020",
-    "monto": 43200,
+    "monto": 43300,
     "tipoPago": "credito",
     "vendedor": "Carlos Mendoza",
     "fechaHora": "2025-05-10T15:40:00.000Z",
     "producto": "Parlante Bluetooth JBL",
     "productos": []
+  },
+  {
+    "id": "V832",
+    "monto": 10000,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:22:02.785Z",
+    "productos": []
+  },
+  {
+    "id": "V4101",
+    "monto": 100,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:29:38.104Z"
+  },
+  {
+    "id": "V7854",
+    "monto": 50400,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:29:45.897Z"
+  },
+  {
+    "id": "V7704",
+    "monto": 3000,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:29:50.860Z",
+    "productos": []
+  },
+  {
+    "id": "V2349",
+    "monto": 3000,
+    "tipoPago": "efectivo",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:29:55.935Z"
+  },
+  {
+    "id": "V8399",
+    "monto": 1500,
+    "tipoPago": "debito",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:30:02.543Z"
+  },
+  {
+    "id": "V2544",
+    "monto": 76400,
+    "tipoPago": "credito",
+    "vendedor": "Laura Fernández",
+    "fechaHora": "2025-05-20T21:30:09.619Z"
   }
 ]

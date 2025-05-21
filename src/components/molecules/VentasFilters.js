@@ -2,8 +2,8 @@
  * @fileoverview Componente para filtros de ventas
  */
 import React, { useState, useEffect } from 'react';
-import { Select } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Select, Tooltip } from 'antd';
+import { UserOutlined, FilterOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
 import '../../styles/components/molecules/VentasFilters.css';
 
@@ -41,15 +41,31 @@ const VentasFilters = ({ onFilterChange, isMobile = false }) => {
   
   return (
     <div className="ventas-filters">
-      <Select
-        placeholder={isMobile ? "Vendedor" : "Filtrar por vendedor"}
-        value={filtroActivo}
-        onChange={handleChange}
-        options={options}
-        style={{ width: isMobile ? 120 : 180 }}
-        suffixIcon={<UserOutlined />}
-        className={isMobile ? 'mobile-filter-select' : ''}
-      />
+      <Tooltip title="Filtrar ventas por vendedor" placement="topLeft">
+        <Select
+          placeholder={isMobile ? "Vendedor" : "Filtrar por vendedor"}
+          value={filtroActivo}
+          onChange={handleChange}
+          options={options}
+          style={{ width: isMobile ? 120 : 180 }}
+          suffixIcon={<UserOutlined />}
+          className={isMobile ? 'mobile-filter-select' : ''}
+          showSearch
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+          dropdownRender={(menu) => (
+            <>
+              <div style={{ padding: '4px 8px', display: 'flex', alignItems: 'center' }}>
+                <FilterOutlined style={{ marginRight: 8 }} />
+                <span>Seleccione un vendedor</span>
+              </div>
+              {menu}
+            </>
+          )}
+        />
+      </Tooltip>
     </div>
   );
 };

@@ -13,6 +13,14 @@ import ReportesTemplate from '../components/templates/ReportesTemplate';
 // Importar datos de reportes desde el archivo JSON
 import reportesData from '../data/reportes.json';
 
+// Importar servicios de exportación a Excel
+import { 
+  exportarVentasDiarias,
+  exportarVentasMensuales,
+  exportarVentasPorUsuario,
+  exportarReporteCompleto 
+} from '../services/excelExport';
+
 // Importar estilos CSS
 import '../styles/pages/Reportes.css';
 
@@ -48,18 +56,18 @@ const Reportes = () => {
   // Efecto para procesar las fechas disponibles
   useEffect(() => {
     if (ventas.length > 0) {
-      // Obtener fechas únicas usando Set para eliminar duplicados
+      // Obtener fechas y meses únicos usando Set para eliminar duplicados
       const uniqueDates = [...new Set(ventas.map(venta => {
         const date = new Date(venta.fechaHora);
         return moment(date).format('YYYY-MM-DD');
       }))];
-      setAvailableDates(uniqueDates);
       
-      // Obtener meses únicos usando Set para eliminar duplicados
       const uniqueMonths = [...new Set(ventas.map(venta => {
         const date = new Date(venta.fechaHora);
         return moment(date).format('YYYY-MM');
       }))];
+      
+      setAvailableDates(uniqueDates);
       setAvailableMonths(uniqueMonths);
     }
   }, [ventas]);
@@ -107,23 +115,20 @@ const Reportes = () => {
    * @param {string} format - Formato del reporte (excel, pdf, csv)
    */
   const handleDownload = (reportType, format) => {
-    // Validar que se haya seleccionado una opción si es necesario
-    if (reportType === 'ventasdiarias' && !selectedDate) {
-      message.warning('Por favor selecciona una fecha específica');
+    // Validaciones según el tipo de reporte
+    const validationMap = {
+      'ventasdiarias': { value: selectedDate, message: 'Por favor selecciona una fecha específica' },
+      'ventasmensual': { value: selectedMonth, message: 'Por favor selecciona un mes específico' },
+      'ventasporusuario': { value: selectedUser, message: 'Por favor selecciona un usuario' }
+    };
+    
+    const validation = validationMap[reportType];
+    if (validation && !validation.value) {
+      message.warning(validation.message);
       return;
     }
     
-    if (reportType === 'ventasmensual' && !selectedMonth) {
-      message.warning('Por favor selecciona un mes específico');
-      return;
-    }
-    
-    if (reportType === 'ventasporusuario' && !selectedUser) {
-      message.warning('Por favor selecciona un usuario');
-      return;
-    }
-    
-    // Construir mensaje de confirmación usando template literals
+    // Construir mensaje de confirmación
     let confirmMessage = `Generando reporte de ${reportType}`;
     
     if (selectedDate && reportType === 'ventasdiarias') {
@@ -135,21 +140,50 @@ const Reportes = () => {
     }
     
     if (selectedUser && reportType === 'ventasporusuario') {
-      // Usar find con arrow function para buscar el usuario por ID
       const usuario = usuarios.find(u => u.id === selectedUser);
       if (usuario) {
         confirmMessage += ` para ${usuario.nombre}`;
       }
     }
     
-    // Usar Promise chaining para mostrar mensajes
-    message.loading(`${confirmMessage}...`, 1)
-      .then(() => {
-        message.success(`${confirmMessage} descargado en formato ${format.toUpperCase()}`)
-      });
+    // Mostrar mensaje de carga
+    const loadingMsg = message.loading(`${confirmMessage}...`);
     
-    console.log(`Descargando reporte ${reportType} en formato ${format}`);
-    // Aquí iría la lógica real para generar y descargar el reporte
+    if (format === 'excel') {
+      // Exportar a Excel
+      try {
+        const exportFunctions = {
+          'ventasdiarias': () => exportarVentasDiarias(ventas, moment(selectedDate).format('YYYY-MM-DD')),
+          'ventasmensual': () => exportarVentasMensuales(ventas, moment(selectedMonth).format('YYYY-MM')),
+          'ventasporusuario': () => exportarVentasPorUsuario(ventas, selectedUser, usuarios),
+          'completo': () => exportarReporteCompleto(ventas)
+        };
+        
+        const exportFunction = exportFunctions[reportType.toLowerCase()];
+        if (exportFunction) {
+          const result = exportFunction();
+          if (result) {
+            setTimeout(() => {
+              loadingMsg();
+              message.success(`${confirmMessage} descargado en formato ${format.toUpperCase()}`);
+            }, 1000);
+          } else {
+            loadingMsg();
+            message.error('Error al generar el reporte');
+          }
+        }
+      } catch (error) {
+        console.error('Error al exportar:', error);
+        loadingMsg();
+        message.error('Error al generar el reporte: ' + error.message);
+      }
+    } else {
+      // Para PDF
+      setTimeout(() => {
+        loadingMsg();
+        message.info(`La exportación a ${format.toUpperCase()} estará disponible próximamente`);
+      }, 1000);
+    }
   };
 
   return (

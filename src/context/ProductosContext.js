@@ -50,12 +50,12 @@ export const ProductosProvider = ({ children }) => {
   useEffect(() => {
     // Cargar datos iniciales desde el archivo JSON
     setProductos(productosData);
-    console.log('Productos cargados desde el archivo JSON:', productosData.length);
+    // Productos cargados inicialmente
     
     // Configurar el polling para actualizar los datos sin recompilar
     const handleProductosUpdate = (nuevosProductos) => {
       setProductos(nuevosProductos);
-      console.log('Datos de productos actualizados mediante polling');
+      // Datos actualizados silenciosamente
     };
     
     // Iniciar el polling cada 5 segundos
@@ -91,14 +91,14 @@ export const ProductosProvider = ({ children }) => {
       if (respuesta.success) {
         // Actualizar el estado local
         setProductos(productosActuales => [...productosActuales, productoNormalizado]);
-        console.log('Producto agregado y guardado en el archivo JSON:', productoNormalizado);
+        // Producto agregado exitosamente
         return productoNormalizado;
       } else {
-        console.error('Error al guardar el producto en el archivo JSON');
+        // Error al guardar el producto
         return null;
       }
     } catch (error) {
-      console.error('Error al agregar producto:', error);
+      // Capturar error silenciosamente
       return null;
     }
   }, []);
@@ -115,12 +115,12 @@ export const ProductosProvider = ({ children }) => {
       if (respuesta.success) {
         // Actualizar el estado local
         setProductos(productosActuales => productosActuales.filter(producto => producto.id !== id));
-        console.log(`Producto con ID ${id} eliminado`);
+        // Producto eliminado exitosamente
       } else {
-        console.error('Error al eliminar el producto');
+        // Error al eliminar el producto
       }
     } catch (error) {
-      console.error('Error al eliminar producto:', error);
+      // Capturar error silenciosamente
     }
   }, []);
 
@@ -136,7 +136,7 @@ export const ProductosProvider = ({ children }) => {
       const productoActual = productos.find(p => p.id === id);
       
       if (!productoActual) {
-        console.error(`No se encontró el producto con ID ${id}`);
+        // Producto no encontrado
         return null;
       }
       
@@ -167,14 +167,14 @@ export const ProductosProvider = ({ children }) => {
           });
         });
         
-        console.log(`Producto ${id} actualizado y guardado en el archivo JSON:`, productoActualizado);
+        // Producto actualizado exitosamente
         return productoActualizado;
       } else {
-        console.error(`Error al guardar la actualización del producto ${id} en el archivo JSON`);
+        // Error al guardar la actualización
         return null;
       }
     } catch (error) {
-      console.error(`Error al actualizar producto ${id}:`, error);
+      // Capturar error silenciosamente
       return null;
     }
   }, [productos]);

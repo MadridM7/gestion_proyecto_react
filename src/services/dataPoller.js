@@ -30,7 +30,7 @@ class DataPoller {
     
     // Iniciar el polling si no está ya iniciado
     if (!this.pollingIntervals[dataType]) {
-      console.log(`Iniciando polling para ${dataType} cada ${interval}ms`);
+      // Iniciar polling silenciosamente
       
       // Hacer una primera carga inmediata
       this.fetchData(dataType);
@@ -48,7 +48,7 @@ class DataPoller {
    */
   stopPolling(dataType) {
     if (this.pollingIntervals[dataType]) {
-      console.log(`Deteniendo polling para ${dataType}`);
+      // Detener polling silenciosamente
       clearInterval(this.pollingIntervals[dataType]);
       delete this.pollingIntervals[dataType];
       delete this.callbacks[dataType];
@@ -59,7 +59,7 @@ class DataPoller {
    * Detiene todos los pollings activos
    */
   stopAllPolling() {
-    console.log('Deteniendo todos los pollings');
+    // Detener todos los pollings silenciosamente
     Object.keys(this.pollingIntervals).forEach(dataType => {
       this.stopPolling(dataType);
     });
@@ -81,7 +81,7 @@ class DataPoller {
       
       // Verificar si los datos han cambiado
       if (this.hasDataChanged(dataType, data)) {
-        console.log(`Datos de ${dataType} actualizados`);
+        // Datos actualizados silenciosamente
         this.lastData[dataType] = JSON.parse(JSON.stringify(data));
         
         // Llamar al callback si existe
@@ -90,7 +90,7 @@ class DataPoller {
         }
       }
     } catch (error) {
-      console.error(`Error en el polling de ${dataType}:`, error);
+      // Capturar error silenciosamente
     }
   }
 
