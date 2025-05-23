@@ -2,7 +2,8 @@
  * @fileoverview Componente para mostrar los detalles de un usuario y editarlo directamente en el panel
  */
 import React, { useState } from 'react';
-import { Card, Descriptions, Divider, Empty, Button, Popconfirm, message, Form, Input, Select, Switch, DatePicker, Tag } from 'antd';
+import { Card, Descriptions, Divider, Empty, Button, Popconfirm, message, Form, Input, Select, Switch, Tag } from 'antd';
+import ReactDatePickerWrapper from '../atoms/ReactDatePickerWrapper';
 import { 
   UserOutlined, 
   EditOutlined, 
@@ -238,12 +239,9 @@ const UsuarioDetail = ({ usuario, onEdit, inMobileModal = false }) => {
               rules={[{ required: true, message: 'Por favor selecciona la fecha de registro' }]}
               help="Fecha en que el usuario fue registrado en el sistema"
             >
-              <DatePicker 
-                style={{ width: '100%' }} 
-                format="DD/MM/YYYY"
+              <ReactDatePickerWrapper
                 placeholder="Selecciona una fecha"
-                suffixIcon={<CalendarOutlined />}
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                maxDate={new Date()}
               />
             </Form.Item>
             

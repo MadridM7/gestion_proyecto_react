@@ -1,10 +1,11 @@
 /**
  * @fileoverview Formulario para agregar o editar ventas
  */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Form, Input, Select, InputNumber } from 'antd';
 import { DollarOutlined, UserOutlined, CreditCardOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import { useUsuarios } from '../../context/UsuariosContext';
 
 const { Option } = Select;
 
@@ -18,6 +19,8 @@ const VentaFormulario = ({
   editingVenta = null,
   loading = false
 }) => {
+  // Obtener usuarios del contexto
+  const { usuarios } = useUsuarios();
   // Función para generar un ID único
   const generateId = useCallback(() => {
     return `V${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
@@ -40,13 +43,18 @@ const VentaFormulario = ({
     { value: 'debito', label: 'Débito' },
     { value: 'credito', label: 'Crédito' }
   ];
-
-  // Usuarios disponibles (vendedores)
-  const usuarios = [
-    { value: 'Laura Fernández', label: 'Laura Fernández' },
-    { value: 'Carlos Mendoza', label: 'Carlos Mendoza' },
-    { value: 'Ana Martínez', label: 'Ana Martínez' }
-  ];
+  
+  // Preparar lista de vendedores desde el contexto de usuarios con useMemo
+  const vendedores = useMemo(() => {
+    return usuarios
+      ? usuarios
+          .filter(usuario => usuario.activo) // Solo usuarios activos
+          .map(usuario => ({
+            value: usuario.nombre,
+            label: usuario.nombre
+          }))
+      : [];
+  }, [usuarios]);
   
   // Inicializar el formulario cuando cambia la venta
   useEffect(() => {
@@ -60,11 +68,11 @@ const VentaFormulario = ({
       form.setFieldsValue({
         id: generateId(),
         tipoPago: 'efectivo',
-        vendedor: 'Laura Fernández',
+        vendedor: vendedores.length > 0 ? vendedores[0].value : '',
         monto: 0
       });
     }
-  }, [editingVenta, form, generateId]);
+  }, [editingVenta, form, generateId, vendedores]);
 
   return (
     <Form
@@ -132,8 +140,8 @@ const VentaFormulario = ({
           showSearch
           optionFilterProp="children"
         >
-          {usuarios.map(usuario => (
-            <Option key={usuario.value} value={usuario.value}>{usuario.label}</Option>
+          {vendedores.map(vendedor => (
+            <Option key={vendedor.value} value={vendedor.value}>{vendedor.label}</Option>
           ))}
         </Select>
       </Form.Item>

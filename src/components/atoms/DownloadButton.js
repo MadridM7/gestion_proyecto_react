@@ -1,57 +1,70 @@
 /**
- * @fileoverview Botón de descarga para reportes
+ * @fileoverview Botón atómico para la descarga de reportes en diferentes formatos
  */
 import React from 'react';
-import { Button } from 'antd';
+import PropTypes from 'prop-types';
+import { Button, Tooltip } from 'antd';
 import { 
   FileExcelOutlined, 
-  FilePdfOutlined 
+  FilePdfOutlined, 
+  FileTextOutlined 
 } from '@ant-design/icons';
-import PropTypes from 'prop-types';
 
 /**
- * Componente atómico para botones de descarga de reportes
+ * Componente atómico que representa un botón de descarga para reportes
  * @param {Object} props - Propiedades del componente
- * @returns {JSX.Element} Botón de descarga con formato e icono
+ * @returns {JSX.Element} Botón de descarga con icono según formato
  */
-const DownloadButton = ({ format, onClick }) => {
-  // Mapeo de formatos a iconos
-  const formatIcons = {
-    excel: <FileExcelOutlined />,
-    pdf: <FilePdfOutlined />
+const DownloadButton = ({ format, onClick, disabled }) => {
+  // Configuración para cada formato de descarga
+  const formatConfig = {
+    excel: {
+      icon: <FileExcelOutlined />,
+      text: 'Excel',
+      color: '#217346',
+      tooltip: 'Descargar en formato Excel'
+    },
+    pdf: {
+      icon: <FilePdfOutlined />,
+      text: 'PDF',
+      color: '#f40f02',
+      tooltip: 'Descargar en formato PDF'
+    },
+    csv: {
+      icon: <FileTextOutlined />,
+      text: 'CSV',
+      color: '#1890ff',
+      tooltip: 'Descargar en formato CSV'
+    }
   };
 
-  // Mapeo de formatos a colores
-  const formatColors = {
-    excel: '#217346',
-    pdf: '#FF0000'
-  };
-
-  // Mapeo de formatos a textos
-  const formatTexts = {
-    excel: 'Excel',
-    pdf: 'PDF'
-  };
+  // Obtener configuración para el formato actual
+  const config = formatConfig[format.toLowerCase()] || formatConfig.excel;
 
   return (
-    <Button
-      type="default"
-      icon={formatIcons[format]}
-      style={{ 
-        color: formatColors[format],
-        borderColor: formatColors[format],
-        marginRight: '8px'
-      }}
-      onClick={onClick}
-    >
-      {formatTexts[format]}
-    </Button>
+    <Tooltip title={config.tooltip}>
+      <Button
+        type="primary"
+        icon={config.icon}
+        onClick={onClick}
+        disabled={disabled}
+        style={{ backgroundColor: config.color, borderColor: config.color }}
+        className="download-button"
+      >
+        {config.text}
+      </Button>
+    </Tooltip>
   );
 };
 
 DownloadButton.propTypes = {
-  format: PropTypes.oneOf(['excel', 'pdf']).isRequired,
-  onClick: PropTypes.func.isRequired
+  format: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
+};
+
+DownloadButton.defaultProps = {
+  disabled: false
 };
 
 export default DownloadButton;

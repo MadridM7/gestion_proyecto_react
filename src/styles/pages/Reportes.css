@@ -1,210 +1,122 @@
-/**
- * Estilos para la página de Reportes
- */
-
-/* Animación de gradiente para las cabeceras */
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+/* Estilos para la página de Reportes */
+.reports-container {
+  padding: 16px;
 }
 
-/* Encabezado de la página */
-.reportes-header {
-  margin-bottom: 24px;
-}
-
-.reportes-title {
-  margin: 0;
-}
-
-.reportes-description {
-  color: rgba(0, 0, 0, 0.45);
-}
-
-/* Alerta de datos insuficientes */
-.data-alert {
-  margin-bottom: 24px;
-}
-
-/* Contenedor de cards de reportes */
-.reports-row {
-  margin-top: 16px;
-}
-
-/* Estilos para las cards de reportes */
 .report-card {
   height: 100%;
-  margin-bottom: 16px;
-  border-radius: 8px;
   transition: all 0.3s;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .report-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilos para tarjetas activas */
-.report-card.active-report {
-  border: 2px solid #1890ff;
-  box-shadow: 0 5px 15px rgba(24, 144, 255, 0.2);
+.report-card .ant-card-head {
+  background-color: #f5f5f5;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
-/* Estilos para los selectores */
-.ant-form-item {
+.report-card .ant-card-head-title {
+  font-weight: 600;
+}
+
+.report-icon {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #1890ff;
+}
+
+.stats-card {
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card .ant-card-head {
+  background-color: #f5f5f5;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.stats-value {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stats-label {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+.payment-stats-card {
+  margin-bottom: 24px;
+}
+
+.payment-type-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.payment-type-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.payment-type-info {
+  flex-grow: 1;
+}
+
+.payment-type-amount {
+  font-weight: 600;
+}
+
+.top-seller-item {
+  display: flex;
+  align-items: center;
   margin-bottom: 16px;
 }
 
-/* Cursor pointer para las cabeceras de tarjetas */
-.report-card-header {
-  cursor: pointer;
+.top-seller-avatar {
+  margin-right: 12px;
 }
 
-/* Animación para tarjetas activas */
-@keyframes pulseActive {
-  0% {
-    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
-  }
+.top-seller-info {
+  flex-grow: 1;
 }
 
-.active-report .report-card-header {
-  animation: pulseActive 2s infinite;
-}
-
-/* Cabecera de las cards */
-.report-card-header {
-  height: 160px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px 8px 0 0;
-  overflow: hidden;
-  transition: all 0.3s;
-  position: relative;
-}
-
-.report-card-header .anticon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.report-card-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
-  z-index: 1;
-}
-
-.report-card-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
-  z-index: 1;
-}
-
-/* Estilos para los encabezados de las cards de reportes */
-/* Estos estilos son un fallback, ahora los colores vienen del JSON */
-.r001-header {
-  background: #1890ff !important;
-}
-
-.r002-header {
-  background: #52c41a !important;
-}
-
-.r003-header {
-  background: #722ed1 !important;
-}
-
-.r004-header {
-  background: #fa8c16 !important;
-}
-
-.r005-header {
-  background: #eb2f96 !important;
-}
-
-.r006-header {
-  background: #f5222d !important;
-}
-
-/* Iconos de los reportes */
-.report-icon {
-  font-size: 80px;
-  color: white;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-  z-index: 2;
-  position: relative;
-  transition: all 0.3s ease;
-  opacity: 0.9;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.report-card:hover .report-icon {
-  transform: scale(1.15) translateY(-5px);
-  opacity: 1;
-  filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4));
-}
-
-/* Botones de descarga */
-.download-buttons-container {
-  width: 100%;
-  padding: 8px 0;
-}
-
-.download-button {
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.download-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.download-button:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.download-button:last-child {
+.top-seller-name {
+  font-weight: 600;
   margin-bottom: 0;
 }
 
-.download-button .anticon {
-  margin-right: 8px;
-  font-size: 16px;
+.top-seller-sales {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+.report-section {
+  margin-bottom: 32px;
+}
+
+.report-section-title {
+  margin-bottom: 16px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.report-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: #1890ff;
 }

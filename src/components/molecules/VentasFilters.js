@@ -1,10 +1,11 @@
 /**
  * @fileoverview Componente para filtros de ventas
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Select, Tooltip } from 'antd';
 import { UserOutlined, FilterOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
+import { useUsuarios } from '../../context/UsuariosContext';
 import '../../styles/components/molecules/VentasFilters.css';
 
 /**
@@ -16,16 +17,24 @@ import '../../styles/components/molecules/VentasFilters.css';
  */
 const VentasFilters = ({ onFilterChange, isMobile = false }) => {
   const { ventas } = useVentas();
-  const [vendedores, setVendedores] = useState([]);
+  const { usuarios } = useUsuarios();
   const [filtroActivo, setFiltroActivo] = useState('todos');
   
-  // Extraer vendedores únicos de las ventas
-  useEffect(() => {
-    if (ventas && ventas.length > 0) {
-      const uniqueVendedores = [...new Set(ventas.map(v => v.vendedor).filter(Boolean))];
-      setVendedores(uniqueVendedores);
-    }
-  }, [ventas]);
+  // Extraer vendedores únicos de las ventas y usuarios usando useMemo
+  const vendedores = useMemo(() => {
+    // Obtener vendedores de las ventas
+    const ventasVendedores = ventas && ventas.length > 0 
+      ? [...new Set(ventas.map(v => v.vendedor).filter(Boolean))]
+      : [];
+    
+    // Obtener nombres de usuarios activos
+    const usuariosVendedores = usuarios && usuarios.length > 0
+      ? usuarios.filter(u => u.activo).map(u => u.nombre)
+      : [];
+    
+    // Combinar y eliminar duplicados
+    return [...new Set([...ventasVendedores, ...usuariosVendedores])].sort();
+  }, [ventas, usuarios]);
   
   // Manejar cambio en el select
   const handleChange = (value) => {
@@ -33,11 +42,11 @@ const VentasFilters = ({ onFilterChange, isMobile = false }) => {
     onFilterChange(value === 'todos' ? null : value);
   };
   
-  // Preparar opciones para el select
-  const options = [
+  // Preparar opciones para el select usando useMemo para evitar recreaciones innecesarias
+  const options = useMemo(() => [
     { value: 'todos', label: 'Todos los vendedores' },
     ...vendedores.map(vendedor => ({ value: vendedor, label: vendedor }))
-  ];
+  ], [vendedores]);
   
   return (
     <div className="ventas-filters">

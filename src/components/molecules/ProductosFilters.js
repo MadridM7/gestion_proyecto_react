@@ -1,7 +1,7 @@
 /**
  * @fileoverview Componente para filtros rápidos de productos
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Select, Tooltip } from 'antd';
 import { TagOutlined, FilterOutlined } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
@@ -16,15 +16,14 @@ import '../../styles/components/molecules/ProductosFilters.css';
  */
 const ProductosFilters = ({ onFilterChange, isMobile = false }) => {
   const { productos } = useProductos();
-  const [categorias, setCategorias] = useState([]);
   const [filtroActivo, setFiltroActivo] = useState('todos');
   
-  // Extraer categorías únicas de los productos
-  useEffect(() => {
+  // Extraer categorías únicas de los productos usando useMemo
+  const categorias = useMemo(() => {
     if (productos && productos.length > 0) {
-      const uniqueCategorias = [...new Set(productos.map(p => p.categoria).filter(Boolean))];
-      setCategorias(uniqueCategorias);
+      return [...new Set(productos.map(p => p.categoria).filter(Boolean))].sort();
     }
+    return [];
   }, [productos]);
   
   // Manejar cambio en el select
@@ -33,11 +32,11 @@ const ProductosFilters = ({ onFilterChange, isMobile = false }) => {
     onFilterChange(value === 'todos' ? null : value);
   };
   
-  // Preparar opciones para el select
-  const options = [
+  // Preparar opciones para el select usando useMemo
+  const options = useMemo(() => [
     { value: 'todos', label: 'Todas las categorías' },
     ...categorias.map(cat => ({ value: cat, label: cat }))
-  ];
+  ], [categorias]);
   
   return (
     <div className="productos-filters">

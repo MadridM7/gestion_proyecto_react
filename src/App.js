@@ -15,6 +15,9 @@ import Productos from './pages/Productos';
 
 // Importar estilos
 import 'antd/dist/reset.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import './styles/components/atoms/ReactDatePickerWrapper.css';
+import './styles/global/datepicker-fixes.css';
 
 function App() {
   return (

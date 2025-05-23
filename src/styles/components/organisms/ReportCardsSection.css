@@ -1,0 +1,56 @@
+/**
+ * Estilos para la sección de tarjetas de reportes
+ */
+
+.report-section {
+  margin-bottom: 32px;
+}
+
+.report-card {
+  transition: all 0.3s;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.report-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.report-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.report-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.report-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.report-card-selector {
+  margin-bottom: 16px;
+}
+
+.report-card-actions {
+  margin-top: auto;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .report-card {
+    margin-bottom: 16px;
+  }
+  
+  .report-card:hover {
+    transform: none;
+  }
+}

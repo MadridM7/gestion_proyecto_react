@@ -1,64 +1,130 @@
 /**
  * @fileoverview Template para la página de reportes
+ * Implementado siguiendo la metodología Atomic Design
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReportGrid from '../organisms/ReportGrid';
+import { Layout, Typography, Spin } from 'antd';
+import ReportCardsSection from '../organisms/ReportCardsSection';
+import StatsSection from '../organisms/StatsSection';
+// Importación de estilos eliminada
+import '../../styles/components/organisms/ReportCardsSection.css';
+
+const { Content } = Layout;
+const { Title } = Typography;
 
 /**
- * Componente template que estructura la página de reportes
+ * Template para la página de reportes
  * @param {Object} props - Propiedades del componente
- * @returns {JSX.Element} Template de la página de reportes
+ * @returns {JSX.Element} Template de reportes
  */
 const ReportesTemplate = ({
-  reportes,
-  activeReport,
-  hayDatos,
-  onSelectReport,
-  onDownloadReport,
-  form,
-  availableDates,
-  availableMonths,
+  loading,
+  keyStats,
+  paymentStats,
+  topSellers,
+  // Datos para los reportes
   usuarios,
-  onDateChange,
-  onMonthChange,
-  onUserChange
+  selectedUserId,
+  onUserChange,
+  // Fechas para cada tipo de reporte
+  dailyDate,
+  weeklyDate,
+  monthlyDate,
+  // Manejadores para cada tipo de reporte
+  onDailyDateChange,
+  onWeeklyDateChange,
+  onMonthlyDateChange,
+  // Funciones de generación de reportes
+  onGenerateDaily,
+  onGenerateWeekly,
+  onGenerateMonthly,
+  onGenerateProducts,
+  onGenerateUserSales,
+  onGenerateComplete
 }) => {
   return (
-    <div className="reportes-container">      
-      
-      {/* Grilla de reportes */}
-      <ReportGrid
-        reportes={reportes}
-        activeReport={activeReport}
-        hayDatos={hayDatos}
-        onSelectReport={onSelectReport}
-        onDownloadReport={onDownloadReport}
-        form={form}
-        availableDates={availableDates}
-        availableMonths={availableMonths}
-        usuarios={usuarios}
-        onDateChange={onDateChange}
-        onMonthChange={onMonthChange}
-        onUserChange={onUserChange}
-      />
-    </div>
+    <Content className="reports-container">
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '50px 0' }}>
+          <Spin size="large" />
+          <Title level={4} style={{ marginTop: 20 }}>Cargando datos...</Title>
+        </div>
+      ) : (
+        <>
+          <ReportCardsSection
+            onGenerateDaily={onGenerateDaily}
+            onGenerateWeekly={onGenerateWeekly}
+            onGenerateMonthly={onGenerateMonthly}
+            onGenerateProducts={onGenerateProducts}
+            onGenerateUserSales={onGenerateUserSales}
+            onGenerateComplete={onGenerateComplete}
+            usuarios={usuarios}
+            selectedUserId={selectedUserId}
+            onUserChange={onUserChange}
+            dailyDate={dailyDate}
+            weeklyDate={weeklyDate}
+            monthlyDate={monthlyDate}
+            onDailyDateChange={onDailyDateChange}
+            onWeeklyDateChange={onWeeklyDateChange}
+            onMonthlyDateChange={onMonthlyDateChange}
+            loading={loading}
+          />
+          
+          <StatsSection
+            keyStats={keyStats}
+            paymentStats={paymentStats}
+            topSellers={topSellers}
+            loading={loading}
+          />
+        </>
+      )}
+    </Content>
   );
 };
 
 ReportesTemplate.propTypes = {
-  reportes: PropTypes.array.isRequired,
-  activeReport: PropTypes.string,
-  hayDatos: PropTypes.bool.isRequired,
-  onSelectReport: PropTypes.func.isRequired,
-  onDownloadReport: PropTypes.func.isRequired,
-  form: PropTypes.object.isRequired,
-  availableDates: PropTypes.arrayOf(PropTypes.string),
-  availableMonths: PropTypes.arrayOf(PropTypes.string),
-  usuarios: PropTypes.arrayOf(PropTypes.object),
-  onDateChange: PropTypes.func,
-  onMonthChange: PropTypes.func,
-  onUserChange: PropTypes.func
+  loading: PropTypes.bool,
+  keyStats: PropTypes.shape({
+    totalVentas: PropTypes.number.isRequired,
+    ingresosTotales: PropTypes.number.isRequired,
+    gananciaNeta: PropTypes.number.isRequired,
+    vendedoresActivos: PropTypes.number.isRequired
+  }).isRequired,
+  paymentStats: PropTypes.arrayOf(
+    PropTypes.shape({
+      method: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired,
+      count: PropTypes.number.isRequired
+    })
+  ).isRequired,
+  topSellers: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      sales: PropTypes.number.isRequired,
+      count: PropTypes.number.isRequired
+    })
+  ).isRequired,
+  usuarios: PropTypes.array.isRequired,
+  selectedUserId: PropTypes.string,
+  onUserChange: PropTypes.func.isRequired,
+  dailyDate: PropTypes.object,
+  weeklyDate: PropTypes.object,
+  monthlyDate: PropTypes.object,
+  onDailyDateChange: PropTypes.func.isRequired,
+  onWeeklyDateChange: PropTypes.func.isRequired,
+  onMonthlyDateChange: PropTypes.func.isRequired,
+  onGenerateDaily: PropTypes.func.isRequired,
+  onGenerateWeekly: PropTypes.func.isRequired,
+  onGenerateMonthly: PropTypes.func.isRequired,
+  onGenerateProducts: PropTypes.func.isRequired,
+  onGenerateUserSales: PropTypes.func.isRequired,
+  onGenerateComplete: PropTypes.func.isRequired
+};
+
+ReportesTemplate.defaultProps = {
+  loading: false
 };
 
 export default ReportesTemplate;

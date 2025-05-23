@@ -2,10 +2,10 @@
  * @fileoverview Formulario para agregar o editar usuarios
  */
 import React, { useEffect } from 'react';
-import { Form, Input, Select, Switch, DatePicker } from 'antd';
-import { UserOutlined, CalendarOutlined, TeamOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Switch } from 'antd';
+import { UserOutlined, TeamOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import ReactDatePickerWrapper from '../atoms/ReactDatePickerWrapper';
 
 const { Option } = Select;
 
@@ -24,14 +24,14 @@ const UsuarioFormulario = ({
     if (usuario) {
       form.setFieldsValue({
         ...usuario,
-        fechaRegistro: usuario.fechaRegistro ? moment(usuario.fechaRegistro) : null
+        fechaRegistro: usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : null
       });
     } else {
       form.resetFields();
       form.setFieldsValue({
         activo: true,
         rol: 'vendedor',
-        fechaRegistro: moment()
+        fechaRegistro: new Date()
       });
     }
   }, [usuario, form]);
@@ -99,20 +99,14 @@ const UsuarioFormulario = ({
       </Form.Item>
       
       {/* Fecha de registro */}
-      <Form.Item
+      <ReactDatePickerWrapper
         name="fechaRegistro"
         label="Fecha de registro"
+        placeholder="Selecciona una fecha"
+        onChange={(date) => form.setFieldsValue({ fechaRegistro: date })}
         rules={[{ required: true, message: 'Por favor selecciona la fecha de registro' }]}
-        tooltip={{ title: 'Fecha en que el usuario fue registrado en el sistema', icon: <InfoCircleOutlined /> }}
-      >
-        <DatePicker 
-          style={{ width: '100%' }} 
-          format="DD/MM/YYYY"
-          placeholder="Selecciona una fecha"
-          suffixIcon={<CalendarOutlined />}
-          disabledDate={(current) => current && current > moment().endOf('day')}
-        />
-      </Form.Item>
+        maxDate={new Date()}
+      />
       
       {/* Estado activo/inactivo */}
       <Form.Item

@@ -27,6 +27,44 @@ h1, h2, h3, h4, h5, h6 {
   color: rgba(0, 0, 0, 0.85);
 }
 
+/* Estilos para los selectores de fecha */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+.react-datepicker {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif !important;
+  border: 1px solid #f0f0f0 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.react-datepicker__header {
+  background-color: #f0f2f5 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__month-text--selected,
+.react-datepicker__month-text--keyboard-selected,
+.react-datepicker__quarter-text--selected,
+.react-datepicker__quarter-text--keyboard-selected,
+.react-datepicker__year-text--selected,
+.react-datepicker__year-text--keyboard-selected {
+  background-color: #1890ff !important;
+  border-radius: 4px !important;
+}
+
 /* Estilos para dispositivos móviles */
 @media (max-width: 768px) {
   .ant-layout-content {
@@ -45,5 +83,15 @@ h1, h2, h3, h4, h5, h6 {
   .ant-col {
     padding-left: 8px !important;
     padding-right: 8px !important;
+  }
+  
+  .react-datepicker {
+    font-size: 0.9em !important;
+  }
+  
+  .react-datepicker__day-name, .react-datepicker__day {
+    width: 1.8em !important;
+    line-height: 1.8em !important;
+    margin: 0.166em !important;
   }
 }
