@@ -1,0 +1,177 @@
+/**
+ * Estilos globales para estandarizar componentes en toda la aplicación
+ */
+
+@import './variables.css';
+@import './components/atoms/Button.css';
+@import './components/molecules/Form.css';
+@import './components/molecules/Card.css';
+@import './components/organisms/Table.css';
+
+/* Estilos generales */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos para tarjetas */
+.ant-card {
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow);
+  margin-bottom: var(--space-md);
+}
+
+.ant-card-head {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ant-card-body {
+  padding: var(--space-lg);
+}
+
+/* Estilos para botones */
+.ant-btn {
+  height: var(--height-md);
+  padding: 0 var(--space-md);
+  font-size: var(--font-size-sm);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-duration);
+}
+
+.ant-btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.ant-btn-sm {
+  height: var(--height-sm);
+  padding: 0 var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+.ant-btn-lg {
+  height: var(--height-lg);
+  padding: 0 var(--space-lg);
+  font-size: var(--font-size-md);
+}
+
+/* Estilos para inputs */
+.ant-input, .ant-select-selector {
+  height: var(--height-md);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-duration);
+}
+
+.ant-input-affix-wrapper {
+  border-radius: var(--border-radius-md);
+}
+
+/* Estilos para tablas */
+.ant-table {
+  font-size: var(--font-size-sm);
+}
+
+.ant-table-thead > tr > th {
+  background-color: #f5f7fa;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.ant-table-tbody > tr > td {
+  padding: var(--space-sm) var(--space-md);
+}
+
+/* Estilos para tags */
+.ant-tag {
+  border-radius: var(--border-radius-sm);
+  padding: 0 var(--space-sm);
+  margin-right: var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+/* Estilos para modales */
+.ant-modal-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ant-modal-body {
+  padding: var(--space-lg);
+}
+
+.ant-modal-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Estilos para formularios */
+.ant-form-item {
+  margin-bottom: var(--space-md);
+}
+
+.ant-form-item-label {
+  padding-bottom: var(--space-xs);
+}
+
+/* Estilos para DataTable estandarizados */
+.data-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  flex-wrap: nowrap;
+  width: 100%;
+  height: var(--height-md);
+}
+
+.data-table-search-wrapper {
+  display: flex;
+  align-items: center;
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.data-table-search {
+  width: 100%;
+}
+
+.search-extra-container {
+  display: flex;
+  align-items: center;
+  margin-left: var(--space-md);
+  flex-grow: 1;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .ant-card-body {
+    padding: var(--space-md);
+  }
+  
+  .data-table-header {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+  
+  .data-table-search-wrapper {
+    width: 60%;
+  }
+  
+  .search-extra-container {
+    width: auto;
+    margin-left: 0;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+  }
+}

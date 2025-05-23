@@ -2,8 +2,32 @@
  * Estilos para el componente VentasDataTable
  */
 
-.ventas-data-table-container {
+@import '../../variables.css';
+
+.ventas-data-table {
   width: 100%;
+}
+
+/* Estilos para el contenedor de acciones en móvil */
+.ventas-mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Asegurar que los elementos dentro del contenedor de acciones móviles ocupen todo el ancho */
+.ventas-mobile-actions > * {
+  width: 100%;
+}
+
+/* Estilos para el botón de agregar en móvil */
+.ventas-mobile-actions .add-button {
+  margin-top: 8px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ventas-table-header {

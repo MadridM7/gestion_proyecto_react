@@ -3,7 +3,7 @@
  */
 
 .ventas-template {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .ventas-content {
@@ -14,11 +14,14 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  height: 32px;
 }
 
 .search-actions-container .ventas-filters {
   margin-bottom: 0;
-  margin-right: 8px;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
 }
 
 .ventas-card .ant-card-head {
@@ -48,8 +51,8 @@
 
 .floating-button-container {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 16px;
+  bottom: 16px;
   z-index: 1000;
 }
 

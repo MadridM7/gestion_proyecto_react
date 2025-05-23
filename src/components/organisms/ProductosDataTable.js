@@ -2,10 +2,12 @@
  * @fileoverview Tabla de datos para la gestión de productos
  */
 import React from 'react';
-import { ShoppingOutlined } from '@ant-design/icons';
+import { ShoppingOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import { useProductos } from '../../context/ProductosContext';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
+import '../../styles/components/organisms/ProductosDataTable.css';
 
 /**
  * Componente organismo para la tabla de productos
@@ -16,8 +18,20 @@ import DataTable from './DataTable';
  * @param {boolean} props.isMobile - Indica si el componente se muestra en versión móvil
  * @returns {JSX.Element} Tabla de productos con funcionalidades de búsqueda y filtrado
  */
-const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile = false }) => {
+const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile = false, onEdit, onAddNew }) => {
   const { productos } = useProductos();
+  
+  // Componente para el botón de nuevo producto
+  const AddButton = () => (
+    <Button 
+      type="primary" 
+      icon={<PlusOutlined />}
+      onClick={onAddNew}
+      className="add-button"
+    >
+      Nuevo Producto
+    </Button>
+  );
   
   // Aplicar filtro por categoría si existe
   const productosFiltrados = categoriaFiltro
@@ -64,6 +78,14 @@ const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile
     style: { cursor: 'pointer' }
   });
 
+  // Si tenemos searchExtra y estamos en móvil, combinamos el filtro con el botón
+  const combinedSearchExtra = searchExtra && isMobile ? (
+    <div className="productos-mobile-actions">
+      {searchExtra}
+      <AddButton />
+    </div>
+  ) : (searchExtra || <AddButton />);
+
   return (
     <DataTable 
       columns={columns} 
@@ -72,17 +94,18 @@ const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile
       rowKey="id"
       searchPlaceholder="Buscar por nombre o categoría..."
       searchFields={['nombre', 'categoria']}
-      pagination={{ 
-        pageSize: 10, 
-        showSizeChanger: true, 
-        showTotal: (total) => `Total: ${total} productos` 
-      }}
-      scroll={{ x: 'max-content' }}
-      size="middle"
-      searchExtra={searchExtra}
       onRow={onRow}
+      searchExtra={combinedSearchExtra}
       className="productos-data-table"
       isMobile={isMobile}
+      pagination={{ 
+        showTotal: (total) => `Total: ${total} productos`,
+        pageSize: 10, 
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50']
+      }}
+      scroll={{ x: 800 }}
+      size="middle"
     />
   );
 };
@@ -91,7 +114,9 @@ ProductosDataTable.propTypes = {
   searchExtra: PropTypes.node,
   onRowClick: PropTypes.func,
   categoriaFiltro: PropTypes.string,
-  isMobile: PropTypes.bool
+  isMobile: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onAddNew: PropTypes.func
 };
 
 export default ProductosDataTable;

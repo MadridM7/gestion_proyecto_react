@@ -29,7 +29,18 @@ const VentasTemplate = ({
   const [selectedVenta, setSelectedVenta] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
-  // Función para mostrar el modal de nueva venta (eliminada por no ser utilizada)
+  // Función para mostrar el modal de nueva venta
+  const showAddModal = () => {
+    setEditingVenta(null);
+    form.resetFields();
+    
+    // Valores por defecto para una nueva venta
+    form.setFieldsValue({
+      fechaHora: new Date()
+    });
+    
+    setIsModalVisible(true);
+  };
 
   // Función para mostrar el modal de editar venta
   const showEditModal = (venta) => {
@@ -120,14 +131,11 @@ const VentasTemplate = ({
           <Card>
             <VentasDataTable 
               isMobile={isMobile}
-              searchExtra={
-                <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
-                  <VentasFilters onFilterChange={handleFilterChange} isMobile={isMobile} />
-                </div>
-              }
+              searchExtra={<VentasFilters onFilterChange={handleFilterChange} isMobile={isMobile} />}
               vendedorFiltro={vendedorSeleccionado}
               onRowClick={handleVentaSelect}
               onEdit={showEditModal}
+              onAddNew={showAddModal}
             />
           </Card>
         </Col>

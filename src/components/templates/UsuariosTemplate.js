@@ -2,8 +2,8 @@
  * @fileoverview Template para la página de usuarios
  */
 import React, { useState } from 'react';
-import { Card, Button, Divider, Modal, Form, message, Row, Col } from 'antd';
-import { UserAddOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Divider, Modal, Form, message, Row, Col } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useUsuarios } from '../../context/UsuariosContext';
 import '../../styles/components/templates/UsuariosTemplate.css';
@@ -119,17 +119,7 @@ const UsuariosTemplate = ({
     setIsDetailModalVisible(false);
   };
 
-  // Botón para agregar nuevo usuario
-  const addButton = (
-    <Button 
-      type="primary" 
-      icon={<UserAddOutlined />} 
-      onClick={showModal}
-      className={isMobile ? 'mobile-icon-only-button' : ''}
-    >
-      {!isMobile && 'Nuevo Usuario'}
-    </Button>
-  );
+  // El botón de agregar nuevo usuario ahora se maneja dentro del componente UsuariosDataTable
 
   return (
     <div className="usuarios-template">      
@@ -140,12 +130,9 @@ const UsuariosTemplate = ({
             {UsuariosDataTable && (
               <UsuariosDataTable 
                 onRowClick={handleUsuarioSelect}
+                onEdit={showEditModal}
+                onAddNew={showModal}
                 isMobile={isMobile}
-                searchExtra={
-                  <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
-                    {addButton}
-                  </div>
-                }
               />
             )}
           </Card>

@@ -2,8 +2,8 @@
  * @fileoverview Template para la página de productos
  */
 import React, { useState } from 'react';
-import { Card, Modal, Form, message, Button, Row, Col } from 'antd';
-import { PlusOutlined, ShoppingOutlined } from '@ant-design/icons';
+import { Card, Modal, Form, message, Row, Col } from 'antd';
+import { ShoppingOutlined } from '@ant-design/icons';
 import { useProductos } from '../../context/ProductosContext';
 import PropTypes from 'prop-types';
 import ProductosStats from '../organisms/ProductosStats';
@@ -74,17 +74,7 @@ const ProductosTemplate = ({
     }
   };
 
-  // Botón para agregar nuevo producto
-  const addButton = (
-    <Button 
-      type="primary" 
-      icon={<PlusOutlined />} 
-      onClick={showModal}
-      className={isMobile ? 'mobile-icon-only-button' : ''}
-    >
-      {!isMobile && 'Nuevo Producto'}
-    </Button>
-  );
+  // El botón de agregar nuevo producto ahora se maneja dentro del componente ProductosDataTable
 
   // Estado para almacenar la categoría seleccionada
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
@@ -127,14 +117,11 @@ const ProductosTemplate = ({
             {ProductosDataTable && (
               <ProductosDataTable 
                 isMobile={isMobile}
-                searchExtra={
-                  <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
-                    <ProductosFilters onFilterChange={handleFilterChange} isMobile={isMobile} />
-                    {addButton}
-                  </div>
-                }
+                searchExtra={<ProductosFilters onFilterChange={handleFilterChange} isMobile={isMobile} />}
                 categoriaFiltro={categoriaSeleccionada}
                 onRowClick={handleProductoSelect}
+                onEdit={showEditModal}
+                onAddNew={showModal}
               />
             )}
           </Card>

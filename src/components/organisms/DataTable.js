@@ -79,14 +79,16 @@ const DataTable = ({
     <div className={`data-table-container ${className}`}>
       {/* Barra de búsqueda con elementos adicionales */}
       {showSearch && searchFields.length > 0 && (
-        <div className="data-table-header">
-          <SearchInput 
-            placeholder={searchPlaceholder} 
-            value={searchText} 
-            onChange={handleSearch} 
-            className={`data-table-search ${searchExtra ? 'with-extra' : ''}`}
-            isMobile={isMobile}
-          />
+        <div className={`data-table-header ${isMobile ? 'mobile-header' : ''}`}>
+          <div className="data-table-search-wrapper">
+            <SearchInput 
+              placeholder={searchPlaceholder} 
+              value={searchText} 
+              onChange={handleSearch} 
+              className={`data-table-search ${searchExtra ? 'with-extra' : ''}`}
+              isMobile={isMobile}
+            />
+          </div>
           {searchExtra && (
             <div className="search-extra-container">
               {searchExtra}

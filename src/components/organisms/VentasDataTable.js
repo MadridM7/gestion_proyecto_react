@@ -2,7 +2,8 @@
  * @fileoverview Tabla de datos para la gestión de ventas
  */
 import React from 'react';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import { useVentas } from '../../context/VentasContext';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
@@ -21,9 +22,23 @@ const VentasDataTable = ({
   searchExtra, 
   onRowClick, 
   vendedorFiltro,
-  isMobile = false
+  isMobile = false,
+  onEdit,
+  onAddNew
 }) => {
   const { ventas } = useVentas();
+  
+  // Componente para el botón de nueva venta
+  const AddButton = () => (
+    <Button 
+      type="primary" 
+      icon={<PlusOutlined />}
+      onClick={onAddNew}
+      className="add-button"
+    >
+      Nueva Venta
+    </Button>
+  );
   
   // Aplicar filtro por vendedor si existe
   const ventasFiltradas = vendedorFiltro
@@ -88,6 +103,14 @@ const VentasDataTable = ({
     style: { cursor: 'pointer' }
   });
 
+  // Si tenemos searchExtra y estamos en móvil, combinamos el filtro con el botón
+  const combinedSearchExtra = searchExtra && isMobile ? (
+    <div className="ventas-mobile-actions">
+      {searchExtra}
+      <AddButton />
+    </div>
+  ) : (searchExtra || <AddButton />);
+
   return (
     <DataTable 
       columns={columns} 
@@ -96,17 +119,18 @@ const VentasDataTable = ({
       rowKey="id"
       searchPlaceholder="Buscar por vendedor o monto..."
       searchFields={['vendedor', 'monto']}
-      pagination={{ 
-        pageSize: 10, 
-        showSizeChanger: true, 
-        showTotal: (total) => `Total: ${total} ventas` 
-      }}
-      scroll={{ x: 'max-content' }}
-      size="middle"
-      searchExtra={searchExtra}
       onRow={onRow}
+      searchExtra={combinedSearchExtra}
       className="ventas-data-table"
       isMobile={isMobile}
+      pagination={{ 
+        showTotal: (total) => `Total: ${total} ventas`,
+        pageSize: 10, 
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50']
+      }}
+      scroll={{ x: 800 }}
+      size="middle"
     />
   );
 };
@@ -116,7 +140,9 @@ VentasDataTable.propTypes = {
   onRowClick: PropTypes.func,
   showTitle: PropTypes.bool,
   vendedorFiltro: PropTypes.string,
-  isMobile: PropTypes.bool
+  isMobile: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onAddNew: PropTypes.func
 };
 
 export default VentasDataTable;

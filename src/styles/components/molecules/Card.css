@@ -1,0 +1,153 @@
+/**
+ * Estilos estandarizados para tarjetas en toda la aplicación
+ */
+
+@import '../../variables.css';
+
+/* Estilos base para tarjetas */
+.card {
+  background-color: var(--component-background);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+/* Estilos para el encabezado de la tarjeta */
+.card-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.card-subtitle {
+  margin: var(--space-xs) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* Estilos para el cuerpo de la tarjeta */
+.card-body {
+  padding: var(--space-lg);
+}
+
+/* Estilos para el pie de la tarjeta */
+.card-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-color);
+  background-color: #f9f9f9;
+}
+
+/* Estilos para tarjetas con acciones */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* Estilos para tarjetas con bordes de colores */
+.card-primary {
+  border-top: 3px solid var(--primary-color);
+}
+
+.card-success {
+  border-top: 3px solid var(--success-color);
+}
+
+.card-warning {
+  border-top: 3px solid var(--warning-color);
+}
+
+.card-danger {
+  border-top: 3px solid var(--error-color);
+}
+
+.card-info {
+  border-top: 3px solid var(--info-color);
+}
+
+/* Estilos para tarjetas con fondos de colores */
+.card-bg-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.card-bg-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.card-bg-warning {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.card-bg-danger {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.card-bg-info {
+  background-color: var(--info-color);
+  color: white;
+}
+
+/* Estilos para tarjetas con sombras de colores */
+.card-shadow-primary {
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}
+
+.card-shadow-success {
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.2);
+}
+
+.card-shadow-warning {
+  box-shadow: 0 2px 8px rgba(250, 173, 20, 0.2);
+}
+
+.card-shadow-danger {
+  box-shadow: 0 2px 8px rgba(245, 34, 45, 0.2);
+}
+
+.card-shadow-info {
+  box-shadow: 0 2px 8px rgba(114, 46, 209, 0.2);
+}
+
+/* Estilos para tarjetas sin padding */
+.card-no-padding .card-body {
+  padding: 0;
+}
+
+/* Estilos para tarjetas con hover */
+.card-hover {
+  transition: transform var(--transition-duration), box-shadow var(--transition-duration);
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .card-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+  
+  .card-body {
+    padding: var(--space-md);
+  }
+  
+  .card-footer {
+    padding: var(--space-sm) var(--space-md);
+  }
+}

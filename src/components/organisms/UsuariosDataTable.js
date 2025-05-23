@@ -2,8 +2,8 @@
  * @fileoverview Tabla de datos para la gestión de usuarios
  */
 import React from 'react';
-import { Tag } from 'antd';
-import { UserOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Tag, Button } from 'antd';
+import { UserOutlined, CalendarOutlined, PlusOutlined } from '@ant-design/icons';
 import { useUsuarios } from '../../context/UsuariosContext';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
@@ -13,8 +13,20 @@ import DataTable from './DataTable';
  * @param {Object} props - Propiedades del componente
  * @returns {JSX.Element} Tabla de usuarios con funcionalidades de búsqueda y filtrado
  */
-const UsuariosDataTable = ({ searchExtra, onRowClick, isMobile = false }) => {
+const UsuariosDataTable = ({ searchExtra, onRowClick, isMobile = false, onEdit, onAddNew }) => {
   const { usuarios } = useUsuarios();
+  
+  // Componente para el botón de nuevo usuario
+  const AddButton = () => (
+    <Button 
+      type="primary" 
+      icon={<PlusOutlined />}
+      onClick={onAddNew}
+      className="add-button"
+    >
+      Nuevo Usuario
+    </Button>
+  );
   
   // Columnas para la tabla (simplificadas a nombre, rol y fecha registro)
   const columns = [
@@ -97,16 +109,18 @@ const UsuariosDataTable = ({ searchExtra, onRowClick, isMobile = false }) => {
       rowKey="id"
       searchPlaceholder="Buscar por nombre o rol..."
       searchFields={['nombre', 'rol']}
-      pagination={{ 
-        pageSize: 10, 
-        showSizeChanger: true, 
-        showTotal: (total) => `Total: ${total} usuarios` 
-      }}
-      scroll={{ x: 'max-content' }}
-      size="middle"
-      searchExtra={searchExtra}
       onRow={onRow}
-      rowClassName="clickable-row"
+      searchExtra={searchExtra || <AddButton />}
+      className="usuarios-data-table"
+      isMobile={isMobile}
+      pagination={{ 
+        showTotal: (total) => `Total: ${total} usuarios`,
+        pageSize: 10, 
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50']
+      }}
+      scroll={{ x: 800 }}
+      size="middle"
     />
   );
 };

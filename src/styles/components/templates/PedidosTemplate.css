@@ -7,7 +7,7 @@
 }
 
 .pedidos-content {
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 /* Estilos para el botón de agregar */
@@ -51,7 +51,7 @@
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 24px;
+  margin-top: 16px;
   gap: 8px;
 }
 
