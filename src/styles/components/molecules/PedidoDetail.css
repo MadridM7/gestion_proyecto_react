@@ -1,0 +1,188 @@
+/**
+ * Estilos para el componente PedidoDetail
+ */
+
+.pedido-detail-card {
+  height: 100%;
+}
+
+.pedido-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pedido-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pedido-descriptions {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.pedido-detail-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pedido-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.pedido-action-buttons .ant-btn {
+  margin: 0;
+}
+
+.pedido-info-adicional,
+.pedido-detalle-texto {
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.pedido-info-adicional p {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pedido-detalle-texto {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.pedido-empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 40px 0;
+}
+
+@media (max-width: 768px) {
+  .pedido-detail-card {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .pedido-detail-content {
+    padding: 0;
+  }
+  
+  .pedido-descriptions {
+    width: 100%;
+  }
+  
+  .pedido-descriptions .ant-descriptions-item-label,
+  .pedido-descriptions .ant-descriptions-item-content {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .pedido-detail-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .pedido-detail-actions.mobile-centered {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+  
+  .pedido-action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  .pedido-action-buttons .ant-btn {
+    flex: 1;
+    max-width: 160px;
+  }
+  
+  .pedido-action-buttons .ant-popconfirm {
+    flex: 1;
+    max-width: 160px;
+  }
+  
+  .pedido-action-buttons .ant-popconfirm .ant-btn {
+    width: 100%;
+  }
+  
+  .pedido-edit-form .ant-form-item {
+    margin-bottom: 12px;
+  }
+  
+  .pedido-edit-form .ant-form-item-label > label {
+    font-size: 14px;
+  }
+}
+
+/* Estilos para el modo de edición */
+.pedido-edit-form {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.cancel-edit-button {
+  background-color: white;
+  color: rgba(0, 0, 0, 0.65);
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.cancel-edit-button:hover {
+  color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.save-button {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.save-button:hover {
+  background-color: #40a9ff;
+}
+
+/* Estilos para móvil */
+@media (max-width: 768px) {
+  .pedido-detail-card {
+    margin-bottom: 16px;
+  }
+  
+  .pedido-detail-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

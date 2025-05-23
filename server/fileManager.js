@@ -107,12 +107,17 @@ class FileManager {
       const data = this.readJsonFile(fileName);
       if (Array.isArray(data)) {
         const filteredData = data.filter(item => item.id !== itemId);
-        if (filteredData.length < data.length) {
-          this.writeJsonFile(fileName, filteredData);
-          return filteredData;
-        } else {
-          throw new Error(`No se encontró el elemento con ID ${itemId} en ${fileName}.json`);
+        
+        // Siempre escribimos el resultado, incluso si no se encontró el elemento
+        // Esto evita errores cuando el elemento ya fue eliminado
+        this.writeJsonFile(fileName, filteredData);
+        
+        // Si no se encontró el elemento, registramos una advertencia pero no lanzamos error
+        if (filteredData.length === data.length) {
+          console.warn(`Advertencia: No se encontró el elemento con ID ${itemId} en ${fileName}.json, pero se continuó con la operación`);
         }
+        
+        return filteredData;
       } else {
         throw new Error(`El archivo ${fileName}.json no contiene un array`);
       }

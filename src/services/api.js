@@ -6,6 +6,9 @@
 // Importar la configuración centralizada
 import { API_URL } from '../config';
 
+// Importamos los datos directamente para simular la API
+import usuariosData from '../data/usuarios.json';
+
 // URL de la API configurada en config.js
 
 /**
@@ -327,22 +330,38 @@ export const agregarUsuario = async (usuario) => {
  */
 export const actualizarUsuario = async (id, usuario) => {
   try {
-    const response = await fetch(`${API_URL}/usuarios/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(usuario),
-    });
+    // Simulamos la llamada a la API actualizando directamente el archivo JSON
+    // En una aplicación real, esto sería una llamada a una API real
     
-    if (!response.ok) {
-      throw new Error('Error al actualizar el usuario');
+    // Encontramos el índice del usuario en el array
+    const index = usuariosData.findIndex(u => u.id === id);
+    
+    if (index === -1) {
+      throw new Error(`Usuario con ID ${id} no encontrado`);
     }
     
-    return await response.json();
+    // Actualizamos el usuario en el array
+    usuariosData[index] = usuario;
+    
+    // En una aplicación real, aquí se guardaría el archivo JSON en el servidor
+    // Como estamos en un entorno de navegador, no podemos escribir directamente en el sistema de archivos
+    // Pero simulamos una respuesta exitosa
+    
+    // Simulamos un pequeño retraso para que parezca una llamada a API real
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    return {
+      success: true,
+      message: 'Usuario actualizado correctamente',
+      data: usuario
+    };
   } catch (error) {
-    // Capturar error silenciosamente
-    throw error;
+    console.error('Error al actualizar el usuario:', error);
+    return {
+      success: false,
+      message: error.message || 'Error al actualizar el usuario',
+      error: error.toString()
+    };
   }
 };
 

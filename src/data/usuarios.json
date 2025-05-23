@@ -1,8 +1,9 @@
 [
   {
     "id": "U1001",
-    "nombre": "Carlos Martínez",
+    "nombre": "Carlos Madrid",
     "email": "carlos.martinez@empresa.cl",
+    "password": "admin123",
     "rol": "admin",
     "fechaRegistro": "2024-12-15T03:00:00.000Z",
     "activo": true
@@ -11,6 +12,7 @@
     "id": "U1002",
     "nombre": "Ana García",
     "email": "ana.garcia@empresa.cl",
+    "password": "admin123",
     "rol": "admin",
     "fechaRegistro": "2025-01-05T03:00:00.000Z",
     "activo": true
@@ -19,6 +21,7 @@
     "id": "U1003",
     "nombre": "Luis Rodríguez",
     "email": "luis.rodriguez@empresa.cl",
+    "password": "admin123",
     "rol": "admin",
     "fechaRegistro": "2025-01-10T03:00:00.000Z",
     "activo": true
@@ -27,6 +30,7 @@
     "id": "U1004",
     "nombre": "María González",
     "email": "maria.gonzalez@empresa.cl",
+    "password": "vendedor123",
     "rol": "vendedor",
     "fechaRegistro": "2025-01-12T03:00:00.000Z",
     "activo": true
@@ -35,6 +39,7 @@
     "id": "U1005",
     "nombre": "Pedro Sánchez",
     "email": "pedro.sanchez@empresa.cl",
+    "password": "vendedor123",
     "rol": "vendedor",
     "fechaRegistro": "2025-01-15T03:00:00.000Z",
     "activo": true
@@ -43,6 +48,7 @@
     "id": "U1007",
     "nombre": "Roberto Torres",
     "email": "roberto.torres@empresa.cl",
+    "password": "supervisor123",
     "rol": "supervisor",
     "fechaRegistro": "2025-01-20T03:00:00.000Z",
     "activo": true
@@ -51,6 +57,7 @@
     "id": "U1008",
     "nombre": "Carmen López",
     "email": "carmen.lopez@empresa.cl",
+    "password": "supervisor123",
     "rol": "supervisor",
     "fechaRegistro": "2025-01-25T13:15:00.000Z",
     "activo": true

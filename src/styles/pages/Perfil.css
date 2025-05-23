@@ -1,0 +1,128 @@
+/**
+ * Estilos para la página de perfil de usuario
+ */
+
+.perfil-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.perfil-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  height: 100%;
+}
+
+/* Tarjeta de información del usuario */
+.user-info-card {
+  overflow: hidden;
+}
+
+.user-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+}
+
+.user-name {
+  margin-top: 16px !important;
+  margin-bottom: 4px !important;
+  text-align: center;
+}
+
+.user-role {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.user-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Tarjeta de formulario de edición */
+.edit-form-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0;
+}
+
+.edit-form-card .ant-card-head-title {
+  padding: 16px 0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .perfil-container {
+    padding: 0 12px;
+  }
+  
+  .user-info-card {
+    margin-bottom: 24px;
+    border-radius: 12px;
+  }
+  
+  .edit-form-card {
+    border-radius: 12px;
+  }
+  
+  .user-avatar-container {
+    padding: 16px 0;
+  }
+  
+  .user-avatar-container .ant-avatar {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    font-size: 32px;
+  }
+  
+  .user-name {
+    font-size: 18px !important;
+    margin-top: 12px !important;
+  }
+  
+  .user-details {
+    gap: 12px;
+    padding: 0 12px 12px;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  
+  .form-actions button {
+    width: 100%;
+    height: 40px;
+  }
+  
+  /* Mejorar la visualización de los campos del formulario */
+  .edit-form-card .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .edit-form-card .ant-form-item-label {
+    padding-bottom: 4px;
+  }
+  
+  /* Hacer que los botones sean más fáciles de tocar */
+  .edit-form-card .ant-btn {
+    height: 44px;
+    font-size: 16px;
+  }
+}

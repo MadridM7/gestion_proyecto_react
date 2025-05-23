@@ -5,11 +5,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Card, Input, Button, Space } from 'antd';
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import 'moment/locale/es';
-
-// Configurar moment para usar español
-moment.locale('es');
 
 /**
  * Componente organismo que muestra una tabla de ventas con filtros y opciones de descarga
@@ -166,18 +161,46 @@ const SalesTable = ({
     {
       title: 'Fecha',
       key: 'fecha',
-      render: (_, record) => moment(record.fechaHora).format('DD/MM/YYYY'),
+      render: (_, record) => {
+        const date = new Date(record.fechaHora);
+        if (isNaN(date.getTime())) return 'Fecha inválida';
+        
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${day}/${month}/${year}`;
+      },
       sorter: (a, b) => new Date(a.fechaHora) - new Date(b.fechaHora),
       defaultSortOrder: 'descend'
     },
     {
       title: 'Hora',
       key: 'hora',
-      render: (_, record) => moment(record.fechaHora).format('HH:mm'),
+      render: (_, record) => {
+        const date = new Date(record.fechaHora);
+        if (isNaN(date.getTime())) return 'Hora inválida';
+        
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        
+        return `${hours}:${minutes}`;
+      },
       sorter: (a, b) => {
-        const timeA = moment(a.fechaHora).format('HH:mm');
-        const timeB = moment(b.fechaHora).format('HH:mm');
-        return timeA.localeCompare(timeB);
+        const dateA = new Date(a.fechaHora);
+        const dateB = new Date(b.fechaHora);
+        
+        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) return 0;
+        
+        const hoursA = dateA.getHours();
+        const minutesA = dateA.getMinutes();
+        const timeValueA = hoursA * 60 + minutesA;
+        
+        const hoursB = dateB.getHours();
+        const minutesB = dateB.getMinutes();
+        const timeValueB = hoursB * 60 + minutesB;
+        
+        return timeValueA - timeValueB;
       }
     }
   ];

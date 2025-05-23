@@ -17,7 +17,6 @@ import {
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useUsuarios } from '../../context/UsuariosContext';
-import moment from 'moment';
 import '../../styles/components/organisms/UsuarioDetail.css';
 
 const { Option } = Select;
@@ -51,7 +50,7 @@ const UsuarioDetail = ({ usuario, onEdit, inMobileModal = false }) => {
     setIsEditing(true);
     form.setFieldsValue({
       ...usuario,
-      fechaRegistro: usuario.fechaRegistro ? moment(usuario.fechaRegistro) : null
+      fechaRegistro: usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : null
     });
   };
   
@@ -60,7 +59,7 @@ const UsuarioDetail = ({ usuario, onEdit, inMobileModal = false }) => {
       // Preparar los datos actualizados
       const usuarioActualizado = {
         ...values,
-        fechaRegistro: values.fechaRegistro ? values.fechaRegistro.toDate() : new Date(),
+        fechaRegistro: values.fechaRegistro instanceof Date ? values.fechaRegistro : new Date(),
         id: usuario.id
       };
       
@@ -240,7 +239,10 @@ const UsuarioDetail = ({ usuario, onEdit, inMobileModal = false }) => {
               help="Fecha en que el usuario fue registrado en el sistema"
             >
               <ReactDatePickerWrapper
+                name="fechaRegistro"
+                label="Fecha de registro"
                 placeholder="Selecciona una fecha"
+                onChange={(date) => form.setFieldsValue({ fechaRegistro: date })}
                 maxDate={new Date()}
               />
             </Form.Item>

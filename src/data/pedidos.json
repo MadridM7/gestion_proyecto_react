@@ -1,0 +1,47 @@
+[
+  {
+    "id": "P1001",
+    "nombreCliente": "María González",
+    "direccion": "Av. Providencia 1234, Santiago",
+    "monto": 45000,
+    "estado": "pagado",
+    "fechaPedido": "2025-05-20T14:30:00.000Z",
+    "detallePedido": "2x Smartphone Samsung Galaxy A54\n1x Audífonos inalámbricos Sony\n1x Cargador rápido USB-C"
+  },
+  {
+    "id": "P1002",
+    "nombreCliente": "Juan Pérez",
+    "direccion": "Los Leones 567, Providencia",
+    "monto": 32500,
+    "estado": "pendiente",
+    "fechaPedido": "2025-05-21T10:15:00.000Z",
+    "detallePedido": "1x Tablet Samsung Galaxy Tab S7\n2x Fundas protectoras\n1x Lápiz digital"
+  },
+  {
+    "id": "P1003",
+    "nombreCliente": "Carolina Muñoz",
+    "direccion": "Manuel Montt 890, Ñuñoa",
+    "monto": 78900,
+    "estado": "pagado",
+    "fechaPedido": "2025-05-22T16:45:00.000Z",
+    "detallePedido": "1x Laptop HP Pavilion\n1x Monitor LG 24 pulgadas\n1x Teclado y mouse inalámbricos\n1x Mochila para laptop"
+  },
+  {
+    "id": "P1004",
+    "nombreCliente": "Roberto Silva",
+    "direccion": "Pedro de Valdivia 432, Providencia",
+    "monto": 54300,
+    "estado": "pendiente",
+    "fechaPedido": "2025-05-23T09:20:00.000Z",
+    "detallePedido": "1x Consola PlayStation 5\n2x Controles adicionales\n3x Juegos (FIFA 25, Gran Turismo 7, God of War)"
+  },
+  {
+    "id": "P1005",
+    "nombreCliente": "Ana Torres",
+    "direccion": "Irarrázaval 1567, Ñuñoa",
+    "monto": 29800,
+    "estado": "pagado",
+    "fechaPedido": "2025-05-22T11:30:00.000Z",
+    "detallePedido": "1x Impresora multifuncional Canon\n2x Cartuchos de tinta negra\n1x Set de cartuchos de colores\n1x Resma de papel fotográfico"
+  }
+]

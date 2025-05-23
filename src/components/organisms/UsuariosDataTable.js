@@ -7,7 +7,6 @@ import { UserOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useUsuarios } from '../../context/UsuariosContext';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
-import moment from 'moment';
 
 /**
  * Componente organismo para la tabla de usuarios
@@ -56,12 +55,26 @@ const UsuariosDataTable = ({ searchExtra, onRowClick, isMobile = false }) => {
       title: 'Fecha Registro',
       dataIndex: 'fechaRegistro',
       key: 'fechaRegistro',
-      render: (fechaRegistro) => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <CalendarOutlined style={{ marginRight: 8, color: '#52c41a' }} />
-          {moment(fechaRegistro).format('DD/MM/YYYY')}
-        </div>
-      ),
+      render: (fechaRegistro) => {
+        // Formatear fecha en formato DD/MM/YYYY
+        const formatDate = (date) => {
+          if (!date) return 'No disponible';
+          const dateObj = new Date(date);
+          if (isNaN(dateObj.getTime())) return 'Fecha inválida';
+          
+          const day = dateObj.getDate().toString().padStart(2, '0');
+          const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+          const year = dateObj.getFullYear();
+          return `${day}/${month}/${year}`;
+        };
+        
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <CalendarOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+            {formatDate(fechaRegistro)}
+          </div>
+        );
+      },
       sorter: (a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro)
     }
   ];

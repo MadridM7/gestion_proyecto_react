@@ -1,0 +1,369 @@
+/**
+ * Estilos para la página de inicio de sesión con diseño dividido
+ */
+
+/* Contenedor principal */
+.login-container {
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.login-row {
+  min-height: 100vh;
+  margin: 0 !important;
+}
+
+/* Estilos para la columna de ilustración (izquierda) */
+.login-illustration-col {
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-illustration {
+  background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-illustration-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  z-index: 2;
+}
+
+/* Elementos de la ilustración */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 130px 80px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 160px 120px, #ffffff, rgba(0, 0, 0, 0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.moon {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #ffeb3b;
+  box-shadow: 0 0 20px #ffeb3b, 0 0 40px rgba(255, 235, 59, 0.4);
+  top: 15%;
+  left: 20%;
+  z-index: 2;
+}
+
+.mountains {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 30%;
+  background: 
+    linear-gradient(135deg, #1a237e 25%, transparent 25%) -50px 0,
+    linear-gradient(225deg, #1a237e 25%, transparent 25%) -50px 0,
+    linear-gradient(315deg, #1a237e 25%, transparent 25%),
+    linear-gradient(45deg, #1a237e 25%, transparent 25%);
+  background-size: 100px 100px;
+  background-color: #283593;
+  z-index: 3;
+}
+
+.clouds {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse at 70% 60%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  z-index: 4;
+}
+
+.login-illustration-text {
+  position: relative;
+  text-align: center;
+  color: white;
+  margin-top: 20%;
+  z-index: 5;
+}
+
+.illustration-title {
+  color: white !important;
+  margin-bottom: 8px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.illustration-subtitle {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 16px;
+}
+
+.login-illustration-footer {
+  position: absolute;
+  bottom: 20px;
+  text-align: center;
+  width: 100%;
+  z-index: 5;
+}
+
+.illustration-footer-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+/* Estilos para la columna del formulario (derecha) */
+.login-form-col {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.login-header {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  color: #1890ff !important;
+  margin-bottom: 0 !important;
+  font-size: 32px !important;
+}
+
+.login-greeting {
+  color: #333 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.login-subtitle {
+  color: #666;
+  font-size: 16px;
+}
+
+.login-form {
+  margin-top: 1.5rem;
+}
+
+.login-form .ant-form-item-label > label {
+  color: #333;
+  font-weight: 500;
+}
+
+.login-form .ant-input-affix-wrapper {
+  border-radius: 8px;
+  height: 45px;
+}
+
+.login-form .ant-input-affix-wrapper:hover,
+.login-form .ant-input-affix-wrapper:focus,
+.login-form .ant-input-affix-wrapper-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.forgot-password {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-password-link {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.login-button-container {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-button {
+  height: 45px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.login-button:hover,
+.login-button:focus {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.create-account {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.create-account-text {
+  color: #666;
+  margin-right: 8px;
+}
+
+.create-account-link {
+  color: #1890ff;
+  font-weight: 500;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .login-container {
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  }
+  
+  .login-row {
+    height: 100vh;
+  }
+  
+  .login-form-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+  }
+  
+  .login-form-container {
+    width: 90%;
+    max-width: 400px;
+    background-color: white;
+    border-radius: 16px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Logo para móviles */
+  .login-form-col::before {
+    content: '📊'; /* Emoji de gráfico 📊 */
+    font-size: 48px;
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Título de la app para móviles */
+  .login-form-col::after {
+    content: 'VenTrack';
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    position: absolute;
+    top: calc(15% + 60px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .login-title {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+    text-align: center;
+  }
+  
+  .login-subtitle {
+    font-size: 14px !important;
+    margin-bottom: 24px !important;
+    text-align: center;
+  }
+  
+  .login-form {
+    margin-top: 15px;
+  }
+  
+  .login-button {
+    height: 48px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  /* Estrellas animadas para el fondo */
+  @keyframes twinkle {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+  }
+  
+  .login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.2) 2px, transparent 2px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.1) 3px, transparent 3px);
+    background-size: 100px 100px, 200px 200px, 300px 300px;
+    background-position: 0 0, 40px 60px, 130px 270px;
+    z-index: 0;
+    animation: twinkle 4s infinite alternate;
+  }
+  
+  /* Agregar copyright al final */
+  .login-form-container::after {
+    content: '© ' attr(data-year) ' Ventrack';
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-form-container {
+    padding: 1rem;
+    max-width: 100%;
+  }
+  
+  .login-header {
+    text-align: center;
+  }
+  
+  .login-form-col {
+    padding: 1rem;
+  }
+}

@@ -4,11 +4,44 @@
  * con diferentes tipos de reportes
  */
 import * as XLSX from 'xlsx';
-import moment from 'moment';
-import 'moment/locale/es';
 
-// Configurar moment para usar español
-moment.locale('es');
+/**
+ * Formatea una fecha en formato DD/MM/YYYY
+ * @param {Date} date - Fecha a formatear
+ * @returns {string} Fecha formateada
+ */
+const formatDate = (date) => {
+  if (!(date instanceof Date) || isNaN(date)) return '';
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+/**
+ * Formatea una hora en formato HH:MM
+ * @param {Date} date - Fecha de la que extraer la hora
+ * @returns {string} Hora formateada
+ */
+const formatTime = (date) => {
+  if (!(date instanceof Date) || isNaN(date)) return '';
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
+/**
+ * Obtiene el nombre del mes en español
+ * @param {number} month - Número del mes (0-11)
+ * @returns {string} Nombre del mes en español
+ */
+const getMonthName = (month) => {
+  const monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  return monthNames[month];
+};
 
 /**
  * Formatea los datos de ventas para su exportación
@@ -44,8 +77,8 @@ const formatearVentasParaExportar = (ventas, productos, usuarios, includeDetalle
       'Monto': monto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       'Tipo de Pago': tipoPago.charAt(0).toUpperCase() + tipoPago.slice(1),
       'Vendedor': nombreVendedor,
-      'Fecha': moment(fechaHora).format('DD/MM/YYYY'),
-      'Hora': moment(fechaHora).format('HH:mm')
+      'Fecha': formatDate(fechaHora),
+      'Hora': formatTime(fechaHora)
     };
     
     // Si se solicitan detalles adicionales, incluirlos
@@ -198,14 +231,18 @@ const exportarVentasDiarias = (ventas, productos, usuarios, fecha) => {
       return false;
     }
 
-    // Formatear la fecha para el filtro y el nombre del archivo
-    const fechaFormateada = moment(fecha).format('YYYY-MM-DD');
-    const fechaVisible = moment(fecha).format('DD/MM/YYYY');
+    // Obtener la fecha formateada para el nombre del archivo
+    const fechaFormateada = formatDate(fecha).replace(/\//g, '-');
+    const nombreArchivo = `Ventas_Diarias_${fechaFormateada}.xlsx`;
     
     // Filtrar ventas por la fecha seleccionada
     const ventasFiltradas = ventas.filter(venta => {
-      const fechaVenta = moment(venta.fechaHora).format('YYYY-MM-DD');
-      return fechaVenta === fechaFormateada;
+      const fechaVenta = new Date(venta.fechaHora);
+      return (
+        fechaVenta.getDate() === fecha.getDate() &&
+        fechaVenta.getMonth() === fecha.getMonth() &&
+        fechaVenta.getFullYear() === fecha.getFullYear()
+      );
     });
     
     // Verificar si hay ventas para exportar
@@ -220,8 +257,8 @@ const exportarVentasDiarias = (ventas, productos, usuarios, fecha) => {
     // Exportar a Excel
     return exportarAExcel(
       datosExportar,
-      `Reporte_Diario_${fechaFormateada}`,
-      `Ventas del ${fechaVisible}`
+      nombreArchivo,
+      `Ventas del ${formatDate(fecha)}`
     );
   } catch (error) {
     console.error('Error al exportar ventas diarias:', error);
@@ -234,7 +271,7 @@ const exportarVentasDiarias = (ventas, productos, usuarios, fecha) => {
  * @param {Array} ventas - Array de todas las ventas
  * @param {Array} productos - Array de todos los productos
  * @param {Array} usuarios - Array de todos los usuarios
- * @param {Object} fecha - Objeto moment con la semana seleccionada
+ * @param {Date} fecha - Fecha seleccionada
  * @returns {boolean} - Indica si la exportación fue exitosa
  */
 const exportarVentasSemanales = (ventas, productos, usuarios, fecha) => {
@@ -245,22 +282,23 @@ const exportarVentasSemanales = (ventas, productos, usuarios, fecha) => {
       return false;
     }
 
-    // Convertir la fecha a moment para manipulación
-    const fechaMoment = moment(fecha);
-    
     // Obtener el inicio y fin de la semana
-    const inicioSemana = fechaMoment.clone().startOf('week');
-    const finSemana = fechaMoment.clone().endOf('week');
+    const inicioSemana = new Date(fecha);
+    inicioSemana.setDate(fecha.getDate() - fecha.getDay()); // Domingo
+    
+    const finSemana = new Date(fecha);
+    finSemana.setDate(fecha.getDate() + (6 - fecha.getDay())); // Sábado
+    finSemana.setHours(23, 59, 59, 999);
     
     // Formatear fechas para el nombre del archivo
-    const inicioFormateado = inicioSemana.format('YYYY-MM-DD');
-    const finFormateado = finSemana.format('YYYY-MM-DD');
-    const semanaVisible = `${inicioSemana.format('DD/MM/YYYY')} al ${finSemana.format('DD/MM/YYYY')}`;
+    const inicioFormateado = formatDate(inicioSemana).replace(/\//g, '-');
+    const finFormateado = formatDate(finSemana).replace(/\//g, '-');
+    const semanaVisible = `${formatDate(inicioSemana)} al ${formatDate(finSemana)}`;
     
-    // Filtrar ventas por el rango de fechas
+    // Filtrar ventas por la semana seleccionada
     const ventasFiltradas = ventas.filter(venta => {
-      const fechaVenta = moment(venta.fechaHora);
-      return fechaVenta.isBetween(inicioSemana, finSemana, null, '[]');
+      const fechaVenta = new Date(venta.fechaHora);
+      return fechaVenta >= inicioSemana && fechaVenta <= finSemana;
     });
     
     // Verificar si hay ventas para exportar
@@ -275,7 +313,7 @@ const exportarVentasSemanales = (ventas, productos, usuarios, fecha) => {
     // Exportar a Excel
     return exportarAExcel(
       datosExportar,
-      `Reporte_Semanal_${inicioFormateado}_${finFormateado}`,
+      `Ventas_Semanales_${inicioFormateado}_${finFormateado}.xlsx`,
       `Ventas del ${semanaVisible}`
     );
   } catch (error) {
@@ -289,7 +327,7 @@ const exportarVentasSemanales = (ventas, productos, usuarios, fecha) => {
  * @param {Array} ventas - Array de todas las ventas
  * @param {Array} productos - Array de todos los productos
  * @param {Array} usuarios - Array de todos los usuarios
- * @param {Object} fecha - Objeto moment con el mes seleccionado
+ * @param {Date} fecha - Fecha seleccionada
  * @returns {boolean} - Indica si la exportación fue exitosa
  */
 const exportarVentasMensuales = (ventas, productos, usuarios, fecha) => {
@@ -300,21 +338,17 @@ const exportarVentasMensuales = (ventas, productos, usuarios, fecha) => {
       return false;
     }
 
-    // Convertir la fecha a moment para manipulación
-    const fechaMoment = moment(fecha);
+    // Obtener el mes y año para el nombre del archivo
+    const mesFormateado = `${getMonthName(fecha.getMonth())}-${fecha.getFullYear()}`;
+    const nombreArchivo = `Ventas_Mensuales_${mesFormateado}.xlsx`;
     
-    // Obtener el inicio y fin del mes
-    const inicioMes = fechaMoment.clone().startOf('month');
-    const finMes = fechaMoment.clone().endOf('month');
-    
-    // Formatear fechas para el nombre del archivo
-    const mesFormateado = fechaMoment.format('YYYY-MM');
-    const mesVisible = fechaMoment.format('MMMM YYYY');
-    
-    // Filtrar ventas por el rango de fechas
+    // Filtrar ventas por la fecha seleccionada
     const ventasFiltradas = ventas.filter(venta => {
-      const fechaVenta = moment(venta.fechaHora);
-      return fechaVenta.isBetween(inicioMes, finMes, null, '[]');
+      const fechaVenta = new Date(venta.fechaHora);
+      return (
+        fechaVenta.getMonth() === fecha.getMonth() &&
+        fechaVenta.getFullYear() === fecha.getFullYear()
+      );
     });
     
     // Verificar si hay ventas para exportar
@@ -326,16 +360,17 @@ const exportarVentasMensuales = (ventas, productos, usuarios, fecha) => {
     // Agrupar ventas por día para la hoja de resumen
     const ventasPorDia = {};
     ventasFiltradas.forEach(venta => {
-      const fechaVenta = moment(venta.fechaHora).format('YYYY-MM-DD');
-      if (!ventasPorDia[fechaVenta]) {
-        ventasPorDia[fechaVenta] = {
-          fecha: moment(fechaVenta).format('DD/MM/YYYY'),
+      const fechaVenta = new Date(venta.fechaHora);
+      const nombreDia = formatDate(fechaVenta);
+      if (!ventasPorDia[nombreDia]) {
+        ventasPorDia[nombreDia] = {
+          fecha: nombreDia,
           totalVentas: 0,
           montoTotal: 0
         };
       }
-      ventasPorDia[fechaVenta].totalVentas += 1;
-      ventasPorDia[fechaVenta].montoTotal += venta.monto || 0;
+      ventasPorDia[nombreDia].totalVentas += 1;
+      ventasPorDia[nombreDia].montoTotal += venta.monto || 0;
     });
     
     // Convertir a array y formatear montos
@@ -350,21 +385,20 @@ const exportarVentasMensuales = (ventas, productos, usuarios, fecha) => {
           maximumFractionDigits: 0
         })
       }))
-      .sort((a, b) => moment(a.Fecha, 'DD/MM/YYYY').diff(moment(b.Fecha, 'DD/MM/YYYY')));
+      .sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha));
     
     // Formatear datos detallados para exportar
     const datosDetallados = formatearVentasParaExportar(ventasFiltradas, productos, usuarios, true);
     
     // Crear múltiples hojas
-    const hojas = {
-      [`Resumen ${mesVisible}`]: resumenDiario,
-      [`Detalle ${mesVisible}`]: datosDetallados
-    };
+    const hojas = {};
+    hojas[`Resumen ${getMonthName(fecha.getMonth())} ${fecha.getFullYear()}`] = resumenDiario;
+    hojas[`Detalle ${getMonthName(fecha.getMonth())} ${fecha.getFullYear()}`] = datosDetallados;
     
     // Exportar a Excel con múltiples hojas
     return exportarMultiplesHojas(
       hojas,
-      `Reporte_Mensual_${mesFormateado}`
+      nombreArchivo
     );
   } catch (error) {
     console.error('Error al exportar ventas mensuales:', error);
@@ -393,9 +427,9 @@ const exportarReporteCompleto = (ventas, productos, usuarios) => {
     // Agrupar ventas por mes
     const ventasPorMes = {};
     ventas.forEach(venta => {
-      const fechaVenta = moment(venta.fechaHora);
-      const mesClave = fechaVenta.format('YYYY-MM');
-      const mesVisible = fechaVenta.format('MMMM YYYY');
+      const fechaVenta = new Date(venta.fechaHora);
+      const mesClave = `${fechaVenta.getFullYear()}-${fechaVenta.getMonth()}`;
+      const mesVisible = `${getMonthName(fechaVenta.getMonth())} ${fechaVenta.getFullYear()}`;
       
       if (!ventasPorMes[mesClave]) {
         ventasPorMes[mesClave] = {
@@ -420,7 +454,22 @@ const exportarReporteCompleto = (ventas, productos, usuarios) => {
           maximumFractionDigits: 0
         })
       }))
-      .sort((a, b) => moment(a.Mes, 'MMMM YYYY').diff(moment(b.Mes, 'MMMM YYYY')));
+      .sort((a, b) => {
+        // Extraer año y mes de las cadenas
+        const [mesA, yearA] = a.Mes.split(' ');
+        const [mesB, yearB] = b.Mes.split(' ');
+        
+        // Comparar primero por año
+        if (yearA !== yearB) return parseInt(yearA) - parseInt(yearB);
+        
+        // Si los años son iguales, comparar por índice del mes
+        const mesesIndice = {
+          'Enero': 0, 'Febrero': 1, 'Marzo': 2, 'Abril': 3, 'Mayo': 4, 'Junio': 5,
+          'Julio': 6, 'Agosto': 7, 'Septiembre': 8, 'Octubre': 9, 'Noviembre': 10, 'Diciembre': 11
+        };
+        
+        return mesesIndice[mesA] - mesesIndice[mesB];
+      });
     
     // Crear múltiples hojas
     const hojas = {
@@ -429,12 +478,13 @@ const exportarReporteCompleto = (ventas, productos, usuarios) => {
     };
     
     // Fecha actual para el nombre del archivo
-    const fechaActual = moment().format('YYYY-MM-DD');
+    const fechaActual = new Date();
+    const fechaFormateada = formatDate(fechaActual).replace(/\//g, '-');
     
     // Exportar a Excel con múltiples hojas
     return exportarMultiplesHojas(
       hojas,
-      `Reporte_Completo_${fechaActual}`
+      `Reporte_Completo_${fechaFormateada}`
     );
   } catch (error) {
     console.error('Error al exportar reporte completo:', error);
@@ -478,12 +528,13 @@ const exportarReporteProductos = (productos) => {
     }));
     
     // Fecha actual para el nombre del archivo
-    const fechaActual = moment().format('YYYY-MM-DD');
+    const fechaActual = new Date();
+    const fechaFormateada = formatDate(fechaActual).replace(/\//g, '-');
     
     // Exportar a Excel
     return exportarAExcel(
       datosProductos,
-      `Reporte_Productos_${fechaActual}`,
+      `Reporte_Productos_${fechaFormateada}`,
       'Productos'
     );
   } catch (error) {
@@ -567,12 +618,13 @@ const exportarVentasPorUsuario = (ventas, productos, usuarios, usuarioId) => {
     };
     
     // Fecha actual para el nombre del archivo
-    const fechaActual = moment().format('YYYY-MM-DD');
+    const fechaActual = new Date();
+    const fechaFormateada = formatDate(fechaActual).replace(/\//g, '-');
     
     // Exportar a Excel con múltiples hojas
     return exportarMultiplesHojas(
       hojas,
-      `Reporte_Ventas_${usuario.nombre.replace(/\s+/g, '_')}_${fechaActual}`
+      `Reporte_Usuario_${nombreUsuario}_${fechaFormateada}`
     );
   } catch (error) {
     console.error('Error al exportar ventas por usuario:', error);

@@ -2,14 +2,11 @@
  * @fileoverview Template para la página de usuarios
  */
 import React, { useState } from 'react';
-import { Card, Button, Divider, Modal, Tabs, Form, message, Row, Col } from 'antd';
-import { UserAddOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
+import { Card, Button, Divider, Modal, Form, message, Row, Col } from 'antd';
+import { UserAddOutlined, UserOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useUsuarios } from '../../context/UsuariosContext';
-import moment from 'moment';
 import '../../styles/components/templates/UsuariosTemplate.css';
-
-const { TabPane } = Tabs;
 
 /**
  * Componente template para la página de usuarios
@@ -28,7 +25,7 @@ const UsuariosTemplate = ({
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingUsuario, setEditingUsuario] = useState(null);
-  const [activeTab, setActiveTab] = useState('1');
+  // Estado para controlar la visualización del modal de detalles en móvil
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
@@ -40,7 +37,7 @@ const UsuariosTemplate = ({
     form.setFieldsValue({
       activo: true,
       rol: 'vendedor',
-      fechaRegistro: moment()
+      fechaRegistro: new Date()
     });
     setIsModalVisible(true);
   };
@@ -52,7 +49,7 @@ const UsuariosTemplate = ({
     setEditingUsuario(usuario);
     form.setFieldsValue({
       ...usuario,
-      fechaRegistro: usuario.fechaRegistro ? moment(usuario.fechaRegistro) : null
+      fechaRegistro: usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : null
     });
     setIsModalVisible(true);
   };
@@ -72,7 +69,7 @@ const UsuariosTemplate = ({
       // Preparar los datos del usuario
       const usuarioData = {
         ...values,
-        fechaRegistro: values.fechaRegistro ? values.fechaRegistro.toDate() : new Date()
+        fechaRegistro: values.fechaRegistro instanceof Date ? values.fechaRegistro : new Date()
       };
 
       // Si no hay contraseña y es una edición, eliminar el campo para no sobrescribir
@@ -107,11 +104,6 @@ const UsuariosTemplate = ({
     }
   };
 
-  // Cambiar de tab
-  const handleTabChange = (key) => {
-    setActiveTab(key);
-  };
-  
   // Manejar selección de usuario
   const handleUsuarioSelect = (usuario) => {
     setSelectedUsuario(usuario);
@@ -140,66 +132,42 @@ const UsuariosTemplate = ({
   );
 
   return (
-    <div className="usuarios-template">
-      
-      <Tabs activeKey={activeTab} onChange={handleTabChange}>
-        <TabPane 
-          tab={
-            <span>
-              <TeamOutlined />
-              Todos los Usuarios
-            </span>
-          } 
-          key="1"
-        >
-          <Row gutter={[16, 16]} className="usuarios-content">
-            <Col xs={24} lg={16}>
-              <Card>
-                {UsuariosDataTable && (
-                  <UsuariosDataTable 
-                    onRowClick={handleUsuarioSelect}
-                    isMobile={isMobile}
-                    searchExtra={
-                      <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
-                        {addButton}
-                      </div>
-                    }
-                  />
-                )}
-              </Card>
-            </Col>
-            
-            {/* En versión desktop mostramos los detalles en la columna lateral */}
-            {!isMobile && (
-              <Col xs={24} lg={8}>
-                <UsuarioDetail usuario={selectedUsuario} onEdit={showEditModal} />
-              </Col>
+    <div className="usuarios-template">      
+      <Row gutter={[16, 16]} className="usuarios-content">
+        {/* Tabla de usuarios */}
+        <Col xs={24} lg={16}>
+          <Card className="usuarios-table-card">
+            {UsuariosDataTable && (
+              <UsuariosDataTable 
+                onRowClick={handleUsuarioSelect}
+                isMobile={isMobile}
+                searchExtra={
+                  <div className={`search-actions-container ${isMobile ? 'mobile-search-container' : ''}`}>
+                    {addButton}
+                  </div>
+                }
+              />
             )}
-          </Row>
-        </TabPane>
-        
-        <TabPane 
-          tab={
-            <span>
-              <UserOutlined />
-              Mi Perfil
-            </span>
-          } 
-          key="2"
-        >
-          <Card title="Información de Perfil">
-            {PerfilUsuario && <PerfilUsuario />}
           </Card>
-        </TabPane>
-      </Tabs>
-      
-      {/* Estadísticas de usuarios */}
-      {UsuariosStats && (
-        <>
-          <Divider orientation="left">Estadísticas de Usuarios</Divider>
-          <UsuariosStats />
-        </>
-      )}
+        </Col>
+        
+        {/* Panel lateral con detalles del usuario */}
+        {!isMobile && (
+          <Col xs={24} lg={8}>
+            <UsuarioDetail usuario={selectedUsuario} onEdit={showEditModal} />
+          </Col>
+        )}
+        
+        {/* Estadísticas de usuarios (ancho completo) */}
+        <Col span={24} style={{ marginTop: '16px' }}>
+          {UsuariosStats && (
+            <div className="usuarios-stats-container">
+              <Divider orientation="left">Estadísticas de Usuarios</Divider>
+              <UsuariosStats />
+            </div>
+          )}
+        </Col>
+      </Row>
       
       {/* Modal para agregar/editar usuario */}
       {UsuarioFormulario && (

@@ -4,7 +4,6 @@
 import React from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import DataTable from './DataTable';
 import '../../styles/components/organisms/VentasDataTable.css';
@@ -56,7 +55,24 @@ const VentasDataTable = ({
       title: 'Fecha',
       dataIndex: 'fechaHora',
       key: 'fechaHora',
-      render: (fechaHora) => moment(fechaHora).format('DD/MM/YYYY HH:mm'),
+      render: (fechaHora) => {
+        // Formatear fecha y hora en formato DD/MM/YYYY HH:mm
+        const formatDateTime = (date) => {
+          if (!date) return 'No disponible';
+          const dateObj = new Date(date);
+          if (isNaN(dateObj.getTime())) return 'Fecha inválida';
+          
+          const day = dateObj.getDate().toString().padStart(2, '0');
+          const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+          const year = dateObj.getFullYear();
+          const hours = dateObj.getHours().toString().padStart(2, '0');
+          const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+          
+          return `${day}/${month}/${year} ${hours}:${minutes}`;
+        };
+        
+        return formatDateTime(fechaHora);
+      },
       sorter: (a, b) => new Date(a.fechaHora) - new Date(b.fechaHora),
       defaultSortOrder: 'descend'
     }

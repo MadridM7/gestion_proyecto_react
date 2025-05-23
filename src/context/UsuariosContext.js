@@ -9,11 +9,7 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import usuariosData from '../data/usuarios.json';
 
 // Importar servicios API
-import { 
-  agregarUsuario as agregarUsuarioAPI,
-  actualizarUsuario as actualizarUsuarioAPI,
-  eliminarUsuario as eliminarUsuarioAPI 
-} from '../services/api';
+import { API_URL } from '../config';
 
 // Importar el sistema de polling para actualización de datos sin recompilar
 import { dataPoller } from '../services/dataPoller';
@@ -158,7 +154,19 @@ export const UsuariosProvider = ({ children }) => {
       };
       
       // Guardar el nuevo usuario en el archivo JSON a través de la API
-      const respuesta = await agregarUsuarioAPI(usuarioNormalizado);
+      const response = await fetch(`${API_URL}/usuarios/agregar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuarioNormalizado),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al agregar el usuario');
+      }
+      
+      const respuesta = await response.json();
       
       if (respuesta.success) {
         // Actualizar el estado local
@@ -175,7 +183,7 @@ export const UsuariosProvider = ({ children }) => {
         return null;
       }
     } catch (error) {
-      // Capturar error silenciosamente
+      console.error('Error al agregar usuario:', error);
       return null;
     }
   }, [calcularEstadisticas]);
@@ -187,7 +195,18 @@ export const UsuariosProvider = ({ children }) => {
   const eliminarUsuario = useCallback(async (id) => {
     try {
       // Eliminar el usuario a través de la API
-      const respuesta = await eliminarUsuarioAPI(id);
+      const response = await fetch(`${API_URL}/usuarios/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al eliminar el usuario');
+      }
+      
+      const respuesta = await response.json();
       
       if (respuesta.success) {
         // Actualizar el estado local
@@ -201,9 +220,10 @@ export const UsuariosProvider = ({ children }) => {
         return true;
       } else {
         // Error al eliminar el usuario
+        return false;
       }
     } catch (error) {
-      // Capturar error silenciosamente
+      console.error('Error al eliminar usuario:', error);
       return false;
     }
   }, [calcularEstadisticas]);
@@ -231,7 +251,19 @@ export const UsuariosProvider = ({ children }) => {
       };
       
       // Actualizar el usuario en el archivo JSON a través de la API
-      const respuesta = await actualizarUsuarioAPI(id, usuarioActualizado);
+      const response = await fetch(`${API_URL}/usuarios/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuarioActualizado),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al actualizar el usuario');
+      }
+      
+      const respuesta = await response.json();
       
       if (respuesta.success) {
         // Actualizar el estado local
@@ -256,7 +288,7 @@ export const UsuariosProvider = ({ children }) => {
         return null;
       }
     } catch (error) {
-      // Capturar error silenciosamente
+      console.error('Error al actualizar usuario:', error);
       return null;
     }
   }, [usuarios, calcularEstadisticas]);

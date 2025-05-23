@@ -127,6 +127,62 @@ app.delete('/api/productos/:id', (req, res) => {
   }
 });
 
+// Rutas para pedidos
+app.get('/api/pedidos', (req, res) => {
+  try {
+    const pedidos = fileManager.readJsonFile('pedidos');
+    res.json(pedidos);
+  } catch (error) {
+    console.error('Error al obtener pedidos:', error);
+    res.status(500).json({ error: 'Error al obtener pedidos' });
+  }
+});
+
+app.post('/api/pedidos', (req, res) => {
+  try {
+    const nuevosPedidos = req.body;
+    fileManager.replaceFile('pedidos', nuevosPedidos);
+    res.json({ success: true, message: 'Pedidos actualizados correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar pedidos:', error);
+    res.status(500).json({ error: 'Error al actualizar pedidos' });
+  }
+});
+
+app.post('/api/pedidos/agregar', (req, res) => {
+  try {
+    const nuevoPedido = req.body;
+    const pedidos = fileManager.addItem('pedidos', nuevoPedido);
+    res.json({ success: true, message: 'Pedido agregado correctamente', pedidos });
+  } catch (error) {
+    console.error('Error al agregar pedido:', error);
+    res.status(500).json({ error: 'Error al agregar pedido' });
+  }
+});
+
+app.put('/api/pedidos/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const pedidoActualizado = req.body;
+    const pedidos = fileManager.updateItem('pedidos', id, pedidoActualizado);
+    res.json({ success: true, message: 'Pedido actualizado correctamente', pedidos });
+  } catch (error) {
+    console.error('Error al actualizar pedido:', error);
+    res.status(500).json({ error: 'Error al actualizar pedido' });
+  }
+});
+
+app.delete('/api/pedidos/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const pedidos = fileManager.deleteItem('pedidos', id);
+    res.json({ success: true, message: 'Pedido eliminado correctamente', pedidos });
+  } catch (error) {
+    console.error('Error al eliminar pedido:', error);
+    res.status(500).json({ error: 'Error al eliminar pedido' });
+  }
+});
+
 // Rutas para usuarios
 app.get('/api/usuarios', (req, res) => {
   try {
@@ -195,6 +251,77 @@ app.delete('/api/usuarios/:id', (req, res) => {
   } catch (error) {
     console.error('Error al eliminar usuario:', error);
     res.status(500).json({ error: 'Error al eliminar usuario' });
+  }
+});
+
+// Rutas para pedidos
+app.get('/api/pedidos', (req, res) => {
+  try {
+    // Verificar si el archivo existe
+    try {
+      const pedidos = fileManager.readJsonFile('pedidos');
+      res.json(pedidos);
+    } catch (error) {
+      // Si el archivo no existe, crear uno vacío
+      fileManager.writeJsonFile('pedidos', []);
+      res.json([]);
+    }
+  } catch (error) {
+    console.error('Error al obtener pedidos:', error);
+    res.status(500).json({ error: 'Error al obtener pedidos' });
+  }
+});
+
+app.post('/api/pedidos', (req, res) => {
+  try {
+    const nuevosPedidos = req.body;
+    fileManager.replaceFile('pedidos', nuevosPedidos);
+    res.json({ success: true, message: 'Pedidos actualizados correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar pedidos:', error);
+    res.status(500).json({ error: 'Error al actualizar pedidos' });
+  }
+});
+
+app.post('/api/pedidos/agregar', (req, res) => {
+  try {
+    const nuevoPedido = req.body;
+    
+    // Verificar si el archivo existe
+    try {
+      const pedidos = fileManager.addItem('pedidos', nuevoPedido);
+      res.json({ success: true, message: 'Pedido agregado correctamente', pedidos });
+    } catch (error) {
+      // Si el archivo no existe, crear uno con el nuevo pedido
+      fileManager.writeJsonFile('pedidos', [nuevoPedido]);
+      res.json({ success: true, message: 'Pedido agregado correctamente', pedidos: [nuevoPedido] });
+    }
+  } catch (error) {
+    console.error('Error al agregar pedido:', error);
+    res.status(500).json({ error: 'Error al agregar pedido' });
+  }
+});
+
+app.put('/api/pedidos/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const pedidoActualizado = req.body;
+    const pedidos = fileManager.updateItem('pedidos', id, pedidoActualizado);
+    res.json({ success: true, message: 'Pedido actualizado correctamente', pedidos });
+  } catch (error) {
+    console.error('Error al actualizar pedido:', error);
+    res.status(500).json({ error: 'Error al actualizar pedido' });
+  }
+});
+
+app.delete('/api/pedidos/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const pedidos = fileManager.deleteItem('pedidos', id);
+    res.json({ success: true, message: 'Pedido eliminado correctamente', pedidos });
+  } catch (error) {
+    console.error('Error al eliminar pedido:', error);
+    res.status(500).json({ error: 'Error al eliminar pedido' });
   }
 });
 

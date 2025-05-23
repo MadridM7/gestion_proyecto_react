@@ -1,0 +1,48 @@
+/**
+ * Estilos para el componente PedidosDataTable
+ */
+
+.pedidos-data-table-container {
+  width: 100%;
+}
+
+.pedidos-table-header {
+  margin-bottom: 16px;
+}
+
+.search-filter-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.pedidos-search-input {
+  width: 250px;
+}
+
+/* Estilo para el contenedor de filtros */
+.search-extra-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Asegurar que el filtro esté en la misma línea */
+.search-actions-container {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 16px;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .search-filter-wrapper {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .pedidos-search-input {
+    width: 60%;
+  }
+}

@@ -1,7 +1,7 @@
 [
   {
     "id": "P1001",
-    "nombre": "Smartphone Galaxy S23",
+    "nombre": "Smartphone Galaxy S24",
     "precioCompra": 450000,
     "margenGanancia": 25,
     "precioVenta": 562500,
@@ -90,13 +90,5 @@
     "margenGanancia": 35,
     "precioVenta": 43200,
     "categoria": "Audio"
-  },
-  {
-    "nombre": "Lo que sea",
-    "categoria": "aaaa",
-    "precioCompra": 1000,
-    "margenGanancia": 30,
-    "precioVenta": 1300,
-    "id": "P2479"
   }
 ]
