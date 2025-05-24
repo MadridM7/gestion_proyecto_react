@@ -24,10 +24,34 @@
 /* Estilos para el botón de agregar en móvil */
 .productos-mobile-actions .add-button {
   margin-top: 8px;
-  height: 32px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para el botón de agregar en general */
+.add-button {
+  height: 40px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para el contenedor de acciones en escritorio */
+.productos-desktop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+/* Asegurar que el botón sea visible en escritorio */
+.productos-desktop-actions .add-button {
+  margin-left: auto;
+  min-width: 150px;
 }
 
 /* Estilos responsivos */

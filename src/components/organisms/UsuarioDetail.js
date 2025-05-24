@@ -13,7 +13,8 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   SaveOutlined,
-  TeamOutlined
+  TeamOutlined,
+  LockOutlined
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useUsuarios } from '../../context/UsuariosContext';
@@ -58,10 +59,16 @@ const UsuarioDetail = ({ usuario, onEdit, inMobileModal = false }) => {
     form.validateFields().then(values => {
       // Preparar los datos actualizados
       const usuarioActualizado = {
-        ...values,
+        ...usuario, // Mantener los datos originales
+        ...values,  // Sobrescribir con los nuevos valores
         fechaRegistro: values.fechaRegistro instanceof Date ? values.fechaRegistro : new Date(),
         id: usuario.id
       };
+      
+      // Si no se ingresó una nueva contraseña, mantener la actual
+      if (!values.password || values.password.trim() === '') {
+        usuarioActualizado.password = usuario.password;
+      }
       
       actualizarUsuario(usuario.id, usuarioActualizado);
       setIsEditing(false);
@@ -210,7 +217,25 @@ const UsuarioDetail = ({ usuario, onEdit, inMobileModal = false }) => {
             >
               <Input 
                 prefix={<MailOutlined />} 
-                placeholder="Email" 
+                placeholder="Email"
+                autoComplete="new-email" // Evitar autocompletado
+              />
+            </Form.Item>
+            
+            <Form.Item
+              name="password"
+              label="Contraseña"
+              rules={[
+                { min: 6, message: 'La contraseña debe tener al menos 6 caracteres' },
+                { max: 20, message: 'La contraseña no puede exceder los 20 caracteres' }
+              ]}
+              help="Dejar en blanco para mantener la contraseña actual"
+            >
+              <Input.Password 
+                prefix={<LockOutlined />} 
+                placeholder="Nueva contraseña" 
+                maxLength={20}
+                autoComplete="new-password" // Evitar autocompletado
               />
             </Form.Item>
             

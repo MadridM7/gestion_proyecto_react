@@ -23,11 +23,18 @@ const PedidoFormulario = ({ form, initialValues }) => {
       // Convertir la fecha de string a objeto Date
       const fechaPedido = initialValues.fechaPedido ? new Date(initialValues.fechaPedido) : new Date();
       
+      // Primero resetear el formulario para evitar problemas con valores anteriores
+      form.resetFields();
+      
+      // Luego establecer los valores
       form.setFieldsValue({
         ...initialValues,
         fechaPedido
       });
     } else {
+      // Resetear el formulario
+      form.resetFields();
+      
       // Valores por defecto para un nuevo pedido
       form.setFieldsValue({
         estado: 'pendiente',
@@ -119,17 +126,21 @@ const PedidoFormulario = ({ form, initialValues }) => {
       
       <Row gutter={16}>
         <Col xs={24}>
-          <ReactDatePickerWrapper
+          <Form.Item
             name="fechaPedido"
             label="Fecha del Pedido"
-            value={form.getFieldValue('fechaPedido')}
-            onChange={(date) => form.setFieldsValue({ fechaPedido: date })}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            dateFormat="dd/MM/yyyy HH:mm"
-            placeholderText="Selecciona fecha y hora"
-          />
+            rules={[{ required: true, message: 'Por favor selecciona la fecha del pedido' }]}
+          >
+            <ReactDatePickerWrapper
+              value={form.getFieldValue('fechaPedido')}
+              onChange={(date) => form.setFieldsValue({ fechaPedido: date })}
+              showTimeSelect={true}
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="dd/MM/yyyy HH:mm"
+              placeholder="Selecciona fecha y hora"
+            />
+          </Form.Item>
         </Col>
       </Row>
       

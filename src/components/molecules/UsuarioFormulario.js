@@ -3,7 +3,7 @@
  */
 import React, { useEffect } from 'react';
 import { Form, Input, Select, Switch } from 'antd';
-import { UserOutlined, TeamOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { UserOutlined, TeamOutlined, InfoCircleOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import ReactDatePickerWrapper from '../atoms/ReactDatePickerWrapper';
 
@@ -21,18 +21,31 @@ const UsuarioFormulario = ({
 }) => {
   // Inicializar el formulario cuando cambia el usuario
   useEffect(() => {
+    // Primero resetear el formulario para evitar problemas con valores anteriores
+    form.resetFields();
+    
     if (usuario) {
-      form.setFieldsValue({
-        ...usuario,
-        fechaRegistro: usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : null
-      });
+      // Convertir la fecha de string a objeto Date
+      const fechaRegistro = usuario.fechaRegistro ? new Date(usuario.fechaRegistro) : new Date();
+      
+      // Establecer los valores del formulario
+      setTimeout(() => {
+        form.setFieldsValue({
+          ...usuario,
+          fechaRegistro
+        });
+      }, 100); // Pequeño retraso para asegurar que el componente esté listo
     } else {
-      form.resetFields();
-      form.setFieldsValue({
-        activo: true,
-        rol: 'vendedor',
-        fechaRegistro: new Date()
-      });
+      // Valores por defecto para un nuevo usuario
+      setTimeout(() => {
+        form.setFieldsValue({
+          activo: true,
+          rol: 'vendedor',
+          fechaRegistro: new Date(),
+          email: '',
+          password: ''
+        });
+      }, 100); // Pequeño retraso para asegurar que el componente esté listo
     }
   }, [usuario, form]);
   
@@ -79,6 +92,45 @@ const UsuarioFormulario = ({
         />
       </Form.Item>
       
+      {/* Correo electrónico */}
+      <Form.Item
+        name="email"
+        label="Correo electrónico"
+        rules={[
+          { required: true, message: 'Por favor ingresa el correo electrónico' },
+          { type: 'email', message: 'Por favor ingresa un correo electrónico válido' },
+          { max: 100, message: 'El correo no puede exceder los 100 caracteres' }
+        ]}
+        tooltip={{ title: 'Correo electrónico del usuario', icon: <InfoCircleOutlined /> }}
+      >
+        <Input 
+          prefix={<MailOutlined />} 
+          placeholder="correo@ejemplo.com" 
+          maxLength={100}
+          showCount
+          autoComplete="new-email" // Evitar autocompletado
+        />
+      </Form.Item>
+      
+      {/* Contraseña */}
+      <Form.Item
+        name="password"
+        label="Contraseña"
+        rules={[
+          { required: true, message: 'Por favor ingresa una contraseña' },
+          { min: 6, message: 'La contraseña debe tener al menos 6 caracteres' },
+          { max: 20, message: 'La contraseña no puede exceder los 20 caracteres' }
+        ]}
+        tooltip={{ title: 'Contraseña para acceder al sistema (6-20 caracteres)', icon: <InfoCircleOutlined /> }}
+      >
+        <Input.Password 
+          prefix={<LockOutlined />} 
+          placeholder="Contraseña" 
+          maxLength={20}
+          autoComplete="new-password" // Evitar autocompletado
+        />
+      </Form.Item>
+      
       {/* Rol */}
       <Form.Item
         name="rol"
@@ -99,14 +151,18 @@ const UsuarioFormulario = ({
       </Form.Item>
       
       {/* Fecha de registro */}
-      <ReactDatePickerWrapper
+      <Form.Item
         name="fechaRegistro"
         label="Fecha de registro"
-        placeholder="Selecciona una fecha"
-        onChange={(date) => form.setFieldsValue({ fechaRegistro: date })}
         rules={[{ required: true, message: 'Por favor selecciona la fecha de registro' }]}
-        maxDate={new Date()}
-      />
+      >
+        <ReactDatePickerWrapper
+          value={form.getFieldValue('fechaRegistro')}
+          onChange={(date) => form.setFieldsValue({ fechaRegistro: date })}
+          placeholder="Selecciona una fecha"
+          maxDate={new Date()}
+        />
+      </Form.Item>
       
       {/* Estado activo/inactivo */}
       <Form.Item

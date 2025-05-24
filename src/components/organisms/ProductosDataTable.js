@@ -28,6 +28,7 @@ const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile
       icon={<PlusOutlined />}
       onClick={onAddNew}
       className="add-button"
+      style={{ marginLeft: '10px', marginBottom: isMobile ? '10px' : '0' }}
     >
       Nuevo Producto
     </Button>
@@ -79,12 +80,17 @@ const ProductosDataTable = ({ searchExtra, onRowClick, categoriaFiltro, isMobile
   });
 
   // Si tenemos searchExtra y estamos en móvil, combinamos el filtro con el botón
-  const combinedSearchExtra = searchExtra && isMobile ? (
+  const combinedSearchExtra = isMobile ? (
     <div className="productos-mobile-actions">
       {searchExtra}
       <AddButton />
     </div>
-  ) : (searchExtra || <AddButton />);
+  ) : (
+    <div className="productos-desktop-actions">
+      {searchExtra}
+      <AddButton />
+    </div>
+  );
 
   return (
     <DataTable 

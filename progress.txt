@@ -1,0 +1,120 @@
+# VenTrack - Registro de Progreso
+
+## Última actualización: 24/05/2025
+
+## Estado Actual del Proyecto
+
+El proyecto VenTrack es una aplicación web para gestión de negocio desarrollada con React, Ant Design y siguiendo la arquitectura Atomic Design. Actualmente se encuentra en fase de desarrollo activo.
+
+## Componentes Implementados
+
+### Dashboard
+- [✓] Panel principal con tarjetas dinámicas
+- [✓] Gráficos de área para ventas mensuales
+- [✓] Gráficos de barras para productos más vendidos
+- [✓] Indicadores clave de rendimiento (KPIs)
+
+### Gestión de Ventas
+- [✓] Listado de ventas con paginación
+- [✓] Formulario de creación/edición de ventas
+- [✓] Filtros avanzados por fecha, cliente y monto
+- [✓] Exportación de reportes a CSV
+
+### Gestión de Productos
+- [✓] Catálogo de productos con imágenes
+- [✓] Formulario de creación/edición de productos
+- [✓] Categorización de productos
+- [✓] Control de inventario
+
+### Gestión de Usuarios
+- [✓] Listado de usuarios
+- [✓] Formulario de creación/edición de usuarios
+- [✓] Asignación de roles y permisos
+- [✓] Historial de actividad
+
+### Gestión de Pedidos
+- [✓] Listado de pedidos
+- [✓] Detalle de pedido con productos
+- [✓] Cambio de estado de pedidos
+- [✓] Notificaciones de nuevos pedidos
+
+## Mejoras Recientes
+
+### Actualización del Sistema de Fechas (22/05/2025)
+- [✓] Reemplazo de DatePickers de Ant Design con ReactDatePickerWrapper
+- [✓] Implementación de portal para mejorar visualización del calendario
+- [✓] Adaptación de funciones de exportación para usar objetos Date nativos
+- [✓] Corrección de problemas de visualización en diferentes navegadores
+
+### Optimización de Rendimiento (18/05/2025)
+- [✓] Implementación de React.memo para componentes que no cambian frecuentemente
+- [✓] Optimización de renderizado condicional
+- [✓] Reducción de re-renderizados innecesarios
+- [✓] Implementación de lazy loading para componentes grandes
+
+### Mejoras de UI/UX (15/05/2025)
+- [✓] Rediseño de la barra de navegación lateral
+- [✓] Implementación de modo oscuro
+- [✓] Mejora de accesibilidad (contraste, etiquetas ARIA)
+- [✓] Diseño responsive para dispositivos móviles
+
+## Tareas Pendientes
+
+### Funcionalidades
+- [ ] Implementar sistema de notificaciones en tiempo real
+- [ ] Añadir dashboard personalizable por usuario
+
+### Mejoras Técnicas
+- [ ] Implementar pruebas unitarias para componentes críticos
+- [ ] Optimizar carga inicial de la aplicación
+
+### Documentación
+- [✓] Actualización del README con estructura detallada
+
+## Estructura Actual de Archivos
+
+La estructura sigue el patrón Atomic Design para componentes React:
+
+```
+react-dashboard-ui/
+├── public/                  # Archivos públicos y estáticos
+├── server/                  # Backend con Express
+│   ├── api/                 # Endpoints de la API
+│   ├── data/                # Archivos JSON para almacenamiento
+│   ├── middleware/          # Middleware del servidor
+│   └── utils/               # Utilidades del servidor
+├── src/                     # Código fuente de React
+│   ├── assets/              # Recursos estáticos
+│   ├── components/          # Componentes (Atomic Design)
+│   │   ├── atoms/           # Componentes básicos
+│   │   ├── molecules/       # Combinaciones de átomos
+│   │   ├── organisms/       # Secciones completas
+│   │   ├── templates/       # Plantillas de página
+│   │   └── wrappers/        # Componentes de envoltura
+│   ├── context/             # Contextos de React
+│   ├── data/                # Datos estáticos y mocks
+│   ├── hooks/               # Hooks personalizados
+│   ├── layouts/             # Layouts de la aplicación
+│   ├── pages/               # Páginas principales
+│   ├── services/            # Servicios de datos
+│   ├── utils/               # Utilidades
+│   └── routes/              # Configuración de rutas
+├── tests/                   # Pruebas
+├── prompt.txt               # Guía para modelos de lenguaje
+└── progress.txt             # Este archivo de seguimiento
+```
+
+## Próximos Pasos (Prioridad)
+
+1. Implementar sistema de notificaciones en tiempo real
+2. Desarrollar pruebas unitarias para componentes críticos
+3. Optimizar el rendimiento de tablas con grandes conjuntos de datos
+4. Mejorar la experiencia móvil en formularios complejos
+
+## Notas para IA
+
+- Al generar código nuevo, asegúrate de seguir la estructura Atomic Design
+- Recuerda que los DatePickers de Ant Design han sido reemplazados por ReactDatePickerWrapper
+- Mantén la coherencia con el estilo de código existente
+- Actualiza este archivo después de implementar cambios significativos
+- Consulta prompt.txt para convenciones específicas del proyecto

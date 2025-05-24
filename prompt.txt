@@ -1,0 +1,205 @@
+# VenTrack - Guía para Modelos de Lenguaje Grandes (LLM)
+
+## Convenciones de Nomenclatura
+
+### Componentes React
+- Nombres en PascalCase: `ProductCard`, `SalesTable`
+- Archivos de componentes con extensión `.jsx`
+- Cada componente en su propio directorio con el mismo nombre
+- Archivos de estilos asociados con el mismo nombre y extensión `.css`
+
+### Atomic Design
+- Átomos: Componentes básicos como `Button`, `Input`, `Select`, `Typography`, `DatePicker`
+- Moléculas: Combinaciones de átomos como `Card`, `SearchInput`, `FormField`, `TableHeader`
+- Organismos: Secciones completas como `Header`, `Sidebar`, `DataTable`, `ProductForm`
+- Plantillas: Esqueletos de página como `DashboardTemplate`, `ListTemplate`, `FormTemplate`
+- Páginas: Instancias específicas como `Dashboard`, `ProductList`, `UserForm`
+
+### API y Servicios
+- Endpoints RESTful: `/api/products`, `/api/sales`, `/api/users`, `/api/orders`
+- Servicios en camelCase: `salesService`, `productService`
+- Métodos de servicio: `getAll()`, `getById(id)`, `create(data)`, `update(id, data)`, `delete(id)`
+
+### Hooks Personalizados
+- Prefijo `use`: `useApi`, `useAuth`, `useForm`
+- Retornan objetos con métodos y estados
+
+### Contextos
+- Sufijo `Context`: `AuthContext`, `ThemeContext`, `DataContext`
+- Hooks asociados con prefijo `use`: `useAuth`, `useTheme`, `useData`
+
+## Estructura del Proyecto
+
+### Directorios Principales
+- `/public`: Archivos estáticos accesibles públicamente
+- `/server`: Backend con Express.js
+- `/src`: Código fuente de React
+- `/tests`: Pruebas unitarias e integración
+
+### Archivos Clave
+- `server/server.js`: Punto de entrada del servidor Express
+- `server/start-all.js`: Script para iniciar cliente y servidor
+- `src/App.js`: Componente principal de React
+- `src/index.js`: Punto de entrada de la aplicación React
+- `start.bat`: Script de inicio rápido para Windows
+
+### Gestión de Datos
+- Datos almacenados en archivos JSON en `server/data/`
+- Contextos React para estado global en `src/context/`
+- Servicios para comunicación con API en `src/services/`
+
+### Gestión de Fechas
+- Se utiliza react-datepicker en lugar de DatePicker de Ant Design
+- Implementación de portal para mejorar visualización
+- Objetos Date nativos en lugar de moment.js
+
+## Comandos Comunes
+
+### Iniciar la Aplicación
+```bash
+# Iniciar cliente y servidor juntos
+start.bat
+# O usando Node.js
+node start-all.js
+```
+
+### Desarrollo
+```bash
+# Iniciar solo el cliente React
+npm start
+# Iniciar solo el servidor
+npm run server
+# Ejecutar pruebas
+npm test
+# Construir para producción
+npm run build
+```
+
+## Manejo de Errores
+
+### Frontend
+- Errores de API capturados en hooks `useApi` con estados de error
+- Componente `ErrorBoundary` para capturar errores de renderizado
+- Mensajes de error mostrados con componente `Alert` de Ant Design
+- Validación de formularios con funciones en `utils/validators.js`
+
+### Backend
+- Middleware de manejo de errores en Express
+- Errores HTTP estándar (400, 401, 404, 500)
+- Logs de errores en consola y archivos
+
+## Casos de Uso Comunes
+
+### Autenticación de Usuario
+```javascript
+import { useAuth } from '../hooks/useAuth';
+
+function LoginPage() {
+  const { login, error, isLoading } = useAuth();
+  
+  const handleSubmit = (credentials) => {
+    login(credentials);
+  };
+  
+  // Resto del componente
+}
+```
+
+### Obtener y Mostrar Datos
+```javascript
+import { useEffect, useState } from 'react';
+import { salesService } from '../services/salesService';
+
+function SalesList() {
+  const [sales, setSales] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const data = await salesService.getAll();
+        setSales(data);
+      } catch (error) {
+        console.error('Error fetching sales:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchSales();
+  }, []);
+  
+  // Renderizado del componente
+}
+```
+
+### Crear o Actualizar Registros
+```javascript
+import { productService } from '../services/productService';
+
+async function saveProduct(product, isNew = false) {
+  try {
+    if (isNew) {
+      return await productService.create(product);
+    } else {
+      return await productService.update(product.id, product);
+    }
+  } catch (error) {
+    throw new Error(`Error al guardar producto: ${error.message}`);
+  }
+}
+```
+
+### Uso del DatePicker Personalizado
+```javascript
+import ReactDatePickerWrapper from '../components/wrappers/ReactDatePickerWrapper';
+
+function SalesForm({ onSubmit }) {
+  const [saleDate, setSaleDate] = useState(new Date());
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <ReactDatePickerWrapper
+        selected={saleDate}
+        onChange={setSaleDate}
+        dateFormat="dd/MM/yyyy"
+        placeholderText="Seleccione fecha"
+      />
+      {/* Otros campos del formulario */}
+      <button type="submit">Guardar</button>
+    </form>
+  );
+}
+```
+
+### Exportación de Reportes
+```javascript
+import { formatDate } from '../utils/formatters';
+
+function exportSalesReport(sales, dateRange) {
+  const filename = `ventas_${formatDate(dateRange.start)}_${formatDate(dateRange.end)}.csv`;
+  
+  // Procesamiento de datos para CSV
+  const csvContent = sales.map(sale => {
+    return [
+      sale.id,
+      formatDate(new Date(sale.date)), // Usando Date nativo en lugar de moment
+      sale.customer,
+      sale.amount
+    ].join(',');
+  }).join('\n');
+  
+  // Lógica para descargar el archivo
+  // ...
+}
+```
+
+## Consejos para Desarrollo
+
+1. Siempre utiliza los componentes de Atomic Design según su nivel de complejidad
+2. Para fechas, usa siempre ReactDatePickerWrapper en lugar de DatePicker de Ant Design
+3. Mantén la lógica de negocio en los servicios, no en los componentes
+4. Usa los hooks personalizados para reutilizar lógica común
+5. Sigue el patrón de manejo de errores establecido para consistencia
+6. Para nuevos componentes, crea una carpeta dedicada con su archivo JSX y CSS
+7. Utiliza el Context API para estado global compartido entre componentes

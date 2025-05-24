@@ -405,3 +405,14 @@
 .sidebar-user-dropdown .ant-dropdown-menu {
   min-width: 160px;
 }
+
+/* Estilo de hover azul para el botón de perfil */
+.sidebar-user-dropdown .ant-dropdown-menu-item:first-child:hover {
+  background-color: #1890ff;
+  color: white;
+}
+
+/* Cambiar el color del ícono en hover */
+.sidebar-user-dropdown .ant-dropdown-menu-item:first-child:hover .anticon {
+  color: white;
+}
