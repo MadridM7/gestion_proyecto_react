@@ -13,6 +13,7 @@ La aplicación permite a los usuarios gestionar ventas, productos, usuarios y pe
 - [Uso](#uso)
 - [Tecnologías Implementadas](#tecnologías-implementadas)
 - [Estructura del Proyecto](#estructura-del-proyecto)
+- [Optimizaciones de Rendimiento](#optimizaciones-de-rendimiento)
 
 ## Características Principales
 
@@ -24,7 +25,7 @@ La aplicación permite a los usuarios gestionar ventas, productos, usuarios y pe
 - 💾 **Persistencia de datos** con archivos JSON
 - 🔍 **Filtrado y búsqueda avanzada** de ventas, productos y usuarios
 - 💻 **Arquitectura cliente-servidor** con Express para manejar operaciones CRUD
-
+- ⚡ **Optimizaciones de rendimiento** con sistema de caché, memoización, virtualización y carga diferida
 
 ## Instalación
 
@@ -65,7 +66,7 @@ Utiliza el script de inicio rápido que inicia tanto el servidor API como la apl
 # En Windows
 start.bat
 
-# O usando Node.js directamente
+# En Linux/Mac
 node start-all.js
 ```
 
@@ -218,6 +219,19 @@ react-dashboard-ui/
 ├── README.md                # Documentación del proyecto
 └── .gitignore               # Archivos ignorados por Git
 ```
+
+## Optimizaciones de Rendimiento
+
+Se han implementado diversas optimizaciones para mejorar el rendimiento de la aplicación:
+
+- **Sistema de caché**: Reduce las solicitudes de red y mejora el tiempo de respuesta.
+- **Memoización**: Reduce los re-renderizados innecesarios y mejora el rendimiento de los componentes.
+- **Virtualización**: Mejora el rendimiento al renderizar grandes conjuntos de datos.
+- **Carga diferida (Lazy Loading)**: Reduce el tiempo de carga inicial de la aplicación.
+- **Optimización de Polling**: Reduce el consumo de recursos y mejora la experiencia del usuario.
+- **Monitor de Rendimiento**: Visualiza y analiza el rendimiento de la aplicación en tiempo real.
+
+Para más detalles sobre las optimizaciones implementadas, consulta la [documentación de optimizaciones](src/docs/OPTIMIZACIONES.md).
 
 ### Organización según Atomic Design
 

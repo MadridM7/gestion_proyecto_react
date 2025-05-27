@@ -1,0 +1,50 @@
+/**
+ * Estilos para el componente PerformanceMonitor
+ */
+
+.performance-monitor {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.performance-monitor:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.performance-monitor .ant-card-head {
+  background-color: #f5f5f5;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.performance-monitor .ant-statistic {
+  margin-bottom: 8px;
+}
+
+.performance-monitor .ant-progress {
+  margin-bottom: 16px;
+}
+
+.metric-subtitle {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .performance-monitor .ant-statistic-title {
+    font-size: 12px;
+  }
+  
+  .performance-monitor .ant-statistic-content {
+    font-size: 20px;
+  }
+  
+  .metric-subtitle {
+    font-size: 10px;
+  }
+}

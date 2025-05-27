@@ -1,0 +1,33 @@
+# Estilo y formato general del codigo
+- Utiliza el patron de diseño y arquitecturas atomic design
+- Utiliza el framework de antd para los componentes a menos que se indique lo contrario
+- Utiliza el framework de react para los componentes a menos que se indique lo contrario
+- Utiliza el framework de react-router-dom para las rutas a menos que se indique lo contrario
+- Utiliza iteracion y modulacion para evitar codigo repetido
+- Utiliza el archivo prompt.txt como guia para el desarrollo
+- Utiliza el archivo progress.txt como guia para el desarrollo
+- Utiliza el archivo .windsurfrules como guia para el desarrollo
+- Utiliza el archivo README.md como guia para el desarrollo
+
+# Estilo y formato de los comentarios
+- Utiliza comentarios para explicar el codigo
+- Utiliza comentarios para explicar las decisiones tomadas
+- Utiliza comentarios para explicar las funcionalidades del codigo
+- Utiliza comentarios para explicar las variables y sus propósitos
+- Utiliza comentarios para explicar las funciones y sus propósitos
+- Utiliza comentarios para explicar los componentes y sus propósitos
+- Utiliza comentarios para explicar los hooks y sus propósitos
+- Utiliza comentarios para explicar los contextos y sus propósitos
+- Utiliza comentarios para explicar los servicios y sus propósitos
+- Utiliza comentarios para explicar los utils y sus propósitos
+- Utiliza comentarios para explicar los hooks personalizados y sus propósitos
+- Utiliza comentarios para explicar los contextos personalizados y sus propósitos
+- Utiliza comentarios para explicar los servicios personalizados y sus propósitos
+- Utiliza comentarios para explicar los utils personalizados y sus propósitos
+
+# Estilo e interfaz de usuario
+- Implementar diseño responsivo para dispositivos moviles y desktop
+- Garantiza la modularidad y escalabilidad del proyecto
+- Implementar estilos personalizados para los componentes
+
+

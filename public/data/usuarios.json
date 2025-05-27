@@ -1,0 +1,11 @@
+[
+  {
+    "id": "U1001",
+    "nombre": "admin",
+    "email": "admin@empresa.cl",
+    "password": "admin123",
+    "rol": "admin",
+    "fechaRegistro": "2025-05-27T03:00:00.000Z",
+    "activo": true
+  }
+]

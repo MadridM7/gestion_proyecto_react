@@ -12,8 +12,16 @@ const colors = {
   server: '\x1b[36m', // Cyan
   react: '\x1b[32m',  // Verde
   error: '\x1b[31m',  // Rojo
-  reset: '\x1b[0m'    // Reset
+  update: '\x1b[33m', // Amarillo
+  reset: '\x1b[0m',   // Reset
+  bold: '\x1b[1m'     // Negrita
 };
+
+// Función para limpiar la consola
+function clearConsole() {
+  // Limpiar consola de forma compatible con Windows y Unix
+  process.stdout.write(process.platform === 'win32' ? '\x1Bc' : '\x1B[2J\x1B[3J\x1B[H');
+}
 
 /**
  * Inicia un proceso y maneja su salida
@@ -32,8 +40,39 @@ function startProcess(command, args, name, color) {
     cwd: __dirname
   });
   
+  // Filtrar y formatear la salida para que sea más limpia
   process.stdout.on('data', (data) => {
-    console.log(`${color}[${name}] ${data.toString().trim()}${colors.reset}`);
+    const output = data.toString().trim();
+    
+    // Detectar mensajes de actualización de archivos (HMR updates)
+    if (output.includes('[vite] (client) hmr update')) {
+      const filePath = output.split('[vite] (client) hmr update')[1].trim();
+      console.log(`${colors.update}[${name}] Update: ${filePath}${colors.reset}`);
+      return;
+    }
+    
+    // Detectar cuando la aplicación está lista
+    if (output.includes('VITE') && output.includes('ready in')) {
+      clearConsole();
+      console.log(`${colors.bold}${color}[${name}] Aplicación lista para usar${colors.reset}`);
+      return;
+    }
+    
+    // Detectar cuando el servidor API está listo
+    if (output.includes('Servidor ejecutándose en')) {
+      console.log(`${colors.bold}${color}[${name}] ${output}${colors.reset}`);
+      return;
+    }
+    
+    // Filtrar mensajes innecesarios
+    if (output.includes('Community users:') || 
+        output.includes('Console Ninja') || 
+        output.includes('node --trace-warnings')) {
+      return;
+    }
+    
+    // Mostrar el resto de mensajes normalmente
+    console.log(`${color}[${name}] ${output}${colors.reset}`);
   });
   
   process.stderr.on('data', (data) => {
@@ -47,19 +86,42 @@ function startProcess(command, args, name, color) {
   return process;
 }
 
+// Banner de inicio
+clearConsole();
+console.log(`${colors.bold}===========================================${colors.reset}`);
+console.log(`${colors.bold}  INICIANDO DASHBOARD DE GESTIÓN DE PROYECTOS  ${colors.reset}`);
+console.log(`${colors.bold}===========================================${colors.reset}\n`);
+
 // Iniciar el servidor API
 console.log(`${colors.server}Iniciando servidor API...${colors.reset}`);
 const serverProcess = startProcess('node', ['server/index.js'], 'API', colors.server);
 
-// Esperar un momento para que el servidor se inicie antes de iniciar la aplicación React
+// Verificar que el servidor API se inicie correctamente
+let serverStarted = false;
+serverProcess.stdout.on('data', (data) => {
+  if (data.toString().includes('Servidor ejecutándose')) {
+    serverStarted = true;
+  }
+});
+
+serverProcess.on('exit', (code) => {
+  if (code !== 0 && !serverStarted) {
+    console.error(`${colors.error}[API] El servidor API se cerró inesperadamente. Código: ${code}${colors.reset}`);
+    process.exit(1);
+  }
+});
+
+// Esperar un momento para que el servidor se inicie antes de iniciar la aplicación React con Vite
+// Vite inicia más rápido que react-scripts, pero seguimos esperando a que el servidor esté listo
 setTimeout(() => {
-  // Iniciar la aplicación React
-  console.log(`${colors.react}Iniciando aplicación React...${colors.reset}`);
-  const reactProcess = startProcess('npm', ['start'], 'React', colors.react);
+  // Iniciar la aplicación React con Vite incluyendo la opción --host para permitir acceso desde otros dispositivos
+  console.log(`${colors.react}Iniciando aplicación React con Vite (accesible desde la red local)...${colors.reset}`);
+  const reactProcess = startProcess('npm', ['run', 'dev', '--', '--host'], 'React', colors.react);
   
   // Manejar la terminación de los procesos cuando se cierra este script
   process.on('SIGINT', () => {
-    console.log('\nCerrando aplicación...');
+    clearConsole();
+    console.log(`${colors.bold}\nCerrando aplicación...${colors.reset}`);
     serverProcess.kill();
     reactProcess.kill();
     process.exit();
@@ -87,17 +149,57 @@ function getLocalIPs() {
   return addresses;
 }
 
-console.log('Iniciando aplicación completa...');
-console.log('Presiona Ctrl+C para detener todos los procesos.');
+// Variable para controlar si ya se mostraron las URLs
+let urlsDisplayed = false;
 
-// Mostrar las IPs de la red local para facilitar la conexión desde dispositivos móviles
-const localIPs = getLocalIPs();
-if (localIPs.length > 0) {
-  console.log('\nPara acceder desde dispositivos móviles, utiliza una de estas direcciones:');
-  localIPs.forEach(ip => {
-    console.log(`${colors.react}http://${ip}:3000${colors.reset} - Para la aplicación React`);
-    console.log(`${colors.server}http://${ip}:3001${colors.reset} - Para la API del servidor`);
-  });
-} else {
-  console.log('\nNo se pudieron detectar direcciones IP de la red local.');
+// Función para mostrar las URLs de acceso
+function displayAccessURLs() {
+  if (urlsDisplayed) return;
+  urlsDisplayed = true;
+  
+  clearConsole();
+  console.log(`${colors.bold}===========================================${colors.reset}`);
+  console.log(`${colors.bold}  DASHBOARD DE GESTIÓN DE PROYECTOS LISTO  ${colors.reset}`);
+  console.log(`${colors.bold}===========================================${colors.reset}\n`);
+  
+  console.log(`${colors.bold}URLs de acceso local:${colors.reset}`);
+  console.log(`${colors.react}➤ http://localhost:3000${colors.reset} - Aplicación React`);
+  console.log(`${colors.server}➤ http://localhost:3001${colors.reset} - API del servidor\n`);
+  
+  // Mostrar las IPs de la red local para facilitar la conexión desde dispositivos móviles
+  const localIPs = getLocalIPs();
+  if (localIPs.length > 0) {
+    console.log(`${colors.bold}URLs para dispositivos en la red local:${colors.reset}`);
+    localIPs.forEach(ip => {
+      console.log(`${colors.react}➤ http://${ip}:3000${colors.reset} - Aplicación React`);
+      console.log(`${colors.server}➤ http://${ip}:3001${colors.reset} - API del servidor`);
+    });
+  }
+  
+  console.log(`\n${colors.bold}Presiona Ctrl+C para detener todos los procesos.${colors.reset}`);
+  console.log(`${colors.update}Los cambios en archivos se mostrarán como "Update: /ruta/archivo"${colors.reset}\n`);
 }
+
+// Configurar un temporizador para mostrar las URLs después de un tiempo
+setTimeout(displayAccessURLs, 5000);
+
+// También mostrar las URLs cuando el servidor y la aplicación estén listos
+let serverReady = false;
+let reactReady = false;
+
+serverProcess.stdout.on('data', (data) => {
+  if (data.toString().includes('Servidor ejecutándose')) {
+    serverReady = true;
+    if (serverReady && reactReady) {
+      displayAccessURLs();
+    }
+  }
+});
+
+// También verificar cuando React esté listo
+setTimeout(() => {
+  reactReady = true;
+  if (serverReady && reactReady) {
+    displayAccessURLs();
+  }
+}, 4000);

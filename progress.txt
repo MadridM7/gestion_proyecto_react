@@ -61,8 +61,8 @@ El proyecto VenTrack es una aplicación web para gestión de negocio desarrollad
 ## Tareas Pendientes
 
 ### Funcionalidades
-- [ ] Implementar sistema de notificaciones en tiempo real
-- [ ] Añadir dashboard personalizable por usuario
+- [ ] Implementar sistema de notificaciones en tiempo real via whatsapp
+- [ ] Añadir diferentes vistas para los diferentes tipos de usuarios
 
 ### Mejoras Técnicas
 - [ ] Implementar pruebas unitarias para componentes críticos

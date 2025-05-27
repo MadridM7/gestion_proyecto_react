@@ -1,0 +1,36 @@
+/**
+ * Estilos para el componente VirtualizedList
+ */
+
+.virtualized-list-container {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.virtualized-list-content {
+  position: relative;
+  width: 100%;
+}
+
+.virtualized-list-item {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+.virtualized-list-item:hover {
+  background-color: #f5f5f5;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .virtualized-list-container {
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+}

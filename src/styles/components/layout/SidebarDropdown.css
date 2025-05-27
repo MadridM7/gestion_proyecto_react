@@ -1,0 +1,83 @@
+/**
+ * Estilos para el menú desplegable del sidebar
+ * Proporciona estilos específicos para el menú de usuario y opciones de perfil
+ */
+
+/* Contenedor del menú desplegable */
+.sidebar-user-dropdown {
+  width: 200px !important;
+}
+
+/* Estilo para los items del menú */
+.sidebar-user-dropdown .ant-dropdown-menu-item,
+.sidebar-dropdown-item {
+  padding: 10px 12px;
+  transition: all 0.3s ease !important;
+  border-radius: 4px;
+  margin: 2px 0;
+  cursor: pointer;
+}
+
+/* Efecto hover para los items del menú */
+.sidebar-user-dropdown .ant-dropdown-menu-item:hover,
+.sidebar-dropdown-item:hover {
+  background-color: #e6f7ff !important;
+  color: #1890ff !important;
+}
+
+/* Estilo para el item de Rendimiento */
+.sidebar-user-dropdown .ant-dropdown-menu-item:first-child:hover,
+.sidebar-dropdown-item:first-child:hover {
+  background-color: #e6f7ff !important;
+  color: #1890ff !important;
+}
+
+/* Icono específico de rendimiento */
+.sidebar-user-dropdown .ant-dropdown-menu-item:first-child:hover .anticon,
+.sidebar-dropdown-item:first-child:hover .anticon {
+  color: #2f54eb !important;
+}
+
+/* Estilo para el item de Perfil */
+.sidebar-user-dropdown .ant-dropdown-menu-item:nth-child(2):hover,
+.sidebar-dropdown-item:nth-child(2):hover {
+  background-color: #e6f7ff !important;
+  color: #1890ff !important;
+}
+
+/* Estilo para el item de Cerrar Sesión */
+.sidebar-user-dropdown .ant-dropdown-menu-item-danger:hover,
+.sidebar-dropdown-item.ant-dropdown-menu-item-danger:hover {
+  background-color: #fff1f0 !important;
+  color: #ff4d4f !important;
+}
+
+/* Iconos en el menú */
+.sidebar-user-dropdown .ant-dropdown-menu-item .anticon,
+.sidebar-dropdown-item .anticon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+/* Animación de entrada para el menú */
+.sidebar-user-dropdown.ant-dropdown {
+  animation-duration: 0.2s;
+}
+
+/* Estilos adicionales para garantizar que el hover funcione */
+.ant-dropdown-menu-item:hover,
+.ant-dropdown-menu-submenu-title:hover {
+  background-color: #e6f7ff !important;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .sidebar-user-dropdown {
+    width: 180px !important;
+  }
+  
+  .sidebar-user-dropdown .ant-dropdown-menu-item,
+  .sidebar-dropdown-item {
+    padding: 8px 10px;
+  }
+}

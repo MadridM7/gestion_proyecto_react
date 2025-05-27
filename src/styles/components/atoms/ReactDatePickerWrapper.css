@@ -6,6 +6,19 @@
   margin-bottom: 24px;
 }
 
+/* Estilos para el contenedor del DatePicker con label */
+.datepicker-container {
+  margin-bottom: 24px;
+}
+
+.datepicker-label {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  line-height: 1.5715;
+}
+
 /* Estilos para el input personalizado */
 .custom-datepicker-input {
   position: relative;

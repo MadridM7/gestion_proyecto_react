@@ -2,6 +2,9 @@
 @import './styles/variables.css';
 @import './styles/global.css';
 
+/* Importar estilos de componentes */
+@import './styles/components/layout/SidebarDropdown.css';
+
 /* Estilos globales para la aplicación */
 body {
   -webkit-font-smoothing: antialiased;
