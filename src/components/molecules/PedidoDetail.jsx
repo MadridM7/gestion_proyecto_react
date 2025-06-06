@@ -2,7 +2,7 @@
  * @fileoverview Componente para mostrar los detalles de un pedido o editarlo
  */
 import React, { useState } from 'react';
-import { Card, Form, Input, Button, InputNumber, Select, Empty, message, Descriptions, Tag, Divider, Popconfirm } from 'antd';
+import { Card, Form, Input, Button, InputNumber, Select, Empty, message, Descriptions, Tag, Divider, Popconfirm, Tooltip } from 'antd';
 import { 
   CloseCircleOutlined,
   EditOutlined,
@@ -14,6 +14,7 @@ import {
   UserOutlined,
   HomeOutlined,
   CheckCircleOutlined,
+  WhatsAppOutlined,
 } from '@ant-design/icons';
 import { usePedidos } from '../../context/PedidosContext';
 import PropTypes from 'prop-types';
@@ -31,10 +32,28 @@ const { Option } = Select;
  * @returns {JSX.Element} Componente de detalles del pedido
  */
 const PedidoDetail = ({ pedido, onEdit, onDelete, inMobileModal = false }) => {
-  const { actualizarPedido } = usePedidos();
+  const { actualizarPedido, notificarPedido } = usePedidos();
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
   
+  /**
+   * Maneja la notificación vía WhatsApp de un pedido específico
+   */
+  const handleNotificar = () => {
+    try {
+      const resultado = notificarPedido(pedido.id);
+      
+      if (resultado) {
+        message.success('Notificación del pedido enviada correctamente');
+      } else {
+        message.error('Error al enviar la notificación del pedido');
+      }
+    } catch (error) {
+      console.error('Error al notificar pedido:', error);
+      message.error('Error al enviar la notificación del pedido');
+    }
+  };
+
   // Manejar eliminación de pedido
   const handleDelete = async () => {
     try {
@@ -167,6 +186,15 @@ const PedidoDetail = ({ pedido, onEdit, onDelete, inMobileModal = false }) => {
                 >
                   Editar
                 </Button>
+                <Tooltip title="Notificar este pedido vía WhatsApp">
+                  <Button 
+                    icon={<WhatsAppOutlined />} 
+                    style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: '#fff' }}
+                    onClick={handleNotificar}
+                  >
+                    Notificar
+                  </Button>
+                </Tooltip>
                 <Popconfirm
                   title="¿Estás seguro de eliminar este pedido?"
                   description="Esta acción no se puede deshacer y eliminará todos los datos asociados a este pedido."

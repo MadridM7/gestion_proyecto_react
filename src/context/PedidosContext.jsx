@@ -2,6 +2,7 @@
  * @fileoverview Contexto para la gestión de pedidos en la aplicación
  * Proporciona funcionalidades para agregar, editar, eliminar pedidos.
  * Implementa un sistema de polling para actualizar los datos sin recompilar la aplicación.
+ * Incluye funcionalidad de notificación vía WhatsApp.
  */
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
@@ -13,6 +14,10 @@ import { API_URL } from '../config';
 
 // Importar el sistema de polling para actualización de datos sin recompilar
 import { dataPoller } from '../services/dataPoller';
+
+// Importar servicio de WhatsApp para notificaciones
+import whatsappService from '../services/whatsappService';
+
 
 // Crear el contexto de pedidos
 const PedidosContext = createContext();
@@ -270,13 +275,64 @@ export const PedidosProvider = ({ children }) => {
     }
   }, [pedidos, calcularEstadisticas]);
 
+  /**
+   * Envía una notificación vía WhatsApp con todos los pedidos pendientes
+   * @returns {boolean} Verdadero si se envió la notificación correctamente
+   */
+  const notificarPedidosPendientes = useCallback(() => {
+    try {
+      // Filtrar pedidos pendientes o por pagar
+      const pedidosPendientes = pedidos.filter(p => 
+        p.estado === 'pendiente' || p.estado === 'por pagar' || p.estado === 'nuevo'
+      );
+      
+      // Verificar si hay pedidos pendientes
+      if (pedidosPendientes.length === 0) {
+        console.log('No hay pedidos pendientes para notificar');
+        return false;
+      }
+      
+      // Enviar notificación con los pedidos pendientes
+      return whatsappService.enviarNotificacionPedidos(pedidosPendientes);
+    } catch (error) {
+      console.error('Error al notificar pedidos pendientes:', error);
+      return false;
+    }
+  }, [pedidos]);
+  
+  /**
+   * Envía una notificación vía WhatsApp con un pedido específico
+   * @param {string} id - Identificador único del pedido a notificar
+   * @returns {boolean} Verdadero si se envió la notificación correctamente
+   */
+  const notificarPedido = useCallback((id) => {
+    try {
+      // Buscar el pedido por su ID
+      const pedido = pedidos.find(p => p.id === id);
+      
+      // Verificar si se encontró el pedido
+      if (!pedido) {
+        console.error(`No se encontró el pedido con ID: ${id}`);
+        return false;
+      }
+      
+      // Enviar notificación con el pedido
+      return whatsappService.enviarNotificacionPedido(pedido);
+    } catch (error) {
+      console.error('Error al notificar pedido:', error);
+      return false;
+    }
+  }, [pedidos]);
+
   // Valor del contexto
   const value = {
     pedidos,
     estadisticas,
     agregarPedido,
     actualizarPedido,
-    eliminarPedido
+    eliminarPedido,
+    notificarPedidosPendientes,
+    notificarPedido
   };
 
   return (

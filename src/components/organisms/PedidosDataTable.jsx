@@ -129,7 +129,9 @@ const PedidosDataTable = ({
 PedidosDataTable.propTypes = {
   searchExtra: PropTypes.node,
   onRowClick: PropTypes.func,
-  isMobile: PropTypes.bool
+  isMobile: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onAddNew: PropTypes.func
 };
 
 export default PedidosDataTable;

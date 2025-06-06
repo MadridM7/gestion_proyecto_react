@@ -2,8 +2,8 @@
  * @fileoverview Template para la página de pedidos
  */
 import React, { useState } from 'react';
-import { Card, Modal, Form, message, Row, Col } from 'antd';
-import { GiftOutlined } from '@ant-design/icons';
+import { Card, Modal, Form, message, Row, Col, Button, Tooltip } from 'antd';
+import { GiftOutlined, WhatsAppOutlined } from '@ant-design/icons';
 import { usePedidos } from '../../context/PedidosContext';
 import PropTypes from 'prop-types';
 import PedidosStats from '../molecules/PedidosStats';
@@ -20,7 +20,7 @@ const PedidosTemplate = ({
   isMobile = false, 
   FormularioPedido 
 }) => {
-  const { agregarPedido, actualizarPedido, eliminarPedido } = usePedidos();
+  const { agregarPedido, actualizarPedido, eliminarPedido, notificarPedidosPendientes, notificarPedido } = usePedidos();
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingPedido, setEditingPedido] = useState(null);
@@ -162,10 +162,61 @@ const PedidosTemplate = ({
     }
   };
 
+  /**
+   * Maneja el envío de notificación de todos los pedidos pendientes vía WhatsApp
+   */
+  const handleNotificarPedidosPendientes = () => {
+    try {
+      const resultado = notificarPedidosPendientes();
+      
+      if (resultado) {
+        message.success('Notificación de pedidos pendientes enviada correctamente');
+      } else {
+        message.info('No hay pedidos pendientes para notificar');
+      }
+    } catch (error) {
+      console.error('Error al notificar pedidos pendientes:', error);
+      message.error('Error al enviar la notificación de pedidos pendientes');
+    }
+  };
+
+  /**
+   * Maneja el envío de notificación de un pedido específico vía WhatsApp
+   * @param {string} id - Identificador único del pedido a notificar
+   */
+  const handleNotificarPedido = (id) => {
+    try {
+      const resultado = notificarPedido(id);
+      
+      if (resultado) {
+        message.success('Notificación del pedido enviada correctamente');
+      } else {
+        message.error('Error al enviar la notificación del pedido');
+      }
+    } catch (error) {
+      console.error('Error al notificar pedido:', error);
+      message.error('Error al enviar la notificación del pedido');
+    }
+  };
+
   return (
     <div className="pedidos-template">      
       {/* Estadísticas de pedidos */}
       <PedidosStats />
+      
+      {/* Botón para notificar todos los pedidos pendientes */}
+      <div className="notification-actions" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+        <Tooltip title="Notificar todos los pedidos pendientes vía WhatsApp">
+          <Button 
+            type="primary" 
+            icon={<WhatsAppOutlined />} 
+            onClick={handleNotificarPedidosPendientes}
+            style={{ backgroundColor: '#25D366', borderColor: '#25D366' }}
+          >
+            Notificar Pedidos Pendientes
+          </Button>
+        </Tooltip>
+      </div>
       
       <Row gutter={[16, 16]} className="pedidos-content">
         <Col xs={24} lg={16}>
@@ -215,6 +266,32 @@ const PedidosTemplate = ({
                   >
                     Guardar
                   </button>
+                </div>
+                <div className="pedido-actions">
+                  <Button 
+                    type="primary" 
+                    size="small" 
+                    onClick={() => handlePedidoSelect(editingPedido)}
+                  >
+                    Ver
+                  </Button>
+                  <Tooltip title="Notificar este pedido vía WhatsApp">
+                    <Button 
+                      size="small" 
+                      icon={<WhatsAppOutlined />}
+                      onClick={() => handleNotificarPedido(editingPedido.id)}
+                      style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: '#fff' }}
+                    >
+                      Notificar
+                    </Button>
+                  </Tooltip>
+                  <Button 
+                    danger 
+                    size="small" 
+                    onClick={() => handleEliminarPedido(editingPedido.id)}
+                  >
+                    Eliminar
+                  </Button>
                 </div>
               </Card>
             ) : (
