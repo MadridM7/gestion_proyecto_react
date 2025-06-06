@@ -1,8 +1,8 @@
 /**
  * @fileoverview Componente para mostrar detalles de una venta o editarla
  */
-import React, { useState } from 'react';
-import { Card, Descriptions, Tag, Divider, Empty, Timeline, Button, Popconfirm, message, Form, Input, Select, InputNumber } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Descriptions, Tag, Divider, Empty, Timeline, Button, Popconfirm, message, Form, Input, Select, InputNumber, Table } from 'antd';
 import { 
   ShoppingCartOutlined, 
   UserOutlined, 
@@ -14,9 +14,11 @@ import {
   SaveOutlined,
   CloseCircleOutlined,
   DollarOutlined,
-  InfoCircleOutlined
+  MinusCircleOutlined
 } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
+import { useUsuarios } from '../../context/UsuariosContext';
+import { useProductos } from '../../context/ProductosContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import '../../styles/components/organisms/VentaDetail.css';
 
@@ -32,8 +34,11 @@ const { Option } = Select;
  */
 const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
   const { eliminarVenta, actualizarVenta } = useVentas();
+  const { usuarios } = useUsuarios();
+  const { productos } = useProductos();
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
+  const [ventaProductos, setVentaProductos] = useState([]);
   
   // Manejar eliminación de venta
   const handleDelete = async () => {
@@ -46,12 +51,22 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
     }
   };
 
+  // Inicializar productos de la venta cuando se edita
+  useEffect(() => {
+    if (venta && venta.productos) {
+      setVentaProductos(venta.productos);
+    }
+  }, [venta]);
+
   // Manejar edición de venta
   const handleEdit = () => {
     setIsEditing(true);
+    setVentaProductos(venta.productos || []);
     form.setFieldsValue({
       ...venta,
-      monto: venta.monto ? Number(venta.monto) : 0
+      monto: venta.monto ? Number(venta.monto) : 0,
+      tipoPago: venta.tipoPago || 'Efectivo',
+      vendedor: venta.vendedor || ''
     });
   };
   
@@ -68,12 +83,16 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
       // El monto ya viene como número desde el InputNumber
       const montoNumerico = values.monto || 0;
       
+      // Calcular el monto total basado en los productos
+      const montoCalculado = ventaProductos.reduce((total, producto) => {
+        return total + (producto.precio * producto.cantidad);
+      }, 0);
+      
       // Preparar los datos actualizados
       const datosActualizados = {
         ...values,
-        monto: montoNumerico,
-        // Mantener los productos y otros campos que no se editan en el formulario
-        productos: venta.productos || [],
+        monto: montoCalculado > 0 ? montoCalculado : montoNumerico,
+        productos: ventaProductos,
         fechaHora: venta.fechaHora
       };
       
@@ -140,12 +159,70 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
     { value: 'Transferencia', label: 'Transferencia' }
   ];
 
-  // Usuarios disponibles (vendedores)
-  const usuarios = [
-    { value: 'Laura Fernández', label: 'Laura Fernández' },
-    { value: 'Carlos Mendoza', label: 'Carlos Mendoza' },
-    { value: 'Ana Martínez', label: 'Ana Martínez' }
-  ];
+  // Usuarios disponibles (vendedores) desde el contexto y opciones de productos
+  const usuariosOptions = usuarios.map(usuario => ({
+    value: usuario.nombre,
+    label: usuario.nombre
+  }));
+  
+  const productosOptions = productos.map(producto => ({
+    value: producto.id,
+    label: producto.nombre,
+    precio: producto.precioVenta || producto.precio || 0
+  }));
+  
+  // Manejar la adición de un producto a la venta
+  const handleAddProduct = (productoId) => {
+    const productoSeleccionado = productos.find(p => p.id === productoId);
+    
+    if (productoSeleccionado) {
+      // Verificar si el producto ya está en la lista
+      const productoExistente = ventaProductos.find(p => p.id === productoId);
+      
+      if (productoExistente) {
+        // Si ya existe, incrementar la cantidad
+        const nuevosProductos = ventaProductos.map(p => {
+          if (p.id === productoId) {
+            return { ...p, cantidad: p.cantidad + 1 };
+          }
+          return p;
+        });
+        setVentaProductos(nuevosProductos);
+      } else {
+        // Si no existe, agregarlo con cantidad 1
+        const nuevoProducto = {
+          id: productoSeleccionado.id,
+          nombre: productoSeleccionado.nombre,
+          precio: productoSeleccionado.precioVenta || productoSeleccionado.precio || 0,
+          cantidad: 1
+        };
+        setVentaProductos([...ventaProductos, nuevoProducto]);
+      }
+    }
+  };
+  
+  // Manejar la eliminación de un producto de la venta
+  const handleRemoveProduct = (productoId) => {
+    const nuevosProductos = ventaProductos.filter(p => p.id !== productoId);
+    setVentaProductos(nuevosProductos);
+  };
+  
+  // Manejar el cambio de cantidad de un producto
+  const handleQuantityChange = (productoId, cantidad) => {
+    if (cantidad <= 0) {
+      handleRemoveProduct(productoId);
+      return;
+    }
+    
+    const nuevosProductos = ventaProductos.map(p => {
+      if (p.id === productoId) {
+        return { ...p, cantidad };
+      }
+      return p;
+    });
+    
+    setVentaProductos(nuevosProductos);
+  };
 
   return (
     <Card 
@@ -226,11 +303,8 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
                 suffixIcon={<UserOutlined />}
                 showSearch
                 optionFilterProp="children"
-              >
-                {usuarios.map(usuario => (
-                  <Option key={usuario.value} value={usuario.value}>{usuario.label}</Option>
-                ))}
-              </Select>
+                options={usuariosOptions}
+              />
             </Form.Item>
             
             <Form.Item
@@ -273,27 +347,91 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
               </Select>
             </Form.Item>
             
-            {/* Mostrar productos en modo edición */}
+            {/* Edición de productos */}
             <Divider orientation="left">Productos</Divider>
-            {venta.productos && venta.productos.length > 0 ? (
+            
+            {/* Selector para agregar productos */}
+            <Form.Item
+              label="Agregar producto"
+              help="Seleccione un producto para agregarlo a la venta"
+            >
+              <Select 
+                placeholder="Seleccionar producto"
+                style={{ width: '100%' }}
+                showSearch
+                optionFilterProp="label"
+                onChange={handleAddProduct}
+                options={productosOptions}
+              />
+            </Form.Item>
+            
+            {/* Tabla de productos en la venta */}
+            {ventaProductos.length > 0 ? (
               <div className="venta-productos-edit-list">
-                <Timeline>
-                  {venta.productos.map((producto, index) => (
-                    <Timeline.Item key={index} color="blue">
-                      <div className="venta-producto-item">
-                        <div className="venta-producto-nombre">{producto.nombre}</div>
-                        <div className="venta-producto-cantidad">Cantidad: {producto.cantidad}</div>
-                        <div className="venta-producto-precio">Precio: {formatMonto(producto.precio)}</div>
-                        <div className="venta-producto-subtotal">
-                          Subtotal: {formatMonto(producto.cantidad * producto.precio)}
-                        </div>
-                      </div>
-                    </Timeline.Item>
-                  ))}
-                </Timeline>
-                <div className="venta-productos-edit-info">
-                  <InfoCircleOutlined /> Para modificar los productos, utilice la función "Editar" completa.
-                </div>
+                <Table 
+                  dataSource={ventaProductos} 
+                  rowKey="id"
+                  pagination={false}
+                  size="small"
+                  columns={[
+                    {
+                      title: 'Producto',
+                      dataIndex: 'nombre',
+                      key: 'nombre',
+                    },
+                    {
+                      title: 'Precio',
+                      dataIndex: 'precio',
+                      key: 'precio',
+                      render: (precio) => formatMonto(precio)
+                    },
+                    {
+                      title: 'Cantidad',
+                      dataIndex: 'cantidad',
+                      key: 'cantidad',
+                      width: 120,
+                      render: (cantidad, record) => (
+                        <InputNumber
+                          min={1}
+                          value={cantidad}
+                          onChange={(value) => handleQuantityChange(record.id, value)}
+                          style={{ width: '100%' }}
+                        />
+                      )
+                    },
+                    {
+                      title: 'Subtotal',
+                      key: 'subtotal',
+                      render: (_, record) => formatMonto(record.precio * record.cantidad)
+                    },
+                    {
+                      title: 'Acciones',
+                      key: 'action',
+                      width: 80,
+                      render: (_, record) => (
+                        <Button 
+                          type="text" 
+                          danger 
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => handleRemoveProduct(record.id)}
+                        />
+                      )
+                    }
+                  ]}
+                  summary={(pageData) => {
+                    const total = pageData.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+                    return (
+                      <Table.Summary.Row>
+                        <Table.Summary.Cell index={0} colSpan={3} align="right">
+                          <strong>Total:</strong>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={1} colSpan={2}>
+                          <strong>{formatMonto(total)}</strong>
+                        </Table.Summary.Cell>
+                      </Table.Summary.Row>
+                    );
+                  }}
+                />
               </div>
             ) : (
               <Empty description="No hay productos en esta venta" image={Empty.PRESENTED_IMAGE_SIMPLE} />

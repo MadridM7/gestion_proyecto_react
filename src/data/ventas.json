@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "id": "V0001",
+    "productos": [],
+    "monto": 1000,
+    "tipoPago": "efectivo",
+    "vendedor": "admin",
+    "fechaHora": "2025-06-06T19:59:48.825Z"
+  },
+  {
+    "id": "V0002",
+    "productos": [
+      {
+        "id": "P0001",
+        "nombre": "master",
+        "precio": 13000,
+        "cantidad": 1
+      }
+    ],
+    "monto": 13000,
+    "tipoPago": "efectivo",
+    "vendedor": "admin",
+    "fechaHora": "2025-06-06T20:06:46.484Z"
+  }
+]

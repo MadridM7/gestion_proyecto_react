@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "nombre": "master",
+    "categoria": "comida",
+    "precioCompra": 10000,
+    "margenGanancia": 30,
+    "precioVenta": 13000,
+    "id": "P0001"
+  }
+]

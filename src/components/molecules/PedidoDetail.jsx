@@ -73,6 +73,10 @@ const PedidoDetail = ({ pedido, onEdit, onDelete, inMobileModal = false }) => {
     setIsEditing(true);
     form.setFieldsValue({
       ...pedido,
+      nombreCliente: pedido.nombreCliente || '',
+      direccion: pedido.direccion || '',
+      detallePedido: pedido.detallePedido || '',
+      estado: pedido.estado || 'pendiente',
       monto: pedido.monto ? Number(pedido.monto) : 0
     });
   };

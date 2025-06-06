@@ -51,6 +51,8 @@ const ProductoDetail = ({ producto, onEdit, inMobileModal = false }) => {
     setIsEditing(true);
     form.setFieldsValue({
       ...producto,
+      nombre: producto.nombre || '',
+      categoria: producto.categoria || '',
       precioCompra: producto.precioCompra || 0,
       precioVenta: producto.precioVenta || 0,
       margenGanancia: producto.margenGanancia || 30

@@ -84,7 +84,7 @@ const VentaFormulario = ({
     return productos
       ? productos.map(producto => ({
           value: producto.id,
-          label: `${producto.nombre} - $${producto.precio.toLocaleString('es-CL')}`,
+          label: producto.nombre,
           precio: producto.precio
         }))
       : [];
@@ -113,7 +113,9 @@ const VentaFormulario = ({
         const newProduct = {
           id: producto.id,
           nombre: producto.nombre,
-          precio: producto.precio,
+          // Asegurarse que el precio sea un número válido
+          precio: typeof producto.precioVenta === 'number' ? producto.precioVenta : 
+                 (typeof producto.precio === 'number' ? producto.precio : 0),
           cantidad: productQuantity
         };
         setSelectedProducts([...selectedProducts, newProduct]);
@@ -170,7 +172,7 @@ const VentaFormulario = ({
       title: 'Precio',
       dataIndex: 'precio',
       key: 'precio',
-      render: (precio) => `$${precio.toLocaleString('es-CL')}`
+      render: (precio) => `$${precio && typeof precio === 'number' ? precio.toLocaleString('es-CL') : 0}`
     },
     {
       title: 'Cantidad',
