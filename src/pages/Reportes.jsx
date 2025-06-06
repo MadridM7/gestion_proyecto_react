@@ -70,16 +70,37 @@ const Reportes = () => {
     const totalVentas = ventas.length;
     const ingresosTotales = ventas.reduce((sum, venta) => sum + (venta.monto || 0), 0);
     
-    // Calcular ganancia neta (estimada como 30% de los ingresos si no hay datos de productos)
+    // Calcular ganancia neta basada en datos de productos
     let gananciaNeta = 0;
+    let totalProductosVendidos = 0;
+    
     if (productos && productos.length > 0) {
+      // Para ventas con múltiples productos
       ventas.forEach(venta => {
-        const producto = productos.find(p => p.nombre === venta.producto);
-        const precioCompra = producto ? producto.precioCompra : (venta.monto * 0.7); // Estimado
-        gananciaNeta += (venta.monto || 0) - precioCompra;
+        // Verificar si la venta tiene estructura de productos
+        if (Array.isArray(venta.productos) && venta.productos.length > 0) {
+          venta.productos.forEach(productoVenta => {
+            // Buscar información del producto en el catálogo completo
+            const productoInfo = productos.find(p => p.id === productoVenta.id);
+            // Incrementar contador de productos vendidos
+            totalProductosVendidos += (productoVenta.cantidad || 1);
+            
+            if (productoInfo && productoInfo.precioCompra) {
+              // Si tenemos información de precio de compra, calcular ganancia real
+              const gananciaProducto = (productoVenta.precio - productoInfo.precioCompra) * (productoVenta.cantidad || 1);
+              gananciaNeta += gananciaProducto;
+            } else {
+              // Si no hay información de precio de compra, estimar ganancia como 30% del precio
+              gananciaNeta += (productoVenta.precio * 0.3) * (productoVenta.cantidad || 1);
+            }
+          });
+        } else {
+          // Para ventas antiguas sin estructura de productos
+          gananciaNeta += (venta.monto || 0) * 0.3; // Estimado 30%
+        }
       });
     } else {
-      // Si no hay datos de productos, estimar ganancia como 30% de ingresos
+      // Si no hay datos de productos en absoluto, estimar ganancia como 30% de ingresos totales
       gananciaNeta = ingresosTotales * 0.3;
     }
     
@@ -93,12 +114,14 @@ const Reportes = () => {
     
     console.log('Vendedores únicos:', [...vendedoresUnicos]);
     console.log('Total de vendedores activos:', vendedoresUnicos.size);
+    console.log('Total de productos vendidos:', totalProductosVendidos);
     
     setKeyStats({
       totalVentas,
       ingresosTotales,
       gananciaNeta,
-      vendedoresActivos: vendedoresUnicos.size
+      vendedoresActivos: vendedoresUnicos.size,
+      totalProductosVendidos // Agregar nueva estadística
     });
   }, [ventas, productos]);
   

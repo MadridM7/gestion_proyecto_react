@@ -46,7 +46,8 @@ StatsSection.propTypes = {
     totalVentas: PropTypes.number.isRequired,
     ingresosTotales: PropTypes.number.isRequired,
     gananciaNeta: PropTypes.number.isRequired,
-    vendedoresActivos: PropTypes.number.isRequired
+    vendedoresActivos: PropTypes.number.isRequired,
+    totalProductosVendidos: PropTypes.number
   }).isRequired,
   paymentStats: PropTypes.arrayOf(
     PropTypes.shape({

@@ -8,7 +8,8 @@ import {
   DollarOutlined, 
   ShoppingOutlined, 
   RiseOutlined, 
-  TeamOutlined 
+  TeamOutlined,
+  GiftOutlined
 } from '@ant-design/icons';
 import StatsCard from '../atoms/StatsCard';
 
@@ -31,7 +32,7 @@ const KeyStatsCards = ({
 
   return (
     <Row gutter={[16, 16]}>
-      <Col xs={24} sm={12} md={6}>
+      <Col xs={24} sm={12} md={8} lg={4}>
         <StatsCard
           title="Total Ventas"
           value={stats.totalVentas}
@@ -41,7 +42,7 @@ const KeyStatsCards = ({
         />
       </Col>
       
-      <Col xs={24} sm={12} md={6}>
+      <Col xs={24} sm={12} md={8} lg={4}>
         <StatsCard
           title="Ingresos Totales"
           value={formatCurrency(stats.ingresosTotales)}
@@ -51,7 +52,7 @@ const KeyStatsCards = ({
         />
       </Col>
       
-      <Col xs={24} sm={12} md={6}>
+      <Col xs={24} sm={12} md={8} lg={4}>
         <StatsCard
           title="Ganancia Neta"
           value={formatCurrency(stats.gananciaNeta)}
@@ -61,13 +62,23 @@ const KeyStatsCards = ({
         />
       </Col>
       
-      <Col xs={24} sm={12} md={6}>
+      <Col xs={24} sm={12} md={8} lg={4}>
         <StatsCard
           title="Vendedores Activos"
           value={stats.vendedoresActivos}
           prefix={<TeamOutlined />}
           loading={loading}
           valueStyle={{ color: '#fa8c16' }}
+        />
+      </Col>
+
+      <Col xs={24} sm={12} md={8} lg={4}>
+        <StatsCard
+          title="Productos Vendidos"
+          value={stats.totalProductosVendidos || 0}
+          prefix={<GiftOutlined />}
+          loading={loading}
+          valueStyle={{ color: '#eb2f96' }}
         />
       </Col>
     </Row>
@@ -79,7 +90,8 @@ KeyStatsCards.propTypes = {
     totalVentas: PropTypes.number.isRequired,
     ingresosTotales: PropTypes.number.isRequired,
     gananciaNeta: PropTypes.number.isRequired,
-    vendedoresActivos: PropTypes.number.isRequired
+    vendedoresActivos: PropTypes.number.isRequired,
+    totalProductosVendidos: PropTypes.number
   }).isRequired,
   loading: PropTypes.bool
 };

@@ -13,7 +13,8 @@ import {
   DeleteOutlined,
   SaveOutlined,
   CloseCircleOutlined,
-  DollarOutlined
+  DollarOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
@@ -272,21 +273,31 @@ const VentaDetail = ({ venta, onEdit, inMobileModal = false }) => {
               </Select>
             </Form.Item>
             
-            <Form.Item
-              name="notas"
-              label="Notas"
-              help="Información adicional sobre la venta (opcional)"
-              rules={[
-                { max: 500, message: 'Las notas no pueden exceder los 500 caracteres' }
-              ]}
-            >
-              <Input.TextArea 
-                rows={4} 
-                placeholder="Notas adicionales sobre la venta" 
-                maxLength={500}
-                showCount
-              />
-            </Form.Item>
+            {/* Mostrar productos en modo edición */}
+            <Divider orientation="left">Productos</Divider>
+            {venta.productos && venta.productos.length > 0 ? (
+              <div className="venta-productos-edit-list">
+                <Timeline>
+                  {venta.productos.map((producto, index) => (
+                    <Timeline.Item key={index} color="blue">
+                      <div className="venta-producto-item">
+                        <div className="venta-producto-nombre">{producto.nombre}</div>
+                        <div className="venta-producto-cantidad">Cantidad: {producto.cantidad}</div>
+                        <div className="venta-producto-precio">Precio: {formatMonto(producto.precio)}</div>
+                        <div className="venta-producto-subtotal">
+                          Subtotal: {formatMonto(producto.cantidad * producto.precio)}
+                        </div>
+                      </div>
+                    </Timeline.Item>
+                  ))}
+                </Timeline>
+                <div className="venta-productos-edit-info">
+                  <InfoCircleOutlined /> Para modificar los productos, utilice la función "Editar" completa.
+                </div>
+              </div>
+            ) : (
+              <Empty description="No hay productos en esta venta" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </Form>
         ) : (
           <>

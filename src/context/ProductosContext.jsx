@@ -77,8 +77,12 @@ export const ProductosProvider = ({ children }) => {
       // Normalizar los datos del producto
       const productoNormalizado = {
         ...nuevoProducto,
-        // Generar un ID único
-        id: `P${Math.floor(Math.random() * 10000)}`,
+        // Generar un ID secuencial para productos
+        id: `P${productos.length > 0 ? 
+          // Extraer el número del último ID y sumarle 1
+          (parseInt(productos[productos.length - 1].id.replace('P', '')) + 1).toString().padStart(4, '0') : 
+          // Si no hay productos, empezar con P0001
+          '0001'}`,
         // Asegurar que los valores numéricos sean números
         precioCompra: Number(nuevoProducto.precioCompra),
         margenGanancia: Number(nuevoProducto.margenGanancia),
@@ -114,7 +118,7 @@ export const ProductosProvider = ({ children }) => {
       console.error('Error al procesar el producto:', error);
       return null;
     }
-  }, []);
+  }, [productos]);
 
   /**
    * Elimina un producto del sistema basado en su ID

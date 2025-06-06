@@ -31,7 +31,7 @@ const VentasContext = createContext();
 export const useVentas = () => {
   const context = useContext(VentasContext);
   if (!context) {
-    throw new Error('useVentas debe ser usado dentro de un VentasProvider');
+    throw new Error('useVentas debe utilizarse dentro de un VentasProvider');
   }
   return context;
 };
@@ -42,11 +42,11 @@ export const useVentas = () => {
  * @returns {Array} Array de ventas con fechas convertidas a objetos Date
  */
 const procesarVentas = (ventas) => {
-  if (!Array.isArray(ventas)) return [];
-  
   return ventas.map(venta => ({
     ...venta,
-    fechaHora: venta.fechaHora instanceof Date ? venta.fechaHora : new Date(venta.fechaHora)
+    // Convertir la fecha de string a objeto Date si es necesario
+    fechaHora: venta.fechaHora instanceof Date ? 
+      venta.fechaHora : new Date(venta.fechaHora)
   }));
 };
 
@@ -57,10 +57,10 @@ const procesarVentas = (ventas) => {
  * @returns {JSX.Element} Proveedor de contexto
  */
 export const VentasProvider = ({ children }) => {
-  // Estado para las ventas
-  const [ventas, setVentas] = useState([]);
+  // Estado para almacenar las ventas
+  const [ventas, setVentas] = useState(() => procesarVentas(ventasData));
   
-  // Estado para las estadísticas
+  // Estado para almacenar las estadísticas de ventas
   const [estadisticas, setEstadisticas] = useState({
     totalVentas: 0,
     promedioVentas: 0,
@@ -70,9 +70,18 @@ export const VentasProvider = ({ children }) => {
       credito: 0
     }
   });
-
+  
+  // Estado para almacenar los filtros de búsqueda
+  const [filtros, setFiltros] = useState({
+    texto: '',
+    fechaInicio: null,
+    fechaFin: null,
+    vendedor: '',
+    tipoPago: ''
+  });
+  
   /**
-   * Calcula estadísticas basadas en las ventas
+   * Calcula estadísticas basadas en las ventas actuales
    * @param {Array} ventasActuales - Array de ventas para calcular estadísticas
    */
   const calcularEstadisticas = useCallback((ventasActuales) => {
@@ -90,71 +99,47 @@ export const VentasProvider = ({ children }) => {
       return;
     }
     
-    try {
-      // Calcular total de ventas
-      const total = ventasActuales.reduce((sum, venta) => {
-        const monto = typeof venta.monto === 'number' ? venta.monto : 0;
-        return sum + monto;
-      }, 0);
-      
-      // Calcular promedio por venta
-      const promedio = ventasActuales.length > 0 ? total / ventasActuales.length : 0;
-      
-      // Calcular ventas por tipo de pago
-      const porTipo = {
-        efectivo: ventasActuales.filter(v => v.tipoPago === 'efectivo')
-          .reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0),
-        debito: ventasActuales.filter(v => v.tipoPago === 'debito')
-          .reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0),
-        credito: ventasActuales.filter(v => v.tipoPago === 'credito')
-          .reduce((sum, v) => sum + (typeof v.monto === 'number' ? v.monto : 0), 0)
-      };
-      
-      // Actualizar el estado de estadísticas
-      setEstadisticas({
-        totalVentas: total,
-        promedioVentas: promedio,
-        ventasPorTipo: porTipo
-      });
-    } catch (error) {
-      // Capturar error silenciosamente
-      // En caso de error, establecer valores por defecto
-      setEstadisticas({
-        totalVentas: 0,
-        promedioVentas: 0,
-        ventasPorTipo: {
-          efectivo: 0,
-          debito: 0,
-          credito: 0
-        }
-      });
-    }
+    // Calcular el total de ventas
+    const total = ventasActuales.reduce((acc, venta) => acc + venta.monto, 0);
+    
+    // Calcular el promedio de ventas
+    const promedio = total / ventasActuales.length;
+    
+    // Calcular ventas por tipo de pago
+    const ventasPorTipo = ventasActuales.reduce((acc, venta) => {
+      const tipo = venta.tipoPago.toLowerCase();
+      if (!acc[tipo]) {
+        acc[tipo] = 0;
+      }
+      acc[tipo] += venta.monto;
+      return acc;
+    }, {});
+    
+    // Actualizar el estado con las nuevas estadísticas
+    setEstadisticas({
+      totalVentas: total,
+      promedioVentas: promedio,
+      ventasPorTipo
+    });
   }, []);
-
-  // Cargar ventas al iniciar y configurar el polling
+  
+  // Calcular estadísticas iniciales al cargar el componente
   useEffect(() => {
-    // Cargar datos iniciales desde el archivo JSON
-    const ventasProcesadas = procesarVentas(ventasData);
-    setVentas(ventasProcesadas);
-    calcularEstadisticas(ventasProcesadas);
+    calcularEstadisticas(ventas);
     
-    // Configurar el polling para actualizar los datos sin recompilar
-    const handleVentasUpdate = (nuevasVentas) => {
-      const ventasActualizadas = procesarVentas(nuevasVentas);
-      setVentas(ventasActualizadas);
-      calcularEstadisticas(ventasActualizadas);
-      // Datos actualizados silenciosamente
-    };
-    
-    // Iniciar el polling cada 5 segundos
-    dataPoller.startPolling('ventas', handleVentasUpdate, 5000);
+    // Iniciar el polling para actualizar los datos sin recompilar
+    dataPoller.startPolling('ventas', (nuevasVentas) => {
+      const ventasProcesadas = procesarVentas(nuevasVentas);
+      setVentas(ventasProcesadas);
+      calcularEstadisticas(ventasProcesadas);
+    });
     
     // Detener el polling cuando el componente se desmonte
     return () => {
       dataPoller.stopPolling('ventas');
     };
-  }, [calcularEstadisticas]);
-
+  }, [calcularEstadisticas, ventas]);
+  
   /**
    * Agrega una nueva venta y la guarda en el archivo JSON a través de la API
    * @param {Object} nuevaVenta - Datos de la nueva venta
@@ -165,7 +150,12 @@ export const VentasProvider = ({ children }) => {
       const ventaNormalizada = {
         ...nuevaVenta,
         // Generar un ID único
-        id: `V${Math.floor(Math.random() * 10000)}`,
+        // Generar un ID secuencial para ventas
+        id: `V${ventas.length > 0 ? 
+          // Extraer el número del último ID y sumarle 1
+          (parseInt(ventas[ventas.length - 1].id.replace('V', '')) + 1).toString().padStart(4, '0') : 
+          // Si no hay ventas, empezar con V0001
+          '0001'}`,
         // Asegurar que la fecha sea un objeto Date
         fechaHora: nuevaVenta.fechaHora instanceof Date ? 
           nuevaVenta.fechaHora : new Date(),
@@ -211,8 +201,8 @@ export const VentasProvider = ({ children }) => {
       console.error('Error al procesar la venta:', error);
       return null;
     }
-  }, [calcularEstadisticas]);
-
+  }, [calcularEstadisticas, ventas]);
+  
   /**
    * Actualiza una venta existente y la guarda en el archivo JSON a través de la API
    * @param {string} id - ID de la venta a actualizar
@@ -236,59 +226,57 @@ export const VentasProvider = ({ children }) => {
         fechaHora: datosActualizados.fechaHora instanceof Date ? 
           datosActualizados.fechaHora : new Date(datosActualizados.fechaHora),
         // Asegurar que el monto sea un número
-        monto: Number(datosActualizados.monto || ventaActual.monto)
+        monto: Number(datosActualizados.monto)
       };
-      
-      // Guardar la venta original para posible reversión
-      const ventaOriginal = { ...ventaActual };
       
       // Actualizar el estado local primero para evitar recargas
       setVentas(ventasActuales => {
-        const ventasActualizadas = ventasActuales.map(venta => 
-          venta.id === id ? ventaActualizada : venta
+        const ventasActualizadas = ventasActuales.map(v => 
+          v.id === id ? ventaActualizada : v
         );
         calcularEstadisticas(ventasActualizadas);
         return ventasActualizadas;
       });
       
-      // Actualizar la venta en el archivo JSON a través de la API de forma asíncrona
-      const promesaActualizacion = actualizarVentaAPI(id, ventaActualizada);
+      // Guardar la venta actualizada en el archivo JSON a través de la API
+      // Usar Promise para no bloquear la interfaz
+      const promesaGuardado = actualizarVentaAPI(id, ventaActualizada);
       
       // Manejar la respuesta de forma asíncrona
-      promesaActualizacion.then(respuesta => {
+      promesaGuardado.then(respuesta => {
         if (!respuesta.success) {
           console.error('Error al actualizar la venta en el servidor');
           // Si falla, revertir el cambio local
           setVentas(ventasActuales => {
-            const ventasRestauradas = ventasActuales.map(venta => 
-              venta.id === id ? ventaOriginal : venta
+            const ventasActualizadas = ventasActuales.map(v => 
+              v.id === id ? ventaActual : v
             );
-            calcularEstadisticas(ventasRestauradas);
-            return ventasRestauradas;
+            calcularEstadisticas(ventasActualizadas);
+            return ventasActualizadas;
           });
         }
       }).catch(error => {
-        console.error('Error en la solicitud de actualización:', error);
+        console.error('Error en la solicitud:', error);
         // Si hay un error, revertir el cambio local
         setVentas(ventasActuales => {
-          const ventasRestauradas = ventasActuales.map(venta => 
-            venta.id === id ? ventaOriginal : venta
+          const ventasActualizadas = ventasActuales.map(v => 
+            v.id === id ? ventaActual : v
           );
-          calcularEstadisticas(ventasRestauradas);
-          return ventasRestauradas;
+          calcularEstadisticas(ventasActualizadas);
+          return ventasActualizadas;
         });
       });
       
       // Devolver la venta actualizada inmediatamente
       return ventaActualizada;
     } catch (error) {
-      console.error('Error al procesar la actualización de la venta:', error);
+      console.error('Error al actualizar la venta:', error);
       return null;
     }
-  }, [ventas, calcularEstadisticas]);
-
+  }, [calcularEstadisticas, ventas]);
+  
   /**
-   * Elimina una venta y actualiza el archivo JSON a través de la API
+   * Elimina una venta existente y actualiza el archivo JSON a través de la API
    * @param {string} id - ID de la venta a eliminar
    */
   const eliminarVenta = useCallback(async (id) => {
@@ -303,56 +291,106 @@ export const VentasProvider = ({ children }) => {
       
       // Actualizar el estado local primero para evitar recargas
       setVentas(ventasActuales => {
-        const ventasActualizadas = ventasActuales.filter(venta => venta.id !== id);
+        const ventasActualizadas = ventasActuales.filter(v => v.id !== id);
         calcularEstadisticas(ventasActualizadas);
         return ventasActualizadas;
       });
       
-      // Eliminar la venta a través de la API de forma asíncrona
+      // Eliminar la venta del archivo JSON a través de la API
+      // Usar Promise para no bloquear la interfaz
       const promesaEliminacion = eliminarVentaAPI(id);
       
       // Manejar la respuesta de forma asíncrona
       promesaEliminacion.then(respuesta => {
         if (!respuesta.success) {
           console.error('Error al eliminar la venta en el servidor');
-          // Si falla, restaurar la venta eliminada
+          // Si falla, revertir el cambio local
           setVentas(ventasActuales => {
-            const ventasRestauradas = [...ventasActuales, ventaAEliminar];
-            // Ordenar por ID para mantener el orden original
-            ventasRestauradas.sort((a, b) => a.id.localeCompare(b.id));
-            calcularEstadisticas(ventasRestauradas);
-            return ventasRestauradas;
+            const ventasActualizadas = [...ventasActuales, ventaAEliminar];
+            calcularEstadisticas(ventasActualizadas);
+            return ventasActualizadas;
           });
+          return false;
         }
       }).catch(error => {
-        console.error('Error en la solicitud de eliminación:', error);
-        // Si hay un error, restaurar la venta eliminada
+        console.error('Error en la solicitud:', error);
+        // Si hay un error, revertir el cambio local
         setVentas(ventasActuales => {
-          const ventasRestauradas = [...ventasActuales, ventaAEliminar];
-          // Ordenar por ID para mantener el orden original
-          ventasRestauradas.sort((a, b) => a.id.localeCompare(b.id));
-          calcularEstadisticas(ventasRestauradas);
-          return ventasRestauradas;
+          const ventasActualizadas = [...ventasActuales, ventaAEliminar];
+          calcularEstadisticas(ventasActualizadas);
+          return ventasActualizadas;
         });
+        return false;
       });
       
-      // Devolver true inmediatamente para mejorar la experiencia del usuario
+      // Devolver true para indicar que la eliminación fue exitosa
       return true;
     } catch (error) {
-      console.error('Error al procesar la eliminación de la venta:', error);
+      console.error('Error al eliminar la venta:', error);
       return false;
     }
-  }, [ventas, calcularEstadisticas]);
-
-  // Valor del contexto
+  }, [calcularEstadisticas, ventas]);
+  
+  /**
+   * Filtra las ventas según los criterios especificados
+   * @param {Object} criterios - Criterios de filtrado
+   */
+  const filtrarVentas = useCallback((criterios) => {
+    setFiltros(criterios);
+  }, []);
+  
+  /**
+   * Obtiene las ventas filtradas según los criterios actuales
+   * @returns {Array} Ventas filtradas
+   */
+  const obtenerVentasFiltradas = useCallback(() => {
+    return ventas.filter(venta => {
+      // Filtrar por texto (ID, vendedor)
+      if (filtros.texto && !venta.id.toLowerCase().includes(filtros.texto.toLowerCase()) && 
+          !venta.vendedor.toLowerCase().includes(filtros.texto.toLowerCase())) {
+        return false;
+      }
+      
+      // Filtrar por fecha de inicio
+      if (filtros.fechaInicio && venta.fechaHora < filtros.fechaInicio) {
+        return false;
+      }
+      
+      // Filtrar por fecha de fin
+      if (filtros.fechaFin) {
+        const fechaFinConHora = new Date(filtros.fechaFin);
+        fechaFinConHora.setHours(23, 59, 59, 999);
+        if (venta.fechaHora > fechaFinConHora) {
+          return false;
+        }
+      }
+      
+      // Filtrar por vendedor
+      if (filtros.vendedor && venta.vendedor !== filtros.vendedor) {
+        return false;
+      }
+      
+      // Filtrar por tipo de pago
+      if (filtros.tipoPago && venta.tipoPago !== filtros.tipoPago) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [ventas, filtros]);
+  
+  // Valor del contexto que se proporcionará a los componentes
   const value = {
     ventas,
     estadisticas,
+    filtros,
     agregarVenta,
     actualizarVenta,
-    eliminarVenta
+    eliminarVenta,
+    filtrarVentas,
+    obtenerVentasFiltradas
   };
-
+  
   return (
     <VentasContext.Provider value={value}>
       {children}

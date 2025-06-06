@@ -149,8 +149,12 @@ export const UsuariosProvider = ({ children }) => {
       // Normalizar los datos del usuario
       const usuarioNormalizado = {
         ...nuevoUsuario,
-        // Generar un ID único
-        id: `U${Math.floor(Math.random() * 10000)}`
+        // Generar un ID secuencial para usuarios
+        id: `U${usuarios.length > 0 ? 
+          // Extraer el número del último ID y sumarle 1
+          (parseInt(usuarios[usuarios.length - 1].id.replace('U', '')) + 1).toString().padStart(4, '0') : 
+          // Si no hay usuarios, empezar con U0001
+          '0001'}`
       };
       
       // Actualizar el estado local primero para evitar recargas
@@ -205,7 +209,7 @@ export const UsuariosProvider = ({ children }) => {
       console.error('Error al procesar el usuario:', error);
       return null;
     }
-  }, [calcularEstadisticas]);
+  }, [calcularEstadisticas, usuarios]);
 
   /**
    * Elimina un usuario del sistema basado en su ID

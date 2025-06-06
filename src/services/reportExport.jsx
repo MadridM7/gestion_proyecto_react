@@ -539,26 +539,47 @@ const exportarReporteProductos = (productos) => {
     }
     
     // Formatear datos de productos para exportar
-    const datosProductos = productos.map(producto => ({
-      'ID': producto.id || '',
-      'Nombre': producto.nombre || '',
-      'Categoría': producto.categoria || 'No especificada',
-      'Precio de Venta': (producto.precioVenta || 0).toLocaleString('es-CL', {
-        style: 'currency',
-        currency: 'CLP',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }),
-      'Precio de Compra': (producto.precioCompra || 0).toLocaleString('es-CL', {
-        style: 'currency',
-        currency: 'CLP',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }),
-      'Margen (%)': producto.margenGanancia || 0,
-      'Stock': producto.stock || 0,
-      'Estado': producto.activo ? 'Activo' : 'Inactivo'
-    }));
+    const datosProductos = productos.map(producto => {
+      // Calcular ganancia por unidad
+      const precioVenta = producto.precio || 0;
+      const precioCompra = producto.precioCompra || 0;
+      const gananciaUnidad = precioVenta - precioCompra;
+
+      // Calcular valor total de inventario
+      const valorInventario = precioVenta * (producto.stock || 0);
+
+      return {
+        'ID': producto.id || '',
+        'Nombre': producto.nombre || '',
+        'Categoría': producto.categoria || 'No especificada',
+        'Precio de Venta': precioVenta.toLocaleString('es-CL', {
+          style: 'currency',
+          currency: 'CLP',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }),
+        'Precio de Compra': precioCompra.toLocaleString('es-CL', {
+          style: 'currency',
+          currency: 'CLP',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }),
+        'Ganancia por Unidad': gananciaUnidad.toLocaleString('es-CL', {
+          style: 'currency',
+          currency: 'CLP',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }),
+        'Margen (%)': producto.margenGanancia || 0,
+        'Stock Actual': producto.stock || 0,
+        'Valor de Inventario': valorInventario.toLocaleString('es-CL', {
+          style: 'currency',
+          currency: 'CLP',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        })
+      };
+    });
     
     // Fecha actual para el nombre del archivo
     const fechaActual = new Date();

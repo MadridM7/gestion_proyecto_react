@@ -131,8 +131,12 @@ export const PedidosProvider = ({ children }) => {
       // Normalizar los datos del pedido
       const pedidoNormalizado = {
         ...nuevoPedido,
-        // Generar un ID único
-        id: `P${Math.floor(Math.random() * 10000)}`
+        // Generar un ID secuencial para pedidos
+        id: `PD${pedidos.length > 0 ? 
+          // Extraer el número del último ID y sumarle 1
+          (parseInt(pedidos[pedidos.length - 1].id.replace('PD', '')) + 1).toString().padStart(4, '0') : 
+          // Si no hay pedidos, empezar con PD0001
+          '0001'}`
       };
       
       // Guardar el nuevo pedido en el archivo JSON a través de la API
@@ -168,7 +172,7 @@ export const PedidosProvider = ({ children }) => {
       console.error('Error al agregar pedido:', error);
       return null;
     }
-  }, [calcularEstadisticas]);
+  }, [calcularEstadisticas, pedidos]);
 
   /**
    * Elimina un pedido del sistema basado en su ID
