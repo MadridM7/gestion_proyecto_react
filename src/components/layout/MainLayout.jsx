@@ -201,6 +201,8 @@ const MainLayout = ({ children, currentPage }) => {
   
   /**
    * Maneja el envío del formulario de nueva venta
+   * Procesa tanto los datos básicos como los productos seleccionados
+   * Sin cálculos automáticos de montos basados en productos
    */
   const handleSubmit = async () => {
     try {
@@ -216,12 +218,25 @@ const MainLayout = ({ children, currentPage }) => {
         montoNumerico = values.monto;
       }
       
+      // Procesar los productos seleccionados (si los hay)
+      // Garantizamos que productos sea siempre un array con solo la información necesaria
+      const productos = Array.isArray(values.productos) 
+        ? values.productos.map(p => ({
+            id: p.id,
+            nombre: p.nombre,
+            precio: p.precio,
+            cantidad: p.cantidad
+          })) 
+        : [];
+      
       // Crear la nueva venta con los datos del formulario
       const nuevaVenta = {
         ...values,
-        monto: montoNumerico,
+        monto: montoNumerico, // El monto lo ingresa el usuario manualmente
         fechaHora: new Date().toISOString(),
-        id: `V${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`
+        id: `V${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+        // Incluir los productos seleccionados en la venta
+        productos: productos
       };
       
       // Agregar la nueva venta

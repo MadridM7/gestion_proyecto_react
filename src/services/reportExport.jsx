@@ -54,46 +54,79 @@ const getMonthName = (month) => {
 const formatearVentasParaExportar = (ventas, productos, usuarios, includeDetalles = false) => {
   if (!Array.isArray(ventas) || ventas.length === 0) return [];
   
-  return ventas.map(venta => {
+  const ventasFormatted = [];
+  
+  ventas.forEach(venta => {
     // Asegurarse de que todos los campos existan para evitar errores
     const monto = typeof venta.monto === 'number' ? venta.monto : 0;
     const tipoPago = venta.tipoPago || '';
     const fechaHora = venta.fechaHora ? new Date(venta.fechaHora) : new Date();
     
-    // Obtener información adicional del producto
-    const producto = productos.find(p => p.nombre === venta.producto);
-    const precioCompra = producto ? producto.precioCompra : 0;
-    const margenGanancia = producto ? producto.margenGanancia : 0;
-    const categoria = producto ? producto.categoria : 'No especificada';
-    
     // Obtener información del vendedor
     const vendedor = usuarios.find(u => u.id === venta.vendedorId);
     const nombreVendedor = vendedor ? vendedor.nombre : venta.vendedor || 'Desconocido';
     
-    // Datos básicos que siempre se incluyen
-    const datosBasicos = {
-      'ID': venta.id || '',
-      'Producto': venta.producto || '',
-      'Monto': monto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-      'Tipo de Pago': tipoPago.charAt(0).toUpperCase() + tipoPago.slice(1),
-      'Vendedor': nombreVendedor,
-      'Fecha': formatDate(fechaHora),
-      'Hora': formatTime(fechaHora)
-    };
-    
-    // Si se solicitan detalles adicionales, incluirlos
-    if (includeDetalles) {
-      return {
-        ...datosBasicos,
-        'Categoría': categoria,
-        'Precio de Compra': precioCompra.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-        'Margen (%)': margenGanancia,
-        'Ganancia': (monto - precioCompra).toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    // Verificar si la venta tiene productos
+    if (Array.isArray(venta.productos) && venta.productos.length > 0) {
+      // Si hay productos en la venta, crear una entrada para cada producto
+      venta.productos.forEach(productoVenta => {
+        // Obtener información adicional del producto desde el catálogo completo
+        const productoCompleto = productos.find(p => p.id === productoVenta.id) || {};
+        
+        // Datos básicos para cada producto de la venta
+        const datoProducto = {
+          'ID Venta': venta.id || '',
+          'Producto': productoVenta.nombre || '',
+          'Precio Unitario': productoVenta.precio?.toLocaleString('es-CL', 
+                              { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }) || '',
+          'Cantidad': productoVenta.cantidad || 0,
+          'Monto Total Venta': monto.toLocaleString('es-CL', 
+                              { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+          'Tipo de Pago': tipoPago.charAt(0).toUpperCase() + tipoPago.slice(1),
+          'Vendedor': nombreVendedor,
+          'Fecha': formatDate(fechaHora),
+          'Hora': formatTime(fechaHora)
+        };
+        
+        // Si se solicitan detalles adicionales, incluirlos
+        if (includeDetalles) {
+          datoProducto['Categoría'] = productoCompleto.categoria || 'No especificada';
+          
+          // Datos adicionales si están disponibles
+          if (productoCompleto.precioCompra) {
+            datoProducto['Precio de Compra'] = productoCompleto.precioCompra.toLocaleString('es-CL', 
+                              { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            
+            // Si tenemos precio de compra, podemos calcular ganancia
+            const gananciaTotal = (productoVenta.precio - productoCompleto.precioCompra) * productoVenta.cantidad;
+            datoProducto['Ganancia Estimada'] = gananciaTotal.toLocaleString('es-CL', 
+                              { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+          }
+          
+          if (productoCompleto.margenGanancia) {
+            datoProducto['Margen (%)'] = productoCompleto.margenGanancia;
+          }
+        }
+        
+        ventasFormatted.push(datoProducto);
+      });
+    } else {
+      // Si no hay productos en la venta, crear una entrada sencilla
+      const datosBasicos = {
+        'ID': venta.id || '',
+        'Monto': monto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+        'Tipo de Pago': tipoPago.charAt(0).toUpperCase() + tipoPago.slice(1),
+        'Vendedor': nombreVendedor,
+        'Fecha': formatDate(fechaHora),
+        'Hora': formatTime(fechaHora),
+        'Productos': 'No especificados'
       };
+      
+      ventasFormatted.push(datosBasicos);
     }
-    
-    return datosBasicos;
   });
+  
+  return ventasFormatted;
 };
 
 /**

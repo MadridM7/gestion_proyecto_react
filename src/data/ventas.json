@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "V2529",
+    "productos": [
+      {
+        "id": "P0005",
+        "nombre": "Disco SSD 500GB Samsung",
+        "precio": 75000,
+        "cantidad": 1
+      }
+    ],
+    "monto": 30000,
+    "tipoPago": "efectivo",
+    "vendedor": "admin",
+    "fechaHora": "2025-06-06T17:18:04.304Z"
+  },
+  {
+    "id": "V5946",
+    "productos": [
+      {
+        "id": "P0003",
+        "nombre": "Teclado Mecánico Redragon",
+        "precio": 45000,
+        "cantidad": 1
+      }
+    ],
+    "monto": 10000,
+    "tipoPago": "efectivo",
+    "vendedor": "admin",
+    "fechaHora": "2025-06-06T17:31:32.726Z"
+  }
+]

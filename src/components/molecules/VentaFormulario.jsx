@@ -1,11 +1,27 @@
 /**
  * @fileoverview Formulario para agregar o editar ventas
  */
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Form, Input, Select, InputNumber } from 'antd';
-import { DollarOutlined, UserOutlined, CreditCardOutlined } from '@ant-design/icons';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Form, 
+  Input, 
+  InputNumber, 
+  Select,
+  Table,
+  Button,
+} from 'antd';
+import {
+  ShoppingOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  DollarOutlined,
+  CreditCardOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useUsuarios } from '../../context/UsuariosContext';
+import { useProductos } from '../../context/ProductosContext';
+import '../../styles/components/molecules/VentaFormulario.css';
 
 const { Option } = Select;
 
@@ -19,8 +35,15 @@ const VentaFormulario = ({
   editingVenta = null,
   loading = false
 }) => {
-  // Obtener usuarios del contexto
+  // Estados para manejar la selección de productos
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [productQuantity, setProductQuantity] = useState(1);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  
+  // Obtener usuarios y productos del contexto
   const { usuarios } = useUsuarios();
+  const { productos } = useProductos();
+  
   // Función para generar un ID único
   const generateId = useCallback(() => {
     return `V${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
@@ -56,6 +79,59 @@ const VentaFormulario = ({
       : [];
   }, [usuarios]);
   
+  // Preparar lista de productos para el selector
+  const productOptions = useMemo(() => {
+    return productos
+      ? productos.map(producto => ({
+          value: producto.id,
+          label: `${producto.nombre} - $${producto.precio.toLocaleString('es-CL')}`,
+          precio: producto.precio
+        }))
+      : [];
+  }, [productos]);
+  
+  // Función para agregar un producto a la lista de seleccionados (versión simplificada)
+  const handleAddProduct = () => {
+    if (!selectedProductId || productQuantity <= 0) return;
+    
+    const producto = productos.find(p => p.id === selectedProductId);
+    
+    if (producto) {
+      // Verificar si el producto ya está en la lista
+      const existingProduct = selectedProducts.find(p => p.id === selectedProductId);
+      
+      if (existingProduct) {
+        // Actualizar la cantidad si ya existe
+        const updatedProducts = selectedProducts.map(p => 
+          p.id === selectedProductId 
+            ? { ...p, cantidad: p.cantidad + productQuantity }
+            : p
+        );
+        setSelectedProducts(updatedProducts);
+      } else {
+        // Agregar nuevo producto
+        const newProduct = {
+          id: producto.id,
+          nombre: producto.nombre,
+          precio: producto.precio,
+          cantidad: productQuantity
+        };
+        setSelectedProducts([...selectedProducts, newProduct]);
+      }
+      
+      // Resetear valores
+      setSelectedProductId(null);
+      setProductQuantity(1);
+    }
+  };
+  
+  // Función para eliminar un producto de la lista
+  const handleRemoveProduct = (productId) => {
+    // Eliminar el producto de la lista
+    const updatedProducts = selectedProducts.filter(p => p.id !== productId);
+    setSelectedProducts(updatedProducts);
+  };
+  
   // Inicializar el formulario cuando cambia la venta
   useEffect(() => {
     if (editingVenta) {
@@ -63,16 +139,65 @@ const VentaFormulario = ({
         ...editingVenta,
         monto: Number(editingVenta.monto)
       });
+      
+      // Si hay productos en la venta a editar, cargarlos
+      if (editingVenta.productos && Array.isArray(editingVenta.productos)) {
+        setSelectedProducts(editingVenta.productos);
+      } else {
+        setSelectedProducts([]);
+      }
     } else {
       form.resetFields();
       form.setFieldsValue({
         id: generateId(),
         tipoPago: 'efectivo',
         vendedor: vendedores.length > 0 ? vendedores[0].value : '',
-        monto: 0
+        monto: 0,
+        productos: []
       });
+      setSelectedProducts([]);
     }
   }, [editingVenta, form, generateId, vendedores]);
+  
+  // Columnas para la tabla de productos seleccionados (versión simplificada)
+  const productColumns = [
+    {
+      title: 'Producto',
+      dataIndex: 'nombre',
+      key: 'nombre',
+    },
+    {
+      title: 'Precio',
+      dataIndex: 'precio',
+      key: 'precio',
+      render: (precio) => `$${precio.toLocaleString('es-CL')}`
+    },
+    {
+      title: 'Cantidad',
+      dataIndex: 'cantidad',
+      key: 'cantidad',
+    },
+    {
+      title: 'Acciones',
+      key: 'acciones',
+      render: (_, record) => (
+        <Button 
+          type="text" 
+          danger 
+          icon={<DeleteOutlined />} 
+          onClick={() => handleRemoveProduct(record.id)}
+          disabled={loading}
+        />
+      )
+    }
+  ];
+
+  // Campo oculto para guardar los productos seleccionados en el formulario
+  useEffect(() => {
+    form.setFieldsValue({
+      productos: selectedProducts
+    });
+  }, [selectedProducts, form]);
 
   return (
     <Form
@@ -84,6 +209,14 @@ const VentaFormulario = ({
       {/* Campo oculto para el ID */}
       <Form.Item
         name="id"
+        hidden
+      >
+        <Input />
+      </Form.Item>
+      
+      {/* Campo oculto para los productos */}
+      <Form.Item
+        name="productos"
         hidden
       >
         <Input />
@@ -146,6 +279,54 @@ const VentaFormulario = ({
           ))}
         </Select>
       </Form.Item>
+      
+      {/* Sección de selección de productos */}
+      <div className="productos-section">
+        <h3>
+          <ShoppingOutlined /> Productos (Opcional)
+        </h3>
+        
+        <div className="productos-selector">
+          <Select
+            placeholder="Selecciona un producto"
+            showSearch
+            optionFilterProp="children"
+            value={selectedProductId}
+            onChange={setSelectedProductId}
+            options={productOptions}
+            disabled={loading}
+          />
+          <InputNumber
+            min={1}
+            value={productQuantity}
+            onChange={setProductQuantity}
+            placeholder="Cantidad"
+            disabled={!selectedProductId || loading}
+          />
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />} 
+            onClick={handleAddProduct}
+            disabled={!selectedProductId || loading}
+          >
+            Agregar
+          </Button>
+        </div>
+        
+        {/* Tabla de productos seleccionados */}
+        {selectedProducts.length > 0 && (
+          <div className="productos-table-container">
+            <Table 
+              dataSource={selectedProducts} 
+              columns={productColumns}
+              pagination={false}
+              size="small"
+              rowKey="id"
+              bordered
+            />
+          </div>
+        )}
+      </div>
     </Form>
   );
 };

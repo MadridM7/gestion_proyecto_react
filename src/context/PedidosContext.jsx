@@ -13,7 +13,7 @@ import pedidosData from '../data/pedidos.json';
 import { API_URL } from '../config';
 
 // Importar el sistema de polling para actualización de datos sin recompilar
-import { dataPoller } from '../services/dataPoller';
+import { dataPoller } from '../services/dataPoller.jsx';
 
 // Importar servicio de WhatsApp para notificaciones
 import whatsappService from '../services/whatsappService';

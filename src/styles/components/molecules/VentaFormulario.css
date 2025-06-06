@@ -1,0 +1,72 @@
+/**
+ * Estilos para el formulario de ventas
+ */
+
+/* Contenedor de la sección de productos */
+.productos-section {
+  margin-top: 24px;
+}
+
+.productos-section h3 {
+  margin-bottom: 16px;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+/* Selector de productos y controles */
+.productos-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.productos-selector .ant-select {
+  flex: 3;
+}
+
+.productos-selector .ant-input-number {
+  flex: 1;
+  min-width: 80px;
+}
+
+.productos-selector .ant-btn {
+  flex: 1;
+  min-width: 100px;
+}
+
+/* Tabla de productos seleccionados */
+.productos-table-container {
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.productos-total {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.productos-total .ant-tag {
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
+/* Diseño responsivo */
+@media screen and (max-width: 768px) {
+  .productos-selector {
+    flex-direction: column;
+  }
+  
+  .productos-selector .ant-select,
+  .productos-selector .ant-input-number,
+  .productos-selector .ant-btn {
+    width: 100%;
+  }
+  
+  .productos-table-container {
+    overflow-x: auto;
+  }
+}
