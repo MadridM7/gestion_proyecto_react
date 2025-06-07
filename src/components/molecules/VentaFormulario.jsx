@@ -90,24 +90,39 @@ const VentaFormulario = ({
       : [];
   }, [productos]);
   
-  // Función para agregar un producto a la lista de seleccionados (versión simplificada)
+  // Función para calcular el total de la venta basado en los productos seleccionados
+  const calcularTotalProductos = useCallback((productos) => {
+    const total = productos.reduce((total, producto) => {
+      return total + (producto.precio * producto.cantidad);
+    }, 0);
+    // Asegurarse de que el total nunca sea menor a 1
+    return Math.max(1, total);
+  }, []);
+
+  // Función para actualizar el monto total en el formulario
+  const actualizarMontoTotal = useCallback((productos) => {
+    const total = calcularTotalProductos(productos);
+    form.setFieldsValue({ monto: total });
+  }, [calcularTotalProductos, form]);
+  
+  // Función para agregar un producto a la lista de seleccionados
   const handleAddProduct = () => {
     if (!selectedProductId || productQuantity <= 0) return;
     
     const producto = productos.find(p => p.id === selectedProductId);
     
     if (producto) {
+      let updatedProducts = [];
       // Verificar si el producto ya está en la lista
       const existingProduct = selectedProducts.find(p => p.id === selectedProductId);
       
       if (existingProduct) {
         // Actualizar la cantidad si ya existe
-        const updatedProducts = selectedProducts.map(p => 
+        updatedProducts = selectedProducts.map(p => 
           p.id === selectedProductId 
             ? { ...p, cantidad: p.cantidad + productQuantity }
             : p
         );
-        setSelectedProducts(updatedProducts);
       } else {
         // Agregar nuevo producto
         const newProduct = {
@@ -118,8 +133,14 @@ const VentaFormulario = ({
                  (typeof producto.precio === 'number' ? producto.precio : 0),
           cantidad: productQuantity
         };
-        setSelectedProducts([...selectedProducts, newProduct]);
+        updatedProducts = [...selectedProducts, newProduct];
       }
+      
+      // Actualizar la lista de productos
+      setSelectedProducts(updatedProducts);
+      
+      // Actualizar el monto total
+      actualizarMontoTotal(updatedProducts);
       
       // Resetear valores
       setSelectedProductId(null);
@@ -132,23 +153,37 @@ const VentaFormulario = ({
     // Eliminar el producto de la lista
     const updatedProducts = selectedProducts.filter(p => p.id !== productId);
     setSelectedProducts(updatedProducts);
+    
+    // Actualizar el monto total
+    actualizarMontoTotal(updatedProducts);
   };
   
   // Inicializar el formulario cuando cambia la venta
   useEffect(() => {
     if (editingVenta) {
-      form.setFieldsValue({
-        ...editingVenta,
-        monto: Number(editingVenta.monto)
-      });
-      
       // Si hay productos en la venta a editar, cargarlos
       if (editingVenta.productos && Array.isArray(editingVenta.productos)) {
         setSelectedProducts(editingVenta.productos);
+        
+        // Calcular el monto basado en los productos
+        const montoCalculado = calcularTotalProductos(editingVenta.productos);
+        
+        form.setFieldsValue({
+          ...editingVenta,
+          // Usar el monto calculado si hay productos, o el monto guardado si no
+          monto: montoCalculado > 0 ? montoCalculado : Number(editingVenta.monto || 0),
+          productos: editingVenta.productos
+        });
       } else {
         setSelectedProducts([]);
+        form.setFieldsValue({
+          ...editingVenta,
+          monto: Number(editingVenta.monto || 0),
+          productos: []
+        });
       }
     } else {
+      // Inicializar un nuevo formulario
       form.resetFields();
       form.setFieldsValue({
         id: generateId(),
@@ -159,7 +194,7 @@ const VentaFormulario = ({
       });
       setSelectedProducts([]);
     }
-  }, [editingVenta, form, generateId, vendedores]);
+  }, [editingVenta, form, generateId, vendedores, calcularTotalProductos]);
   
   // Columnas para la tabla de productos seleccionados (versión simplificada)
   const productColumns = [
@@ -230,7 +265,7 @@ const VentaFormulario = ({
         label="Monto"
         rules={[
           { required: true, message: 'Por favor ingresa el monto' },
-          { type: 'number', min: 0, message: 'El monto debe ser mayor o igual a 0' }
+          { type: 'number', min: 1, message: 'El monto debe ser mayor a 0' }
         ]}
       >
         <InputNumber
@@ -239,7 +274,7 @@ const VentaFormulario = ({
           parser={value => value.replace(/\$\s?|(\.*)|(,*)/g, '')}
           placeholder="Ingresa el monto"
           onChange={handleMontoChange}
-          min={0}
+          min={1}
           precision={0}
           prefix={<DollarOutlined />}
           suffix="CLP"
@@ -325,6 +360,19 @@ const VentaFormulario = ({
               size="small"
               rowKey="id"
               bordered
+              summary={(pageData) => {
+                const total = calcularTotalProductos(pageData);
+                return (
+                  <Table.Summary.Row>
+                    <Table.Summary.Cell index={0} colSpan={2} align="right">
+                      <strong>Total:</strong>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell index={1} colSpan={2}>
+                      <strong>${total.toLocaleString('es-CL')}</strong>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                );
+              }}
             />
           </div>
         )}
