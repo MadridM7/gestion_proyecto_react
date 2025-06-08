@@ -1,5 +1,6 @@
 /**
  * Estilos para el componente TopProductsChart
+ * Optimizado para visualización en dispositivos móviles
  */
 
 .top-products-chart-card {
@@ -7,6 +8,7 @@
   box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.06), 0 5px 12px 4px rgba(0, 0, 0, 0.04);
   border-radius: 8px;
   margin-bottom: 16px;
+  transition: all 0.3s ease;
 }
 
 .top-products-chart-card .ant-card-head {
@@ -40,6 +42,77 @@
   cursor: pointer;
 }
 
+/* Lista de productos para móvil */
+.mobile-products-list {
+  padding: 0;
+}
+
+.mobile-product-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-product-item:last-child {
+  border-bottom: none;
+}
+
+.product-color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.product-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.product-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.product-quantity {
+  background-color: #e6f7ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.product-amount {
+  background-color: #f6ffed;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.product-percent {
+  background-color: #fff7e6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Clase para la tarjeta en modo móvil */
+.mobile-card {
+  height: auto !important;
+  margin-bottom: 12px;
+}
+
+.mobile-card .ant-card-body {
+  padding: 12px;
+}
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
   .top-products-chart-card .ant-card-head-wrapper {
@@ -49,6 +122,14 @@
   .top-products-chart-card .ant-card-extra {
     margin-top: 8px;
     margin-left: 0;
+  }
+  
+  .top-products-chart-card {
+    height: auto;
+  }
+  
+  .chart-loading {
+    height: 200px;
   }
 }
 

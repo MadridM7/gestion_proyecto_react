@@ -1,43 +1,118 @@
 /**
  * Estilos para el componente TimeRangeFilter
+ * Optimizados para dispositivos móviles y escritorio
  */
 
+/* Contenedor principal */
 .time-range-filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
   margin-bottom: 0;
+  width: 100%;
+}
+
+/* Contenedor para vista desktop - todo en una línea */
+.desktop-filter-container {
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Contenedor interno para vista móvil */
+.filter-container {
+  width: 100%;
+}
+
+/* Botones de radio */
+.range-radio-group {
+  display: flex;
+  margin-bottom: 8px;
 }
 
 .range-radio-group .ant-radio-button-wrapper {
   border-radius: 6px;
   margin-right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .range-radio-group .ant-radio-button-wrapper:first-child {
-  border-radius: 6px 6px 6px 6px;
+  border-radius: 6px;
 }
 
 .range-radio-group .ant-radio-button-wrapper:last-child {
-  border-radius: 6px 6px 6px 6px;
+  border-radius: 6px;
   margin-right: 0;
+}
+
+/* Selector de rango personalizado */
+.custom-range-picker {
+  display: flex;
 }
 
 .custom-range-picker .ant-picker {
   border-radius: 6px;
 }
 
+.responsive-date-picker {
+  border-radius: 6px;
+}
+
+/* Clases específicas para dispositivos móviles */
+.mobile-view {
+  padding: 8px 0;
+}
+
+.mobile-radio-group {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mobile-radio-group .ant-space {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.mobile-picker {
+  width: 100%;
+}
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
   .time-range-filter {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0;
   }
   
   .custom-range-picker {
     width: 100%;
+  }
+  
+  .ant-picker {
+    width: 100% !important;
+  }
+  
+  .range-radio-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .range-radio-group .ant-space {
+    gap: 4px !important;
+    width: 100%;
+  }
+  
+  .range-radio-group .ant-radio-button-wrapper {
+    flex: 1;
+    padding: 0 8px;
+    display: flex;
+    justify-content: center;
   }
   
   .custom-range-picker .ant-picker {

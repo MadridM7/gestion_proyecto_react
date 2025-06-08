@@ -1,14 +1,16 @@
 /**
- * @fileoverview Componente de gráfico circular para mostrar los 5 productos más vendidos
+ * @fileoverview Componente de gráfico circular para mostrar los productos más vendidos
  * Implementado siguiendo el patrón Atomic Design como un organismo
+ * Optimizado para visualización en dispositivos móviles
  */
 import React, { useState, useEffect } from 'react';
-import { Card, Empty, Spin, Tooltip } from 'antd';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Card, Empty, Spin, Tooltip, List } from 'antd';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { ShoppingOutlined } from '@ant-design/icons';
 // El componente recibe las ventas directamente como prop
 import { formatCurrency } from '../../utils/formatters';
 import '../../styles/components/dashboard/Chart.css';
+import '../../styles/components/organisms/TopProductsChart.css';
 
 // Colores para las secciones del gráfico circular
 const COLORS = [
@@ -21,28 +23,54 @@ const COLORS = [
 ];
 
 /**
- * Componente que muestra los 5 productos más vendidos en un gráfico circular
+ * Componente que muestra los productos más vendidos en un gráfico circular
+ * Optimizado para visualización móvil con detección automática si no se proporciona la prop isMobile
  * @param {Object} props - Propiedades del componente
+ * @param {Array} props.ventas - Lista de ventas para procesar
  * @param {Object} props.timeRange - Rango de tiempo seleccionado
  * @param {number} props.limit - Límite de productos a mostrar (por defecto 5)
  * @param {boolean} props.loading - Indica si está cargando los datos
- * @returns {JSX.Element} Gráfico circular de productos más vendidos
+ * @param {boolean} props.isMobile - Opcional, indica si es dispositivo móvil (si no se proporciona, se detecta automáticamente)
+ * @returns {JSX.Element} Gráfico circular de productos más vendidos adaptado al dispositivo
  */
-const TopProductsChart = ({ ventas = [], timeRange, limit = 5, loading = false }) => {
+const TopProductsChart = ({ ventas = [], timeRange, limit = 5, loading = false, isMobile: propIsMobile }) => {
   // Estado para almacenar los datos procesados del gráfico
   const [chartData, setChartData] = useState([]);
   // Estado para controlar la carga del componente
   const [isLoading, setIsLoading] = useState(true);
   // Estado para controlar el sector activo en el gráfico
   const [activeIndex, setActiveIndex] = useState(0);
+  // Estado para detectar si es dispositivo móvil (solo se usa si no se proporciona la prop)
+  const [localIsMobile, setLocalIsMobile] = useState(false);
+  
+  // Usar la prop isMobile si se proporciona, de lo contrario usar el estado local
+  const isMobile = propIsMobile !== undefined ? propIsMobile : localIsMobile;
+  
+  // Detectar si es dispositivo móvil al cargar y al cambiar el tamaño de la ventana (solo si no hay prop)
+  useEffect(() => {
+    // Si ya tenemos la prop, no necesitamos detectar el tamaño de la ventana
+    if (propIsMobile !== undefined) return;
+    
+    const checkIfMobile = () => {
+      setLocalIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Verificar al cargar el componente
+    checkIfMobile();
+    
+    // Verificar al cambiar el tamaño de la ventana
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Limpiar el event listener al desmontar el componente
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, [propIsMobile]);
 
   /**
    * Procesa los datos de ventas según el rango de tiempo seleccionado
    */
   useEffect(() => {
-    console.log('TopProductsChart - ventas recibidas:', ventas?.length);
-    console.log('TopProductsChart - timeRange:', timeRange);
-    
     if (!ventas || !Array.isArray(ventas) || !timeRange) {
       setChartData([]);
       setIsLoading(false);
@@ -67,77 +95,41 @@ const TopProductsChart = ({ ventas = [], timeRange, limit = 5, loading = false }
         return false;
       }
     });
-    
-    console.log('TopProductsChart - Ventas filtradas:', ventasFiltradas.length);
-    
-    console.log('TopProductsChart - ventas filtradas:', ventasFiltradas.length);
 
     // Mapa para agrupar productos por nombre y sumar cantidades
     const productosMap = new Map();
 
     // Procesar cada venta y sus productos
     ventasFiltradas.forEach(venta => {
-      if (!venta.productos || !Array.isArray(venta.productos) || venta.productos.length === 0) {
-        console.log('Venta sin productos o formato incorrecto:', venta.id || venta._id);
-        return;
-      }
-      
-      // Mostrar estructura de la primera venta para depuración
-      if (ventasFiltradas.indexOf(venta) === 0) {
-        console.log('Estructura de productos en JSON:', venta.productos);
-      }
-      
-      venta.productos.forEach(item => {
-        // Identificar estructura del producto en el JSON
-        let productoId, nombreProducto, cantidad, precioUnitario;
-        
-        // Para datos del JSON actual:
-        // {"id":"P0001","nombre":"master","precio":13000,"cantidad":1}
-        if (item.id && item.nombre) {
-          productoId = item.id;
-          nombreProducto = item.nombre;
-          cantidad = item.cantidad || 1;
-          precioUnitario = item.precio || 0;
-        }
-        // Para estructura alternativa donde producto es una propiedad del item
-        else if (item.producto) {
-          if (typeof item.producto === 'object') {
-            productoId = item.producto.id || item.producto._id || JSON.stringify(item.producto);
-            nombreProducto = item.producto.nombre || 'Producto sin nombre';
-          } else {
-            productoId = String(item.producto);
-            nombreProducto = 'Producto ' + productoId;
+      // Cada venta puede tener múltiples productos
+      if (venta.productos && Array.isArray(venta.productos)) {
+        venta.productos.forEach(producto => {
+          const {
+            id: productoId = 'desconocido',
+            nombre: nombreProducto = 'Producto desconocido',
+            cantidad = 1,
+            precioUnitario = 0
+          } = producto;
+          
+          // Si no existe el producto en el map, lo inicializamos
+          if (!productosMap.has(productoId)) {
+            productosMap.set(productoId, {
+              id: productoId,
+              name: nombreProducto, // Usamos 'name' en lugar de 'nombre' para ser consistente con la estructura esperada por PieChart
+              valor: 0,
+              cantidad: 0,
+              monto: 0
+            });
           }
-          cantidad = item.cantidad || 1;
-          precioUnitario = item.precioUnitario || item.precio || 0;
-        }
-        // Si no se puede identificar la estructura
-        else {
-          console.log('Estructura de producto no reconocida:', item);
-          return;
-        }
-        
-        // Si no existe el producto en el map, lo inicializamos
-        if (!productosMap.has(productoId)) {
-          productosMap.set(productoId, {
-            id: productoId,
-            name: nombreProducto, // Usamos 'name' en lugar de 'nombre' para ser consistente con la estructura esperada por PieChart
-            valor: 0,
-            cantidad: 0,
-            monto: 0
-          });
-        }
-        
-        // Actualizar contadores para este producto
-        const producto = productosMap.get(productoId);
-        producto.cantidad += cantidad;
-        producto.monto += cantidad * precioUnitario;
-        producto.valor = producto.cantidad; // Necesario para el gráfico circular
-      });
+          
+          // Actualizar contadores para este producto
+          const productoActual = productosMap.get(productoId);
+          productoActual.cantidad += cantidad;
+          productoActual.monto += cantidad * precioUnitario;
+          productoActual.valor = productoActual.cantidad; // Necesario para el gráfico circular
+        });
+      }
     });
-    
-    console.log('TopProductsChart - Procesando productos de ventas filtradas:', ventasFiltradas.length);
-    console.log('TopProductsChart - Productos encontrados:', productosMap.size);
     
     // Convertir a array, ordenar por cantidad (de mayor a menor) y limitar a los top productos
     const topProductos = Array.from(productosMap.values())
@@ -148,8 +140,6 @@ const TopProductsChart = ({ ventas = [], timeRange, limit = 5, loading = false }
         // Añadir porcentaje para visualización
         percentText: `${Math.round((producto.cantidad / Array.from(productosMap.values()).reduce((acc, curr) => acc + curr.cantidad, 0)) * 100)}%`
       }));
-    
-    console.log('TopProductsChart - productos procesados:', topProductos);
     
     setChartData(topProductos);
     setIsLoading(false);
@@ -167,14 +157,27 @@ const TopProductsChart = ({ ventas = [], timeRange, limit = 5, loading = false }
    * Renderiza un sector activo con estilo especial
    */
   const renderActiveShape = (props) => {
+    const RADIAN = Math.PI / 180;
     const { 
-      cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, name, valor 
+      cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle,
+      fill, payload, percent, valor
     } = props;
     
+    const sin = Math.sin(-RADIAN * midAngle);
+    const cos = Math.cos(-RADIAN * midAngle);
+    const sx = cx + (outerRadius + 10) * cos;
+    const sy = cy + (outerRadius + 10) * sin;
+    const mx = cx + (outerRadius + 30) * cos;
+    const my = cy + (outerRadius + 30) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+    const ey = my;
+    const textAnchor = cos >= 0 ? 'start' : 'end';
+
     return (
       <g>
-        <text x={cx} y={cy - 10} dy={8} textAnchor="middle" fill="#333">
-          {name}
+        <Tooltip />
+        <text x={cx} y={cy} dy={-20} textAnchor="middle" fill={fill} fontSize="16px" fontWeight="bold">
+          {payload.name}
         </text>
         <text x={cx} y={cy + 10} dy={8} textAnchor="middle" fill="#999" fontSize="12px">
           {`${valor} unid.`}
@@ -213,54 +216,91 @@ const TopProductsChart = ({ ventas = [], timeRange, limit = 5, loading = false }
     return null;
   };
 
-
+  // Renderiza la vista de gráfico o lista según el dispositivo
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="chart-loading">
+          <Spin size="large" />
+        </div>
+      );
+    }
+    
+    if (chartData.length === 0) {
+      return (
+        <Empty
+          description="No hay datos disponibles" 
+          image={Empty.PRESENTED_IMAGE_SIMPLE} 
+          className="chart-empty"
+        />
+      );
+    }
+    
+    // Vista de dispositivos móviles: mostrar una lista en lugar del gráfico
+    if (isMobile) {
+      return (
+        <div className="mobile-products-list">
+          <List
+            dataSource={chartData}
+            renderItem={(item, index) => (
+              <List.Item className="mobile-product-item">
+                <div className="product-color-indicator" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                <div className="product-details">
+                  <div className="product-name">{item.name}</div>
+                  <div className="product-stats">
+                    <span className="product-quantity">{item.cantidad} unidades</span>
+                    <span className="product-amount">{formatCurrency(item.monto)}</span>
+                    <span className="product-percent">{item.percentText}</span>
+                  </div>
+                </div>
+              </List.Item>
+            )}
+          />
+        </div>
+      );
+    }
+    
+    // Vista de escritorio: mostrar el gráfico circular
+    return (
+      <ResponsiveContainer width="100%" height={330}>
+        <PieChart>
+          <Pie
+            activeIndex={activeIndex}
+            activeShape={renderActiveShape}
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            outerRadius={120}
+            innerRadius={60}
+            dataKey="valor"
+            nameKey="name"
+            onMouseEnter={onPieEnter}
+          >
+            {chartData.map((entry, index) => (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={COLORS[index % COLORS.length]} 
+                stroke="none"
+              />
+            ))}
+          </Pie>
+          <Tooltip content={customTooltip} />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+  };
 
   return (
     <Card 
       title="Top Productos Vendidos" 
-      className="dashboard-card top-products-chart-card"
+      className={`dashboard-card top-products-chart-card ${isMobile ? 'mobile-card' : ''}`}
       extra={<ShoppingOutlined />}
       loading={loading}
-      style={{ height: "430px" }}
+      style={{ height: isMobile ? "auto" : "430px" }}
+      bodyStyle={{ padding: isMobile ? '12px' : '24px' }}
     >
-      {isLoading ? (
-        <div className="chart-loading">
-          <Spin size="large" />
-        </div>
-      ) : chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={330}>
-          <PieChart>
-            <Pie
-              activeIndex={activeIndex}
-              activeShape={renderActiveShape}
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={120}
-              innerRadius={60}
-              dataKey="valor"
-              nameKey="name"
-              onMouseEnter={onPieEnter}
-            >
-              {chartData.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={COLORS[index % COLORS.length]} 
-                />
-              ))}
-            </Pie>
-            <Tooltip content={customTooltip} />
-          </PieChart>
-        </ResponsiveContainer>
-      ) : (
-        <div className="chart-empty-container">
-          <Empty 
-            image={Empty.PRESENTED_IMAGE_SIMPLE} 
-            description={<span>No hay datos disponibles para el período seleccionado</span>}
-          />
-        </div>
-      )}
+      {renderContent()}
     </Card>
   );
 };

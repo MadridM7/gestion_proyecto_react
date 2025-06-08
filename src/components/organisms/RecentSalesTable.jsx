@@ -1,10 +1,12 @@
 /**
  * @fileoverview Componente de tabla para mostrar las ventas más recientes
+ * Implementa optimización para visualización en dispositivos móviles
  */
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Tag, Tooltip, Badge, Typography, Button } from 'antd';
+import { Card, Table, Tag, Tooltip, Badge, Typography, Button, List, Space } from 'antd';
 import { 
-  ShoppingCartOutlined
+  CalendarOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { useVentas } from '../../context/VentasContext';
 import { formatCurrency } from '../../utils/formatters';
@@ -25,6 +27,26 @@ const RecentSalesTable = ({
   const { ventas } = useVentas();
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Estado para detectar si es dispositivo móvil
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar si es dispositivo móvil al cargar y al cambiar el tamaño de la ventana
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Verificar al cargar el componente
+    checkIfMobile();
+    
+    // Verificar al cambiar el tamaño de la ventana
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Limpiar el event listener al desmontar el componente
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   useEffect(() => {
     if (!ventas || ventas.length === 0) {
@@ -148,7 +170,8 @@ const RecentSalesTable = ({
     return cantidad > 0 ? <Badge count={cantidad} overflowCount={99} /> : <Text type="secondary">0</Text>;
   };
 
-  const columns = [
+  // Columnas para la vista de escritorio
+  const desktopColumns = [
     {
       title: 'ID Venta',
       dataIndex: 'id',
@@ -211,6 +234,37 @@ const RecentSalesTable = ({
       render: renderTipoPago
     }
   ];
+  
+  // Columnas para la vista móvil (versión simplificada con menos columnas)
+  const mobileColumns = [
+    {
+      title: 'Venta',
+      dataIndex: 'id',
+      key: 'id',
+      render: (id, record) => (
+        <div className="mobile-sale-info">
+          <Text strong>{id}</Text>
+          <Text type="secondary" className="mobile-vendor">{record.vendedor}</Text>
+        </div>
+      )
+    },
+    {
+      title: 'Monto',
+      dataIndex: 'monto',
+      key: 'monto',
+      align: 'right',
+      render: (monto) => <Text strong>{formatCurrency(monto)}</Text>,
+    },
+    {
+      title: 'Tipo',
+      dataIndex: 'tipoPago',
+      key: 'tipoPago',
+      render: renderTipoPago
+    }
+  ];
+  
+  // Seleccionar columnas según el tipo de dispositivo
+  const columns = isMobile ? mobileColumns : desktopColumns;
 
   const extra = (
     <Button 
@@ -222,29 +276,86 @@ const RecentSalesTable = ({
     </Button>
   );
 
-  return (
-    <Card
-      title="Ventas Recientes"
-      className="recent-sales-table-card"
-      extra={extra}
-      style={{ height: "430px" }}
-    >
-      <Table
-        dataSource={dataSource}
+  // Renderizado para vista móvil con Lista en lugar de Tabla
+  const renderMobileView = () => {
+    return (
+      <List
+        className="mobile-sales-list"
         loading={loading}
-        pagination={false}
-        columns={columns}
-        size="small"
-        className="recent-sales-table"
         locale={{
           emptyText: (
             <div style={{ padding: '20px 0' }}>
-              <ShoppingCartOutlined style={{ fontSize: '32px', color: '#bfbfbf', display: 'block', marginBottom: '8px' }} />
-              <p>No hay ventas recientes en el período seleccionado</p>
+              <p>No hay ventas recientes para mostrar</p>
             </div>
           )
         }}
+        dataSource={dataSource}
+        renderItem={item => (
+          <List.Item 
+            className="mobile-sale-item"
+            onClick={() => onViewDetail && onViewDetail({ type: 'venta', id: item.id })}
+          >
+            <div className="mobile-sale-content">
+              <div className="mobile-sale-header">
+                <span className="sale-id">{item.id}</span>
+                <span className="sale-amount">{formatCurrency(item.monto)}</span>
+              </div>
+              
+              <div className="mobile-sale-details">
+                <Space size={16}>
+                  <span className="sale-detail-item">
+                    <UserOutlined /> {item.vendedor}
+                  </span>
+                  <span className="sale-detail-item">
+                    <CalendarOutlined /> {item.fechaFormateada}
+                  </span>
+                  <span className="sale-detail-item payment-type">
+                    {renderTipoPago(item.tipoPago)}
+                  </span>
+                </Space>
+              </div>
+              
+              <div className="mobile-sale-products">
+                <Badge count={item.cantidadProductos} overflowCount={99} /> 
+                <span className="products-label">productos</span>
+              </div>
+            </div>
+          </List.Item>
+        )}
       />
+    );
+  };
+  
+  return (
+    <Card
+      title="Ventas Recientes"
+      className={`recent-sales-table-card ${isMobile ? 'mobile-card' : ''}`}
+      extra={extra}
+      style={{ height: isMobile ? "auto" : "430px" }}
+      bodyStyle={{ padding: isMobile ? '8px' : '24px' }}
+    >
+      {isMobile ? (
+        renderMobileView()
+      ) : (
+        <Table
+          dataSource={dataSource}
+          loading={loading}
+          pagination={false}
+          columns={columns}
+          size="small"
+          className="recent-sales-table"
+          locale={{
+            emptyText: (
+              <div style={{ padding: '20px 0' }}>
+                <p>No hay ventas recientes para mostrar</p>
+              </div>
+            )
+          }}
+          onRow={(record) => ({
+            onClick: () => onViewDetail && onViewDetail({ type: 'venta', id: record.id })
+          })}
+        />
+      )}
     </Card>
   );
 };

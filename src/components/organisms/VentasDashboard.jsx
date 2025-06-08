@@ -1,7 +1,8 @@
 /**
  * @fileoverview Dashboard de ventas mejorado que integra múltiples componentes con métricas avanzadas
+ * Optimizado para dispositivos móviles y desktop con diseño responsivo
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Empty } from 'antd';
 import PropTypes from 'prop-types';
 import { useVentas } from '../../context/VentasContext';
@@ -41,6 +42,25 @@ const VentasDashboard = ({
 }) => {
   const { ventas, loading } = useVentas();
   const { timeRange } = useTimeRange();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Efecto para detectar si es un dispositivo móvil
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Verificar al cargar la página
+    checkIfMobile();
+    
+    // Agregar listener para cambios de tamaño de pantalla
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Limpiar el listener cuando se desmonta el componente
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
   
   // Función para redireccionar a la pestaña de ventas
   const handleViewAllSales = () => {
@@ -50,66 +70,65 @@ const VentasDashboard = ({
   };
 
   return (
-    <div className="ventas-dashboard">
-
-
+    <div className={`ventas-dashboard ${isMobile ? 'mobile-view' : ''}`}>
       {/* Header con filtro de tiempo */}
-      <Card className="dashboard-header">
+      <Card className="dashboard-header mobile-friendly-card">
         <TimeRangeFilter />
       </Card>
 
       {/* KPIs */}
       {showKPIs && (
         <div className="ventas-dashboard-row">
-          <KPIContainer ventas={ventas} timeRange={timeRange} loading={loading} />
+          <KPIContainer ventas={ventas} timeRange={timeRange} loading={loading} isMobile={isMobile} />
         </div>
       )}
 
       {/* Gráficos principales */}
       {showCharts && (
         <>
-          <Row gutter={[16, 16]} className="ventas-dashboard-row">
-            <Col xs={24} lg={16}>
-              <SalesChart ventas={ventas} loading={loading} timeRange={timeRange} />
+          <Row gutter={[16, isMobile ? 12 : 16]} className="ventas-dashboard-row">
+            <Col xs={24} sm={24} lg={16}>
+              <SalesChart ventas={ventas} loading={loading} timeRange={timeRange} isMobile={isMobile} className="chart-card" />
             </Col>
-            <Col xs={24} lg={8}>
-              <PaymentTypeChart ventas={ventas} loading={loading} timeRange={timeRange} />
+            <Col xs={24} sm={24} lg={8}>
+              <PaymentTypeChart ventas={ventas} loading={loading} timeRange={timeRange} isMobile={isMobile} className="chart-card" />
             </Col>
           </Row>
 
           {/* Tabla de ventas recientes y gráfico de productos más vendidos */}
-          <Row gutter={[16, 16]} className="ventas-dashboard-row">
+          <Row gutter={[16, isMobile ? 12 : 16]} className="ventas-dashboard-row">
             {showTable && (
-              <Col xs={24} lg={16}>
+              <Col xs={24} sm={24} lg={16}>
                 {ventas && ventas.length > 0 ? (
                   <RecentSalesTable 
                     ventas={ventas} 
                     loading={loading} 
                     onViewDetail={handleViewAllSales} 
                     timeRange={timeRange}
+                    isMobile={isMobile}
+                    className="table-card"
                   />
                 ) : (
-                  <Card>
+                  <Card className="mobile-friendly-card">
                     <Empty description="No hay ventas para mostrar" />
                   </Card>
                 )}
               </Col>
             )}
             
-            <Col xs={24} lg={8}>
+            <Col xs={24} sm={24} lg={8}>
               <TopProductsChart 
                 ventas={ventas} 
                 loading={loading}
                 timeRange={timeRange} 
-                limit={5} 
+                limit={isMobile ? 3 : 5} 
+                isMobile={isMobile}
+                className="chart-card"
               />
             </Col>
           </Row>
         </>
       )}
-
-
-      {/* Se eliminó la tabla de historial de ventas según lo solicitado */}
     </div>
   );
 };

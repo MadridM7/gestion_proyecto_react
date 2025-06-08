@@ -10,7 +10,7 @@ import 'dayjs/locale/es';
 import { useTimeRange } from '../../context/TimeRangeContext';
 
 // Importar estilos
-import '../../styles/components/molecules/WelcomePanel.css';
+import '../../styles/components/molecules/Panel.css';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -22,7 +22,7 @@ const { Title, Text, Paragraph } = Typography;
  * @param {Function} props.onActionClick - Función a ejecutar cuando se hace clic en un acceso rápido
  * @returns {JSX.Element} Panel de bienvenida
  */
-const WelcomePanel = ({ usuario = {}, shortcuts = [], onActionClick }) => {
+const Panel = ({ usuario = {}, shortcuts = [], onActionClick }) => {
   // Obtenemos el rango de tiempo seleccionado del contexto
   const { timeRange } = useTimeRange();
   
@@ -66,24 +66,24 @@ const WelcomePanel = ({ usuario = {}, shortcuts = [], onActionClick }) => {
   const fechaActual = dayjs().format('dddd, D [de] MMMM [de] YYYY');
   
   return (
-    <Card className="welcome-panel">
+    <Card className="-panel">
       <Row gutter={[24, 16]} align="middle">
         <Col xs={24} md={14} lg={16}>
-          <div className="welcome-content">
-            <Title level={4} className="welcome-greeting">
+          <div className="-content">
+            <Title level={4} className="-greeting">
               {obtenerSaludo()}, {usuario.nombre || 'Usuario'}
             </Title>
-            <Paragraph className="welcome-date">
+            <Paragraph className="-date">
               <ClockCircleOutlined /> {fechaActual}
             </Paragraph>
-            <Text type="secondary" className="welcome-context">
+            <Text type="secondary" className="-context">
               <BulbOutlined /> {obtenerMensajeContextual()}
             </Text>
           </div>
         </Col>
         
         <Col xs={24} md={10} lg={8}>
-          <div className="welcome-shortcuts">
+          <div className="-shortcuts">
             <Text strong>Accesos Rápidos</Text>
             <Divider className="shortcuts-divider" />
             <Space direction="vertical" style={{ width: '100%' }}>
@@ -109,4 +109,4 @@ const WelcomePanel = ({ usuario = {}, shortcuts = [], onActionClick }) => {
   );
 };
 
-export default WelcomePanel;
+export default Panel;

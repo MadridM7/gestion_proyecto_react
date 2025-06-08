@@ -1,8 +1,9 @@
 /**
  * @fileoverview Componente de filtros de tiempo para el dashboard
+ * Optimizado para visualización móvil
  */
-import React from 'react';
-import { Radio, Space, DatePicker, Tooltip } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Radio, Space, DatePicker, Tooltip, Row, Col } from 'antd';
 import { 
   CalendarOutlined, 
   ClockCircleOutlined,
@@ -26,8 +27,30 @@ const TimeRangeFilter = ({
   showCustomRange = true,
   size = "middle"
 }) => {
+  // Estado para detectar si es dispositivo móvil
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar si es dispositivo móvil al cargar y al cambiar el tamaño de la ventana
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Comprobar al cargar
+    checkIfMobile();
+    
+    // Comprobar al cambiar el tamaño de la ventana
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Limpiar el event listener al desmontar
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
   // Acceder al contexto de rango de tiempo
   const { timeRange, updateTimeRange } = useTimeRange();
+  
   // Opciones de rango de tiempo predefinidas
   const rangeOptions = [
     { label: 'Hoy', value: 'today', icon: <ClockCircleOutlined /> },
@@ -89,38 +112,79 @@ const TimeRangeFilter = ({
   };
 
   return (
-    <div className="time-range-filter">
-      <Radio.Group 
-        value={timeRange.type} 
-        onChange={handleRangeOptionChange}
-        optionType="button"
-        size={size}
-        buttonStyle="solid"
-        className="range-radio-group"
-      >
-        <Space>
-          {rangeOptions.map(option => (
-            <Tooltip key={option.value} title={option.label}>
-              <Radio.Button value={option.value}>
-                {size === "small" ? option.icon : (
-                  <>
-                    {option.icon} {option.label}
-                  </>
-                )}
-              </Radio.Button>
-            </Tooltip>
-          ))}
-        </Space>
-      </Radio.Group>
-      
-      {showCustomRange && (
-        <div className="custom-range-picker">
-          <RangePicker
+    <div className={`time-range-filter ${isMobile ? 'mobile-view' : ''}`}>
+      {isMobile ? (
+        // Vista móvil: elementos en columna
+        <Row gutter={[8, 12]} className="filter-container">
+          <Col xs={24}>
+            <Radio.Group 
+              value={timeRange.type} 
+              onChange={handleRangeOptionChange}
+              optionType="button"
+              size="small"
+              buttonStyle="solid"
+              className="range-radio-group mobile-radio-group"
+            >
+              <Space wrap direction="horizontal" align="center">
+                {rangeOptions.map(option => (
+                  <Tooltip key={option.value} title={option.label}>
+                    <Radio.Button value={option.value}>
+                      {option.icon}
+                    </Radio.Button>
+                  </Tooltip>
+                ))}
+              </Space>
+            </Radio.Group>
+          </Col>
+          
+          {showCustomRange && (
+            <Col xs={24}>
+              <div className="custom-range-picker mobile-picker">
+                <RangePicker
+                  size="small"
+                  onChange={handleCustomRangeChange}
+                  allowClear={false}
+                  style={{ width: '100%' }}
+                  placeholder={['Inicio', 'Fin']}
+                  className="responsive-date-picker"
+                />
+              </div>
+            </Col>
+          )}
+        </Row>
+      ) : (
+        // Vista desktop: todo en una línea
+        <div className="desktop-filter-container">
+          <Radio.Group 
+            value={timeRange.type} 
+            onChange={handleRangeOptionChange}
+            optionType="button"
             size={size}
-            onChange={handleCustomRangeChange}
-            allowClear={false}
-            placeholder={['Inicio', 'Fin']}
-          />
+            buttonStyle="solid"
+            className="range-radio-group"
+          >
+            <Space wrap={false} direction="horizontal" align="center">
+              {rangeOptions.map(option => (
+                <Tooltip key={option.value} title={option.label}>
+                  <Radio.Button value={option.value}>
+                    {option.icon} {option.label}
+                  </Radio.Button>
+                </Tooltip>
+              ))}
+            </Space>
+          </Radio.Group>
+          
+          {showCustomRange && (
+            <div className="custom-range-picker">
+              <RangePicker
+                size={size}
+                onChange={handleCustomRangeChange}
+                allowClear={false}
+                placeholder={['Inicio', 'Fin']}
+                className="responsive-date-picker"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
