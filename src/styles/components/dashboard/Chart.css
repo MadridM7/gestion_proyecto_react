@@ -1,5 +1,120 @@
 /* Estilos para los gráficos del dashboard */
 
+/* Estilos para el contenedor del gráfico circular de productos */
+.top-products-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-products-chart-card .ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+}
+
+.top-products-chart-card .recharts-responsive-container {
+  margin: auto;
+}
+
+/* Mejoras para el gráfico circular */
+.recharts-pie-sector:hover {
+  cursor: pointer;
+  filter: brightness(1.05);
+  transform: scale(1.01);
+}
+
+/* Estilos para los gráficos principales */
+.sales-chart-card,
+.payment-type-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-chart-card .ant-card-body,
+.payment-type-chart-card .ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px !important;
+}
+
+.sales-chart-card .recharts-responsive-container,
+.payment-type-chart-card .recharts-responsive-container {
+  margin: auto;
+}
+
+/* Centrado del mensaje de carga y estado vacío */
+.top-products-chart-card .chart-loading,
+.top-products-chart-card .chart-empty-container,
+.sales-chart-card .chart-loading,
+.sales-chart-card .chart-empty-container,
+.payment-type-chart-card .chart-loading,
+.payment-type-chart-card .chart-empty-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.chart-empty-container .ant-empty {
+  margin: auto;
+}
+
+/* Estilos para el gráfico circular de productos */
+.custom-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ebebeb;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  width: 200px;
+}
+
+.tooltip-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0 0 8px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-value {
+  margin: 2px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.tooltip-amount {
+  color: #1890ff;
+  font-weight: 700;
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.tooltip-percent {
+  font-size: 12px;
+  color: #52c41a;
+  font-weight: 700;
+  margin: 2px 0;
+}
+
+/* Estilos para el gráfico de productos */
+.products-pie-chart {
+  position: relative;
+}
+
+.products-pie-chart .recharts-sector:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
 /* Tarjeta del gráfico */
 .chart-card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);

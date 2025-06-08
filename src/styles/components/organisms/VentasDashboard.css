@@ -1,11 +1,94 @@
 /**
- * Estilos para el componente VentasDashboard
+ * Estilos mejorados para el dashboard de ventas
+ * Diseñado para ser completamente responsivo y con una interfaz moderna
+ * Siguiendo el patrón de Atomic Design
  */
 
-.ventas-dashboard-row {
-  margin-top: 16px;
+/* Contenedor principal del dashboard */
+.ventas-dashboard {
+  padding: 0;
+  transition: all 0.3s ease;
 }
 
+/* Cabecera del dashboard con filtros y controles */
+.dashboard-header {
+  margin-bottom: 0;
+  background-color: #fff;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.06), 0 5px 12px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Filas de componentes del dashboard */
+.ventas-dashboard-row {
+  margin-bottom: 24px;
+}
+
+/* Tarjetas del dashboard */
 .dashboard-card {
-  margin-top: 16px;
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.06), 0 5px 12px 4px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.dashboard-card .ant-card-head {
+  background-color: rgba(240, 242, 245, 0.5);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Tarjeta vacía cuando no hay datos */
+.dashboard-empty-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.06), 0 5px 12px 4px rgba(0, 0, 0, 0.04);
+  padding: 40px 0;
+}
+
+/* Animaciones para cargar elementos */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ventas-dashboard > * {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Estilos responsivos */
+@media (max-width: 992px) {
+  .ventas-dashboard-row {
+    margin-bottom: 16px;
+  }
+  
+  .dashboard-card {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dashboard-actions {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header {
+    padding: 12px;
+  }
+  
+  .ventas-dashboard {
+    padding: 0;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 375px) {
+  .dashboard-header {
+    padding: 8px;
+  }
 }

@@ -1,8 +1,8 @@
 /**
- * @fileoverview Componente de gráfico de ventas mejorado con visualización moderna
+ * @fileoverview Componente de gráfico de ventas mejorado que usa el filtro de tiempo global
  */
-import React, { useState } from 'react';
-import { Card, Radio, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Empty } from 'antd';
 import {
   AreaChart,
   Area,
@@ -12,18 +12,21 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
-import { useVentas } from '../../context/VentasContext';
 import { formatCurrency } from '../../utils/formatters';
+import dayjs from 'dayjs';
 import '../../styles/components/dashboard/Chart.css';
 
 /**
  * Componente que muestra un gráfico de área con la evolución de ventas
+ * @param {Object} props - Propiedades del componente
+ * @param {Array} props.ventas - Arreglo de ventas a mostrar
+ * @param {Object} props.timeRange - Rango de tiempo seleccionado globalmente
+ * @param {boolean} props.loading - Indica si está cargando los datos
  * @returns {JSX.Element} Gráfico de ventas
  */
-const SalesChart = () => {
-  const { ventas } = useVentas();
-  const [periodo, setPeriodo] = useState('semana'); // 'dia', 'semana', 'mes'
-
+const SalesChart = ({ ventas = [], timeRange, loading = false }) => {
+  const [chartData, setChartData] = useState([]);
+  
   /**
    * Formatea valores numéricos como moneda chilena (CLP)
    * @param {number} value - Valor a formatear
@@ -34,201 +37,123 @@ const SalesChart = () => {
   };
 
   /**
-   * Maneja el cambio de periodo seleccionado
-   */
-  const handlePeriodoChange = (e) => {
-    setPeriodo(e.target.value);
-  };
-
-  // No necesitamos esta función ya que mostramos los botones directamente
-
-  /**
-   * Procesa los datos de ventas según el periodo seleccionado
+   * Procesa los datos de ventas según el rango de tiempo seleccionado
    * @returns {Array} Datos procesados para el gráfico
    */
-  const procesarDatosVentas = () => {
-    // Verificar que tenemos datos de ventas del contexto
-    if (!ventas || !Array.isArray(ventas)) {
-      console.warn('No hay datos de ventas disponibles en el contexto');
-      return [];
+  useEffect(() => {
+    if (!ventas || !Array.isArray(ventas) || !timeRange) {
+      setChartData([]);
+      return;
     }
 
-    const hoy = new Date();
-    const datosProcesados = [];
+    console.log('SalesChart - ventas recibidas:', ventas?.length);
+    console.log('SalesChart - timeRange:', timeRange);
+    
+    // Filtrar ventas según el rango de tiempo seleccionado
+    const filteredVentas = ventas.filter(venta => {
+      if (!venta.fechaHora) {
+        console.log('Venta sin fecha:', venta);
+        return false;
+      }
+      
+      // Validar que timeRange y sus propiedades existan
+      if (!timeRange || !timeRange.startDate || !timeRange.endDate) {
+        console.log('timeRange incompleto, incluyendo todas las ventas');
+        return true;
+      }
+      
+      const ventaDate = new Date(venta.fechaHora);
+      const startDate = new Date(timeRange.startDate);
+      const endDate = new Date(timeRange.endDate);
+      
+      // Comprobamos que la fecha de la venta esté dentro del rango
+      return ventaDate >= startDate && ventaDate <= endDate;
+    });
+    
+    console.log('SalesChart - ventas filtradas:', filteredVentas.length);
 
-    // Configurar parámetros según el periodo
-    switch (periodo) {
-      case 'dia': {
-        // Para el día actual, mostrar cada hora
-        const fechaInicio = new Date(hoy);
-        fechaInicio.setHours(0, 0, 0, 0);
+    // Determinar si mostrar por horas o por días según el rango de tiempo
+    const mostrarPorHoras = timeRange && 
+      (new Date(timeRange.endDate) - new Date(timeRange.startDate)) <= 86400000; // 24 horas en ms
+    
+    console.log('SalesChart - Mostrar por horas:', mostrarPorHoras);
+    
+    let result = [];
+    
+    if (mostrarPorHoras) {
+      // Agrupar ventas por hora y calcular totales
+      const ventasPorHora = {};
+      filteredVentas.forEach(venta => {
+        // Para el modo por horas, usamos la hora completa
+        const fechaHora = dayjs(venta.fechaHora);
+        const hora = fechaHora.format('HH:00'); // Redondeamos a la hora
+        const fechaCompleta = fechaHora.format('YYYY-MM-DD HH:00');
         
-        // Crear datos para cada hora
-        for (let hora = 0; hora < 24; hora++) {
-          const fechaHora = new Date(fechaInicio);
-          fechaHora.setHours(hora);
-          
-          // Formatear la hora para mostrar
-          let horaFormateada = '';
-          if (hora === 0) horaFormateada = '12 AM';
-          else if (hora === 12) horaFormateada = '12 PM';
-          else if (hora < 12) horaFormateada = `${hora} AM`;
-          else horaFormateada = `${hora - 12} PM`;
-          
-          // Sumar ventas para esta hora
-          let totalVentas = 0;
-          ventas.forEach(venta => {
-            if (!venta.fechaHora || typeof venta.monto !== 'number') return;
-            
-            const fechaVenta = new Date(venta.fechaHora);
-            if (fechaVenta.getDate() === hoy.getDate() && 
-                fechaVenta.getMonth() === hoy.getMonth() && 
-                fechaVenta.getFullYear() === hoy.getFullYear() && 
-                fechaVenta.getHours() === hora) {
-              totalVentas += venta.monto;
-            }
-          });
-          
-          datosProcesados.push({
-            fecha: fechaHora.toISOString(),
-            ventas: totalVentas,
-            fechaFormateada: horaFormateada,
-            hora: hora // Guardar la hora para filtrar en el eje X
-          });
+        if (!ventasPorHora[fechaCompleta]) {
+          ventasPorHora[fechaCompleta] = {
+            fecha: fechaCompleta,
+            hora,
+            etiqueta: hora,  // Para mostrar solo la hora en el eje X
+            total: 0,
+            count: 0
+          };
         }
-        break;
-      }
+        ventasPorHora[fechaCompleta].total += parseFloat(venta.monto || 0);
+        ventasPorHora[fechaCompleta].count += 1;
+      });
       
-      case 'semana': {
-        // Nombres de los días de la semana en orden correcto (lunes a domingo)
-        const diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-        
-        // Encontrar el lunes de la semana actual
-        const fechaInicio = new Date(hoy);
-        const diaSemana = fechaInicio.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
-        const diasHastaLunes = diaSemana === 0 ? 6 : diaSemana - 1; // Si es domingo, restar 6 días
-        fechaInicio.setDate(fechaInicio.getDate() - diasHastaLunes);
-        fechaInicio.setHours(0, 0, 0, 0);
-        
-        // Crear datos para cada día de la semana
-        for (let i = 0; i < 7; i++) {
-          const fecha = new Date(fechaInicio);
-          fecha.setDate(fechaInicio.getDate() + i);
-          
-          // Formatear la fecha para mostrar
-          const numeroDia = fecha.getDate().toString().padStart(2, '0');
-          const nombreDia = diasSemana[i]; // Usar el índice directamente (0=lunes, etc.)
-          
-          // Sumar ventas para este día
-          let totalVentas = 0;
-          ventas.forEach(venta => {
-            if (!venta.fechaHora || typeof venta.monto !== 'number') return;
-            
-            const fechaVenta = new Date(venta.fechaHora);
-            if (fechaVenta.getDate() === fecha.getDate() && 
-                fechaVenta.getMonth() === fecha.getMonth() && 
-                fechaVenta.getFullYear() === fecha.getFullYear()) {
-              totalVentas += venta.monto;
-            }
-          });
-          
-          datosProcesados.push({
-            fecha: fecha.toISOString().split('T')[0],
-            ventas: totalVentas,
-            fechaFormateada: `${nombreDia} ${numeroDia}`,
-            diaSemana: i // Para mantener el orden correcto
-          });
+      // Convertir a array y ordenar por fecha/hora
+      result = Object.values(ventasPorHora).sort((a, b) => 
+        dayjs(a.fecha).diff(dayjs(b.fecha))
+      );
+      
+    } else {
+      // Agrupar ventas por día y calcular totales diarios
+      const ventasPorDia = {};
+      filteredVentas.forEach(venta => {
+        const fecha = dayjs(venta.fechaHora).format('YYYY-MM-DD');
+        if (!ventasPorDia[fecha]) {
+          ventasPorDia[fecha] = {
+            fecha,
+            etiqueta: dayjs(fecha).format('DD/MM'),  // Formato más corto para el eje X
+            total: 0,
+            count: 0
+          };
         }
-        break;
-      }
+        ventasPorDia[fecha].total += parseFloat(venta.monto || 0);
+        ventasPorDia[fecha].count += 1;
+      });
       
-      case 'mes': {
-        // Primer día del mes actual
-        const fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-        const diasEnMes = hoy.getDate(); // Número de días hasta hoy
-        
-        // Crear datos para cada día del mes hasta hoy
-        for (let i = 0; i < diasEnMes; i++) {
-          const fecha = new Date(fechaInicio);
-          fecha.setDate(fechaInicio.getDate() + i);
-          
-          // Calcular la semana a la que pertenece el día
-          const diffDias = Math.floor((fecha - fechaInicio) / (1000 * 60 * 60 * 24));
-          const numSemana = Math.floor(diffDias / 7) + 1;
-          const esPrimerDiaSemana = diffDias % 7 === 0;
-          
-          // Formatear la fecha para mostrar
-          const dia = fecha.getDate();
-          const mes = fecha.getMonth() + 1;
-          let etiqueta = `${dia}/${mes}`;
-          if (esPrimerDiaSemana) {
-            etiqueta = `Sem ${numSemana}\n${dia}/${mes}`;
-          }
-          
-          // Sumar ventas para este día
-          let totalVentas = 0;
-          ventas.forEach(venta => {
-            if (!venta.fechaHora || typeof venta.monto !== 'number') return;
-            
-            const fechaVenta = new Date(venta.fechaHora);
-            if (fechaVenta.getDate() === fecha.getDate() && 
-                fechaVenta.getMonth() === fecha.getMonth() && 
-                fechaVenta.getFullYear() === fecha.getFullYear()) {
-              totalVentas += venta.monto;
-            }
-          });
-          
-          datosProcesados.push({
-            fecha: fecha.toISOString().split('T')[0],
-            ventas: totalVentas,
-            fechaFormateada: etiqueta,
-            semana: numSemana,
-            esSemana: esPrimerDiaSemana
-          });
-        }
-        break;
-      }
-      
-      default:
-        console.warn('Periodo no reconocido:', periodo);
-        return [];
+      // Convertir a array y ordenar por fecha
+      result = Object.values(ventasPorDia).sort((a, b) => 
+        dayjs(a.fecha).diff(dayjs(b.fecha))
+      );
     }
     
-    return datosProcesados;
-  };
+    setChartData(result);
+  }, [ventas, timeRange]);
 
   /**
-   * Componente personalizado para el tooltip del gráfico
+   * Personalizar el tooltip del gráfico
+   * @param {Object} props - Propiedades del tooltip
+   * @returns {JSX.Element} Tooltip personalizado
    */
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      let titulo = '';
-      
-      switch (periodo) {
-        case 'dia':
-          titulo = `Hora: ${label}`;
-          break;
-        case 'semana':
-          titulo = label;
-          break;
-        case 'mes':
-          titulo = label;
-          break;
-        default:
-          titulo = label;
-          break;
-      }
+      const esPorHoras = payload[0].payload.hora !== undefined;
+      const fechaFormateada = esPorHoras 
+        ? `${dayjs(payload[0].payload.fecha).format('DD/MM/YYYY')} a las ${payload[0].payload.hora}` 
+        : dayjs(payload[0].payload.fecha).format('DD/MM/YYYY');
       
       return (
-        <div className="custom-tooltip sales-tooltip">
-          <p className="tooltip-title">{titulo}</p>
-          <div className="tooltip-content">
-            <div className="tooltip-item">
-              <div className="tooltip-indicator" style={{ backgroundColor: '#1890ff' }}></div>
-              <span className="tooltip-name">Ventas:</span>
-              <span className="tooltip-amount">{formatCLP(payload[0].value)}</span>
-            </div>
-          </div>
+        <div className="custom-tooltip">
+          <p className="tooltip-date">{fechaFormateada}</p>
+          <p className="tooltip-total">
+            Total: {formatCLP(payload[0].value)}
+          </p>
+          <p className="tooltip-count">
+            {payload[0].payload.count} venta(s)
+          </p>
         </div>
       );
     }
@@ -236,82 +161,52 @@ const SalesChart = () => {
   };
 
   return (
-    <Card
-      title="Ventas"
-      className="chart-card sales-chart-card"
-      extra={
-        <Space>
-          <Radio.Group value={periodo} onChange={handlePeriodoChange} buttonStyle="solid" size="small">
-            <Radio.Button value="dia">Día</Radio.Button>
-            <Radio.Button value="semana">Semana</Radio.Button>
-            <Radio.Button value="mes">Mes</Radio.Button>
-          </Radio.Group>
-        </Space>
-      }
+    <Card 
+      title="Evolución de Ventas" 
+      className="dashboard-card sales-chart-card"
+      style={{ height: "370px" }}
+      loading={loading}
     >
-      <ResponsiveContainer width="100%" height={350}>
-        <AreaChart
-          data={procesarDatosVentas()}
-          margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
-        >
-          <defs>
-            <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#1890ff" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#1890ff" stopOpacity={0.1}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis 
-            dataKey="fechaFormateada"
-            axisLine={{ stroke: '#E0E0E0' }}
-            tickLine={false}
-            tick={{ fill: '#666666', fontSize: 12 }}
-            interval={periodo === 'dia' ? 1 : (periodo === 'mes' ? 6 : 0)} // En vista diaria cada 2 horas, en mensual cada semana
-            angle={periodo === 'mes' ? -45 : 0} // Rotar etiquetas en vista mensual para mejor legibilidad
-            textAnchor={periodo === 'mes' ? 'end' : 'middle'}
-            height={60} // Dar más espacio para las etiquetas
+      {chartData && chartData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={290}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0.2}/>
+              </linearGradient>
+            </defs>
+            <XAxis 
+              dataKey="fecha"
+              tickFormatter={(value) => {
+                const item = chartData.find(item => item.fecha === value);
+                return item && item.etiqueta ? item.etiqueta : dayjs(value).format('DD/MM');
+              }}
+            />
+            <YAxis 
+              tickFormatter={(value) => `$${(value/1000)}k`}
+            />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip content={<CustomTooltip />} />
+            <Area 
+              type="monotone" 
+              dataKey="total" 
+              stroke="#8884d8" 
+              fillOpacity={1} 
+              fill="url(#colorTotal)" 
+              activeDot={{ r: 8 }}
+              name="Ventas"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="chart-empty-container">
+          <Empty 
+            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+            description={<span>No hay datos disponibles para el período seleccionado</span>}
           />
-          <YAxis 
-            tickFormatter={formatCLP}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: '#666666', fontSize: 12 }}
-            interval={0}
-          />
-          <Tooltip 
-            content={<CustomTooltip />} 
-            cursor={{ stroke: '#f0f0f0', strokeWidth: 2 }}
-          />
-          <Area
-            type="monotone"
-            dataKey="ventas"
-            name="Ventas"
-            stroke="#1890ff"
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#colorVentas)"
-            activeDot={{ r: 8, stroke: '#FFFFFF', strokeWidth: 2, fill: '#1890ff' }}
-            // Destacar visualmente las semanas en vista mensual
-            dot={periodo === 'mes' ? (props) => {
-              const { cx, cy, payload } = props;
-              // Destacar el primer día de cada semana
-              if (payload.esSemana) {
-                return (
-                  <circle 
-                    cx={cx} 
-                    cy={cy} 
-                    r={4} 
-                    stroke="#1890ff" 
-                    strokeWidth={2} 
-                    fill="#fff" 
-                  />
-                );
-              }
-              return null;
-            } : null}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+        </div>
+      )}
     </Card>
   );
 };

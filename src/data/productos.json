@@ -1,10 +1,92 @@
 [
   {
-    "nombre": "master",
-    "categoria": "comida",
-    "precioCompra": 10000,
+    "id": "P0001",
+    "nombre": "Royal Canin Adulto 15kg",
+    "categoria": "Alimento",
+    "precioCompra": 45000,
     "margenGanancia": 30,
-    "precioVenta": 13000,
-    "id": "P0001"
+    "precioVenta": 58500,
+    "stock": 25
+  },
+  {
+    "id": "P0002",
+    "nombre": "Pedigree Cachorro 10kg",
+    "categoria": "Alimento",
+    "precioCompra": 28000,
+    "margenGanancia": 25,
+    "precioVenta": 35000,
+    "stock": 30
+  },
+  {
+    "id": "P0003",
+    "nombre": "Collar Antipulgas",
+    "categoria": "Accesorios",
+    "precioCompra": 8000,
+    "margenGanancia": 40,
+    "precioVenta": 11200,
+    "stock": 50
+  },
+  {
+    "id": "P0004",
+    "nombre": "Juguete Mordedor",
+    "categoria": "Juguetes",
+    "precioCompra": 3500,
+    "margenGanancia": 45,
+    "precioVenta": 5075,
+    "stock": 60
+  },
+  {
+    "id": "P0005",
+    "nombre": "Whiskas Pescado 8kg",
+    "categoria": "Alimento",
+    "precioCompra": 22000,
+    "margenGanancia": 30,
+    "precioVenta": 28600,
+    "stock": 40
+  },
+  {
+    "id": "P0006",
+    "nombre": "Cama Mascota Grande",
+    "categoria": "Accesorios",
+    "precioCompra": 18000,
+    "margenGanancia": 50,
+    "precioVenta": 27000,
+    "stock": 15
+  },
+  {
+    "id": "P0007",
+    "nombre": "Arena Gato 10kg",
+    "categoria": "Higiene",
+    "precioCompra": 12000,
+    "margenGanancia": 35,
+    "precioVenta": 16200,
+    "stock": 45
+  },
+  {
+    "id": "P0008",
+    "nombre": "Comedero Automático",
+    "categoria": "Accesorios",
+    "precioCompra": 25000,
+    "margenGanancia": 40,
+    "precioVenta": 35000,
+    "stock": 12
+  },
+  {
+    "id": "P0009",
+    "nombre": "Shampoo Antipulgas",
+    "categoria": "Higiene",
+    "precioCompra": 9000,
+    "margenGanancia": 45,
+    "precioVenta": 13050,
+    "stock": 35
+  },
+  {
+    "id": "P0010",
+    "nombre": "Transportadora Plástica",
+    "categoria": "Accesorios",
+    "precioCompra": 32000,
+    "margenGanancia": 35,
+    "precioVenta": 43200,
+    "stock": 18
   }
 ]

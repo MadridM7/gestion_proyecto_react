@@ -1,0 +1,42 @@
+/**
+ * Estilos para el componente KPIContainer
+ */
+
+.kpi-container {
+  margin-bottom: 24px;
+}
+
+.kpi-container .ant-row {
+  margin-bottom: 0;
+}
+
+/* Estilos responsivos para dispositivos móviles */
+@media (max-width: 576px) {
+  .kpi-container .ant-col {
+    margin-bottom: 16px;
+  }
+}
+
+/* Animaciones para las tarjetas cuando aparecen */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.kpi-container .ant-col {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Aplicar retardo a las animaciones para que aparezcan secuencialmente */
+.kpi-container .ant-col:nth-child(1) { animation-delay: 0.1s; }
+.kpi-container .ant-col:nth-child(2) { animation-delay: 0.2s; }
+.kpi-container .ant-col:nth-child(3) { animation-delay: 0.3s; }
+.kpi-container .ant-col:nth-child(4) { animation-delay: 0.4s; }
+.kpi-container .ant-col:nth-child(5) { animation-delay: 0.5s; }
+.kpi-container .ant-col:nth-child(6) { animation-delay: 0.6s; }

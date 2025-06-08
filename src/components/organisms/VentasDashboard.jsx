@@ -1,62 +1,115 @@
 /**
- * @fileoverview Dashboard de ventas que integra varios componentes
+ * @fileoverview Dashboard de ventas mejorado que integra múltiples componentes con métricas avanzadas
  */
 import React from 'react';
-import { Card, Row, Col } from 'antd';
-import VentasDataTable from './VentasDataTable';
-import SummaryCards from './SummaryCards';
+import { Row, Col, Card, Empty } from 'antd';
+import PropTypes from 'prop-types';
+import { useVentas } from '../../context/VentasContext';
+import { useTimeRange } from '../../context/TimeRangeContext';
+
+// Importar componentes
+import KPIContainer from './KPIContainer';
 import SalesChart from './SalesChart';
 import PaymentTypeChart from './PaymentTypeChart';
-import PropTypes from 'prop-types';
-import '../../styles/pages/Dashboard.css';
+import TopProductsChart from './TopProductsChart';
+import RecentSalesTable from './RecentSalesTable';
+import TimeRangeFilter from '../molecules/TimeRangeFilter';
+
+// Importar estilos
 import '../../styles/components/organisms/VentasDashboard.css';
 
 /**
- * Componente organismo para el dashboard de ventas
+ * Componente de Dashboard de Ventas que muestra un panel de bienvenida, KPIs, gráficos y tabla de ventas recientes
  * @param {Object} props - Propiedades del componente
- * @returns {JSX.Element} Dashboard completo de ventas
+ * @param {boolean} props.showWelcomePanel - Indica si se muestra el panel de bienvenida
+ * @param {boolean} props.showKPIs - Indica si se muestran las tarjetas de KPI
+ * @param {boolean} props.showCharts - Indica si se muestran los gráficos
+ * @param {boolean} props.showTable - Indica si se muestra la tabla de ventas
+ * @param {Function} props.onRowClick - Función para manejar el clic en una fila de la tabla
+ * @param {Function} props.onNewSale - Función para crear una nueva venta
+ * @returns {JSX.Element} Dashboard de ventas
  */
-const VentasDashboard = ({ 
-  onEdit,
-  showTable = true,
-  showResumen = true,
+const VentasDashboard = ({
+  showWelcomePanel = true,
+  showKPIs = true,
   showCharts = true,
-  dataSource,
-  onRowClick
+  showTable = true,
+  onRowClick,
+  onNewSale,
+  onEdit,
+  dataSource
 }) => {
-  // En una implementación completa, aquí se cargarían datos adicionales si fuera necesario
+  const { ventas, loading } = useVentas();
+  const { timeRange } = useTimeRange();
   
+  // Función para redireccionar a la pestaña de ventas
+  const handleViewAllSales = () => {
+    // Redirigir a la página de ventas utilizando la navegación
+    window.location.href = '/ventas';
+    console.log('Redireccionando a la página de ventas');
+  };
+
   return (
     <div className="ventas-dashboard">
-      {/* Tarjetas de resumen */}
-      {showResumen && (
-        <SummaryCards />
+
+
+      {/* Header con filtro de tiempo */}
+      <Card className="dashboard-header">
+        <TimeRangeFilter />
+      </Card>
+
+      {/* KPIs */}
+      {showKPIs && (
+        <div className="ventas-dashboard-row">
+          <KPIContainer ventas={ventas} timeRange={timeRange} loading={loading} />
+        </div>
       )}
-      
-      {/* Gráficos */}
+
+      {/* Gráficos principales */}
       {showCharts && (
-        <Row gutter={[16, 16]} className="ventas-dashboard-row">
-          <Col xs={24} lg={12}>
-            <SalesChart />
-          </Col>
-          <Col xs={24} lg={12}>
-            <PaymentTypeChart />
-          </Col>
-        </Row>
+        <>
+          <Row gutter={[16, 16]} className="ventas-dashboard-row">
+            <Col xs={24} lg={16}>
+              <SalesChart ventas={ventas} loading={loading} timeRange={timeRange} />
+            </Col>
+            <Col xs={24} lg={8}>
+              <PaymentTypeChart ventas={ventas} loading={loading} timeRange={timeRange} />
+            </Col>
+          </Row>
+
+          {/* Tabla de ventas recientes y gráfico de productos más vendidos */}
+          <Row gutter={[16, 16]} className="ventas-dashboard-row">
+            {showTable && (
+              <Col xs={24} lg={16}>
+                {ventas && ventas.length > 0 ? (
+                  <RecentSalesTable 
+                    ventas={ventas} 
+                    loading={loading} 
+                    onViewDetail={handleViewAllSales} 
+                    timeRange={timeRange}
+                  />
+                ) : (
+                  <Card>
+                    <Empty description="No hay ventas para mostrar" />
+                  </Card>
+                )}
+              </Col>
+            )}
+            
+            <Col xs={24} lg={8}>
+              <TopProductsChart 
+                ventas={ventas} 
+                loading={loading}
+                timeRange={timeRange} 
+                limit={5} 
+              />
+            </Col>
+          </Row>
+        </>
       )}
-      
-      {/* Tabla de ventas */}
-      {showTable && (
-        <Card className="dashboard-card">
-          <VentasDataTable 
-            onEdit={onEdit} 
-            showTitle={true}
-            dataSource={dataSource}
-            onRowClick={onRowClick}
-            pageSize={10}
-          />
-        </Card>
-      )}
+
+
+      {/* Se eliminó la tabla de historial de ventas según lo solicitado */}
     </div>
   );
 };
@@ -64,7 +117,7 @@ const VentasDashboard = ({
 VentasDashboard.propTypes = {
   onEdit: PropTypes.func,
   showTable: PropTypes.bool,
-  showResumen: PropTypes.bool,
+  showKPIs: PropTypes.bool,
   showCharts: PropTypes.bool,
   dataSource: PropTypes.array,
   onRowClick: PropTypes.func

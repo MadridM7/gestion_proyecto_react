@@ -1,0 +1,116 @@
+/**
+ * Estilos para el componente WelcomePanel
+ * Siguiendo el patrón de Atomic Design
+ */
+
+.welcome-panel {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
+              0 3px 6px 0 rgba(0, 0, 0, 0.06),
+              0 5px 12px 4px rgba(0, 0, 0, 0.04);
+  background: linear-gradient(to right, #ffffff, #f9f9fc);
+  transition: all 0.3s ease;
+}
+
+.welcome-panel:hover {
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.2),
+              0 6px 16px 0 rgba(0, 0, 0, 0.08),
+              0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.welcome-panel .ant-card-body {
+  padding: 24px;
+}
+
+/* Estilos para el contenido del mensaje de bienvenida */
+.welcome-content {
+  padding-right: 16px;
+}
+
+.welcome-greeting {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+  font-size: 1.5rem;
+  letter-spacing: -0.5px;
+  color: #1a1a1a;
+}
+
+.welcome-date {
+  display: block;
+  margin-bottom: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.welcome-date .anticon {
+  margin-right: 6px;
+  color: #1890ff;
+}
+
+.welcome-context {
+  font-size: 0.95rem;
+  display: block;
+  line-height: 1.5;
+}
+
+.welcome-context .anticon {
+  margin-right: 6px;
+  color: #faad14;
+}
+
+/* Estilos para los accesos rápidos */
+.welcome-shortcuts {
+  border-left: 1px solid #f0f0f0;
+  padding-left: 24px;
+  height: 100%;
+}
+
+.shortcuts-divider {
+  margin: 8px 0 16px !important;
+}
+
+/* Estilos responsivos */
+@media (max-width: 992px) {
+  .welcome-panel .ant-card-body {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-shortcuts {
+    border-left: none;
+    border-top: 1px solid #f0f0f0;
+    padding-left: 0;
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+  
+  .welcome-content {
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .welcome-panel .ant-card-body {
+    padding: 16px;
+  }
+  
+  .welcome-greeting {
+    font-size: 1.25rem;
+  }
+  
+  .welcome-context {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .welcome-panel .ant-card-body {
+    padding: 12px;
+  }
+  
+  .welcome-greeting {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,58 @@
+/**
+ * Estilos para el componente TimeRangeFilter
+ */
+
+.time-range-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.range-radio-group .ant-radio-button-wrapper {
+  border-radius: 6px;
+  margin-right: 5px;
+}
+
+.range-radio-group .ant-radio-button-wrapper:first-child {
+  border-radius: 6px 6px 6px 6px;
+}
+
+.range-radio-group .ant-radio-button-wrapper:last-child {
+  border-radius: 6px 6px 6px 6px;
+  margin-right: 0;
+}
+
+.custom-range-picker .ant-picker {
+  border-radius: 6px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .time-range-filter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .custom-range-picker {
+    width: 100%;
+  }
+  
+  .custom-range-picker .ant-picker {
+    width: 100%;
+  }
+}
+
+/* Estilos para los botones activos */
+.range-radio-group .ant-radio-button-wrapper-checked {
+  background-color: var(--primary-color, #1890ff);
+  border-color: var(--primary-color, #1890ff);
+  box-shadow: 0 2px 6px rgba(24, 144, 255, 0.2);
+}
+
+/* Hover effect */
+.range-radio-group .ant-radio-button-wrapper:hover {
+  color: var(--primary-color, #1890ff);
+}

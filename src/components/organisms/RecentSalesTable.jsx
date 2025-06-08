@@ -1,0 +1,252 @@
+/**
+ * @fileoverview Componente de tabla para mostrar las ventas más recientes
+ */
+import React, { useState, useEffect } from 'react';
+import { Card, Table, Tag, Tooltip, Badge, Typography, Button } from 'antd';
+import { 
+  ShoppingCartOutlined
+} from '@ant-design/icons';
+import { useVentas } from '../../context/VentasContext';
+import { formatCurrency } from '../../utils/formatters';
+import '../../styles/components/organisms/RecentSalesTable.css';
+
+const { Text } = Typography;
+
+/**
+ * Componente que muestra una tabla con las ventas más recientes
+ * @param {Object} props - Propiedades del componente
+ * @returns {JSX.Element} Tabla de ventas recientes
+ */
+const RecentSalesTable = ({ 
+  timeRange,
+  limit = 5, 
+  onViewDetail
+}) => {
+  const { ventas } = useVentas();
+  const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!ventas || ventas.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    // Filtrar por rango de tiempo
+    let ventasFiltradas = ventas.filter(venta => {
+      if (!venta.fechaHora) {
+        console.log('Venta sin fecha:', venta);
+        return false;
+      }
+      
+      // Validar que timeRange y sus propiedades existan
+      if (!timeRange || !timeRange.startDate || !timeRange.endDate) {
+        console.log('timeRange incompleto, incluyendo todas las ventas');
+        return true;
+      }
+      
+      try {
+        const fechaVenta = new Date(venta.fechaHora);
+        const startDate = new Date(timeRange.startDate);
+        const endDate = new Date(timeRange.endDate);
+        
+        // Incluir ventas dentro del rango (incluyendo los límites)
+        return fechaVenta >= startDate && fechaVenta <= endDate;
+      } catch (error) {
+        console.error('Error al procesar fecha:', venta.fechaHora, error);
+        return false;
+      }
+    });
+
+    // Ordenar por fecha descendente (más recientes primero)
+    ventasFiltradas.sort((a, b) => {
+      try {
+        const fechaA = new Date(a.fechaHora);
+        const fechaB = new Date(b.fechaHora);
+        // Asegurar que las ventas más recientes aparecen primero (orden descendente)
+        return fechaB.getTime() - fechaA.getTime();
+      } catch (error) {
+        console.error('Error al ordenar ventas por fecha:', error);
+        return 0;
+      }
+    });
+    
+    console.log('Ventas ordenadas por fecha (las más recientes primero):', 
+      ventasFiltradas.map(v => ({ id: v.id, fecha: v.fechaHora })));
+
+    // Limitar a la cantidad especificada
+    ventasFiltradas = ventasFiltradas.slice(0, limit);
+
+    // Procesar datos para la tabla
+    const ventasFormateadas = ventasFiltradas.map((venta, index) => {
+      // Calcular cantidad de productos
+      const cantidadProductos = venta.productos?.reduce((sum, item) => sum + item.cantidad, 0) || 0;
+      
+      // Formatear fecha
+      const fechaVenta = new Date(venta.fechaHora);
+      const fechaFormateada = fechaVenta.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      });
+      const horaFormateada = fechaVenta.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      return {
+        key: venta.id || `venta-${index}`,
+        id: venta.id || `#${index + 1}`,
+        vendedor: venta.vendedor,
+        fecha: fechaVenta,
+        fechaFormateada,
+        horaFormateada,
+        monto: venta.monto || 0,
+        estado: venta.estado || 'completada',
+        tipoPago: venta.tipoPago || 'efectivo',
+        cantidadProductos,
+        productos: venta.productos || []
+      };
+    });
+
+    setDataSource(ventasFormateadas);
+    setLoading(false);
+  }, [ventas, timeRange, limit]);
+
+  /**
+   * Renderiza el tipo de pago
+   * @param {string} tipo - Tipo de pago
+   * @returns {JSX.Element} Etiqueta con el tipo de pago formateado
+   */
+  const renderTipoPago = (tipo) => {
+    const tipoLower = tipo.toLowerCase();
+    let color;
+
+    switch (tipoLower) {
+      case 'efectivo':
+        color = 'green';
+        break;
+      case 'debito':
+        color = 'blue';
+        break;
+      case 'credito':
+        color = 'orange';
+        break;
+      default:
+        color = 'default';
+    }
+
+    return <Tag color={color}>{tipo.charAt(0).toUpperCase() + tipo.slice(1)}</Tag>;
+  };
+
+  /**
+   * Renderiza la cantidad de productos
+   * @param {number} cantidad - Cantidad de productos
+   * @returns {JSX.Element} Badge con la cantidad
+   */
+  const renderCantidadProductos = (cantidad) => {
+    return cantidad > 0 ? <Badge count={cantidad} overflowCount={99} /> : <Text type="secondary">0</Text>;
+  };
+
+  const columns = [
+    {
+      title: 'ID Venta',
+      dataIndex: 'id',
+      key: 'id',
+      width: 80,
+      render: (id) => <Text strong>{id}</Text>
+    },
+    {
+      title: 'Vendedor',
+      dataIndex: 'vendedor',
+      key: 'vendedor',
+      render: (vendedor) => <Text strong>{vendedor}</Text>
+    },
+    {
+      title: 'Fecha',
+      dataIndex: 'fechaFormateada',
+      key: 'fecha',
+      render: (fechaFormateada, record) => {
+        // Verificar si tenemos los datos formateados
+        if (!fechaFormateada || !record.horaFormateada) {
+          return <Typography.Text type="secondary">No disponible</Typography.Text>;
+        }
+        
+        return (
+          <Tooltip title={`${fechaFormateada} a las ${record.horaFormateada}`}>
+            <div>
+              <div>{fechaFormateada}</div>
+              <Typography.Text type="secondary">{record.horaFormateada}</Typography.Text>
+            </div>
+          </Tooltip>
+        );
+      },
+      sorter: (a, b) => {
+        try {
+          return new Date(a.fecha) - new Date(b.fecha);
+        } catch (error) {
+          return 0;
+        }
+      }
+    },
+    {
+      title: 'Monto',
+      dataIndex: 'monto',
+      key: 'monto',
+      align: 'right',
+      render: (monto) => <Text strong>{formatCurrency(monto)}</Text>,
+      sorter: (a, b) => a.monto - b.monto
+    },
+    {
+      title: 'Productos',
+      dataIndex: 'cantidadProductos',
+      key: 'cantidadProductos',
+      align: 'center',
+      render: renderCantidadProductos
+    },
+    {
+      title: 'Pago',
+      dataIndex: 'tipoPago',
+      key: 'tipoPago',
+      render: renderTipoPago
+    }
+  ];
+
+  const extra = (
+    <Button 
+      type="link" 
+      onClick={() => onViewDetail && onViewDetail({type: 'all'})}
+      className="view-all-button"
+    >
+      Ver todas
+    </Button>
+  );
+
+  return (
+    <Card
+      title="Ventas Recientes"
+      className="recent-sales-table-card"
+      extra={extra}
+      style={{ height: "430px" }}
+    >
+      <Table
+        dataSource={dataSource}
+        loading={loading}
+        pagination={false}
+        columns={columns}
+        size="small"
+        className="recent-sales-table"
+        locale={{
+          emptyText: (
+            <div style={{ padding: '20px 0' }}>
+              <ShoppingCartOutlined style={{ fontSize: '32px', color: '#bfbfbf', display: 'block', marginBottom: '8px' }} />
+              <p>No hay ventas recientes en el período seleccionado</p>
+            </div>
+          )
+        }}
+      />
+    </Card>
+  );
+};
+
+export default RecentSalesTable;
