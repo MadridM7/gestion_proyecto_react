@@ -4,8 +4,8 @@
 
 .floating-button-container {
   position: fixed;
-  bottom: 40px;
-  right: 24px;
+  bottom: 0px;
+  right: 0px;
   z-index: 1000;
 }
 

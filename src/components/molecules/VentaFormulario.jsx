@@ -8,18 +8,17 @@ import {
   InputNumber, 
   Select,
   Table,
-  Button,
+  Button
 } from 'antd';
 import {
   ShoppingOutlined,
   PlusOutlined,
   DeleteOutlined,
   DollarOutlined,
-  CreditCardOutlined,
-  UserOutlined
+  CreditCardOutlined
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
-import { useUsuarios } from '../../context/UsuariosContext';
+import { useAuth } from '../../context/AuthContext';
 import { useProductos } from '../../context/ProductosContext';
 import '../../styles/components/molecules/VentaFormulario.css';
 
@@ -40,8 +39,8 @@ const VentaFormulario = ({
   const [productQuantity, setProductQuantity] = useState(1);
   const [selectedProductId, setSelectedProductId] = useState(null);
   
-  // Obtener usuarios y productos del contexto
-  const { usuarios } = useUsuarios();
+  // Obtener el usuario autenticado y productos del contexto
+  const { usuario } = useAuth();
   const { productos } = useProductos();
   
   // Función para generar un ID único
@@ -67,17 +66,10 @@ const VentaFormulario = ({
     { value: 'credito', label: 'Crédito' }
   ];
   
-  // Preparar lista de vendedores desde el contexto de usuarios con useMemo
-  const vendedores = useMemo(() => {
-    return usuarios
-      ? usuarios
-          .filter(usuario => usuario.activo) // Solo usuarios activos
-          .map(usuario => ({
-            value: usuario.nombre,
-            label: usuario.nombre
-          }))
-      : [];
-  }, [usuarios]);
+  // Obtener el nombre del usuario autenticado para la venta
+  const nombreVendedor = useMemo(() => {
+    return usuario ? usuario.nombre : '';
+  }, [usuario]);
   
   // Preparar lista de productos para el selector
   const productOptions = useMemo(() => {
@@ -188,13 +180,13 @@ const VentaFormulario = ({
       form.setFieldsValue({
         id: generateId(),
         tipoPago: 'efectivo',
-        vendedor: vendedores.length > 0 ? vendedores[0].value : '',
+        vendedor: nombreVendedor,
         monto: 0,
         productos: []
       });
       setSelectedProducts([]);
     }
-  }, [editingVenta, form, generateId, vendedores, calcularTotalProductos]);
+  }, [editingVenta, form, generateId, nombreVendedor, calcularTotalProductos]);
   
   // Columnas para la tabla de productos seleccionados (versión simplificada)
   const productColumns = [
@@ -299,22 +291,12 @@ const VentaFormulario = ({
         </Select>
       </Form.Item>
       
-      {/* Nombre del usuario (vendedor) */}
+      {/* Campo oculto para el vendedor (usuario logueado) */}
       <Form.Item
         name="vendedor"
-        label="Nombre del usuario"
-        rules={[{ required: true, message: 'Por favor selecciona el usuario' }]}
+        hidden
       >
-        <Select 
-          placeholder="Selecciona el usuario"
-          suffixIcon={<UserOutlined />}
-          showSearch
-          optionFilterProp="children"
-        >
-          {vendedores.map(vendedor => (
-            <Option key={vendedor.value} value={vendedor.value}>{vendedor.label}</Option>
-          ))}
-        </Select>
+        <Input />
       </Form.Item>
       
       {/* Sección de selección de productos */}

@@ -24,6 +24,9 @@ import { AuthProvider } from './context/AuthContext.jsx';
 // Importar páginas críticas (carga inmediata)
 import Login from './pages/Login.jsx';
 
+// Importar componente para gestionar el título de la página
+import PageTitle from './components/atoms/PageTitle.jsx';
+
 // Importar páginas con carga diferida (lazy loading)
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 const Ventas = lazy(() => import('./pages/Ventas.jsx'));
@@ -78,7 +81,8 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   return (
     <Suspense fallback={
       <div className="loading-container">
-        <Spin size="large" tip="Cargando..." />
+        <Spin size="large" />
+        <div style={{ marginTop: '10px' }}>Cargando...</div>
       </div>
     }>
       {children}
@@ -89,13 +93,15 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 function App() {
   return (
     <ConfigProvider locale={esES}>
-      <VentasProvider>
-        <UsuariosProvider>
-          <ProductosProvider>
-            <PedidosProvider>
-              <AuthProvider>
-              <Router>
-                <Routes>
+      <Router>
+        {/* Componente para actualizar el título de la página según la ruta */}
+        <PageTitle defaultTitle="Sistema de Gestión" />
+        <VentasProvider>
+          <UsuariosProvider>
+            <ProductosProvider>
+              <PedidosProvider>
+                <AuthProvider>
+                  <Routes>
                   {/* Ruta de login pública */}
                   <Route path="/login" element={<Login />} />
                   
@@ -165,12 +171,12 @@ function App() {
                     })()
                   } />
                 </Routes>
-              </Router>
-              </AuthProvider>
-            </PedidosProvider>
-          </ProductosProvider>
-        </UsuariosProvider>
-      </VentasProvider>
+                </AuthProvider>
+              </PedidosProvider>
+            </ProductosProvider>
+          </UsuariosProvider>
+        </VentasProvider>
+      </Router>
     </ConfigProvider>
   );
 }
