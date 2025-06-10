@@ -42,6 +42,10 @@ class DataPoller {
     // Guardar el callback
     this.callbacks[dataType] = callback;
     
+    // Configurar listener para eventos personalizados de actualización de datos
+    // para evitar recargas durante operaciones CRUD
+    this.setupEventListener(dataType);
+    
     // Iniciar el polling si no está ya iniciado
     if (!this.pollingIntervals[dataType]) {
       console.log(`Iniciando polling para ${dataType} cada ${pollingInterval}ms`);
@@ -69,6 +73,43 @@ class DataPoller {
       this.pollingIntervals[dataType] = requestAnimationFrame(checkTime);
     }
   }
+  
+  /**
+   * Configura un listener para eventos personalizados de actualización de datos
+   * Esta función ayuda a evitar recargas durante operaciones CRUD
+   * @param {string} dataType - Tipo de datos (ventas, productos, usuarios)
+   */
+  setupEventListener(dataType) {
+    // Verificar si ya existe un listener para este tipo de datos
+    if (this[`eventListener_${dataType}`]) {
+      return;
+    }
+    
+    // Crear función de listener
+    const handleUpdateEvent = (event) => {
+      const { type, data } = event.detail;
+      
+      // Verificar si el evento es para este tipo de datos
+      if (type === dataType && data) {
+        // Actualizar los últimos datos conocidos
+        this.lastData[dataType] = JSON.parse(JSON.stringify(data));
+        
+        // Llamar al callback si existe
+        if (this.callbacks[dataType]) {
+          // Envolver en setTimeout para evitar bloquear el hilo principal
+          setTimeout(() => {
+            this.callbacks[dataType](data);
+          }, 0);
+        }
+      }
+    };
+    
+    // Guardar referencia al listener para poder eliminarlo después
+    this[`eventListener_${dataType}`] = handleUpdateEvent;
+    
+    // Añadir listener al evento personalizado
+    window.addEventListener('dataPoller:update', handleUpdateEvent);
+  }
 
   /**
    * Detiene el polling para un tipo de datos específico
@@ -82,6 +123,12 @@ class DataPoller {
       cancelAnimationFrame(this.pollingIntervals[dataType]);
       delete this.pollingIntervals[dataType];
       delete this.callbacks[dataType];
+      
+      // Eliminar el event listener si existe
+      if (this[`eventListener_${dataType}`]) {
+        window.removeEventListener('dataPoller:update', this[`eventListener_${dataType}`]);
+        delete this[`eventListener_${dataType}`];
+      }
     }
   }
 
@@ -92,6 +139,17 @@ class DataPoller {
     // Detener todos los pollings silenciosamente
     Object.keys(this.pollingIntervals).forEach(dataType => {
       this.stopPolling(dataType);
+    });
+    
+    // Limpiar todos los listeners restantes
+    Object.keys(this).forEach(key => {
+      if (key.startsWith('eventListener_')) {
+        // No necesitamos almacenar dataType ya que solo usamos this[key]
+        if (this[key]) {
+          window.removeEventListener('dataPoller:update', this[key]);
+          delete this[key];
+        }
+      }
     });
   }
 

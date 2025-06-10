@@ -4,7 +4,7 @@
  */
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ConfigProvider, Spin } from 'antd';
+import { ConfigProvider } from 'antd';
 import esES from 'antd/lib/locale/es_ES';
 
 // Importar estilos
@@ -77,14 +77,9 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     }
   }
   
-  // Envolver el componente en Suspense para manejar la carga diferida
+  // Envolver el componente en Suspense para manejar la carga diferida sin mostrar spinner
   return (
-    <Suspense fallback={
-      <div className="loading-container">
-        <Spin size="large" />
-        <div style={{ marginTop: '10px' }}>Cargando...</div>
-      </div>
-    }>
+    <Suspense fallback={<></>}>
       {children}
     </Suspense>
   );

@@ -34,6 +34,11 @@ async function fetchWithCache(url, options = {}, useCache = true, cacheKey = nul
   if (isCacheEnabled && (!options.method || options.method === 'GET')) {
     const cachedData = cacheService.get(key);
     if (cachedData) {
+      // Devolver inmediatamente los datos en caché pero programar una actualización en segundo plano
+      // para mantener los datos frescos sin bloquear la UI
+      setTimeout(() => {
+        refreshCachedData(url, options, key, endpoint);
+      }, 0);
       return cachedData;
     }
   }
@@ -46,7 +51,10 @@ async function fetchWithCache(url, options = {}, useCache = true, cacheKey = nul
       keepalive: true, // Mantener la conexión viva incluso si la página cambia
       headers: {
         ...options.headers,
-        'X-Requested-With': 'XMLHttpRequest' // Indicar que es una solicitud AJAX
+        'X-Requested-With': 'XMLHttpRequest', // Indicar que es una solicitud AJAX
+        'Cache-Control': 'no-cache, no-store, must-revalidate', // Prevenir caché del navegador
+        'Pragma': 'no-cache',
+        'Expires': '0'
       }
     };
     
@@ -64,13 +72,61 @@ async function fetchWithCache(url, options = {}, useCache = true, cacheKey = nul
     } else if (options.method && options.method !== 'GET') {
       // Si es una solicitud de modificación, invalidar el caché relacionado
       // pero no eliminar completamente, solo marcar como expirado
-      cacheService.invalidate(`/${endpoint}`);
+      cacheService.invalidate(`/${endpoint}`, true); // Invalidar todas las entradas relacionadas
+      
+      // Actualizar los datos en caché sin recargar la página
+      const normalizedUrl = `/${endpoint}`;
+      setTimeout(() => {
+        refreshCachedData(normalizedUrl, { method: 'GET' }, cacheService.generateKey(normalizedUrl, {}), endpoint);
+      }, 100); // Pequeño retraso para dar tiempo a que se complete la operación en el servidor
     }
     
     return data;
   } catch (error) {
     console.error(`Error en fetchWithCache: ${error.message}`);
     throw error;
+  }
+}
+
+/**
+ * Actualiza los datos en caché en segundo plano sin bloquear la UI
+ * @param {string} url - URL de la solicitud
+ * @param {Object} options - Opciones de fetch
+ * @param {string} cacheKey - Clave de caché
+ * @param {string} endpoint - Tipo de datos (ventas, productos, etc.)
+ */
+async function refreshCachedData(url, options, cacheKey, endpoint) {
+  try {
+    const fetchOptions = {
+      ...options,
+      keepalive: true,
+      headers: {
+        ...options.headers,
+        'X-Requested-With': 'XMLHttpRequest',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    };
+    
+    const response = await fetch(`${API_URL}${url}`, fetchOptions);
+    
+    if (!response.ok) return;
+    
+    const data = await response.json();
+    
+    // Actualizar el caché sin notificar a los componentes
+    cacheService.set(cacheKey, data);
+    
+    // Notificar al dataPoller que hay datos nuevos disponibles
+    // usando un evento personalizado para evitar recargas
+    const event = new CustomEvent('dataPoller:update', { 
+      detail: { type: endpoint, data } 
+    });
+    window.dispatchEvent(event);
+  } catch (error) {
+    // Ignorar errores en actualización en segundo plano
+    console.warn(`Error en actualización en segundo plano: ${error.message}`);
   }
 }
 
