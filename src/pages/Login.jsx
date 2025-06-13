@@ -2,7 +2,7 @@
  * @fileoverview Página de inicio de sesión para la aplicación
  * Implementada siguiendo la metodología Atomic Design
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Typography, message, Spin, Row, Col } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useUsuarios } from '../context/UsuariosContext';
@@ -18,8 +18,23 @@ const { Title, Text, Paragraph } = Typography;
 const Login = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { usuarios } = useUsuarios();
   const { login } = useAuth();
+  
+  // Detectar si es dispositivo móvil
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   /**
    * Maneja el envío del formulario de inicio de sesión
@@ -64,8 +79,22 @@ const Login = () => {
   
   return (
     <div className="login-container">
+      {isMobile && (
+        <div className="mobile-background">
+          <div className="stars"></div>
+          <div className="moon"></div>
+          <div className="mountains"></div>
+          <div className="clouds"></div>
+          <div className="mobile-footer">
+            <Text className="mobile-footer-text">
+              © {new Date().getFullYear()} Ventrack
+            </Text>
+          </div>
+        </div>
+      )}
+      
       <Row className="login-row">
-        {/* Lado izquierdo - Ilustración */}
+        {/* Lado izquierdo - Ilustración (visible solo en desktop) */}
         <Col xs={0} sm={0} md={12} lg={12} xl={12} className="login-illustration-col">
           <div className="login-illustration">
             <div className="login-illustration-content">
@@ -88,7 +117,7 @@ const Login = () => {
           </div>
         </Col>
         
-        {/* Lado derecho - Formulario */}
+        {/* Formulario (adaptado según el dispositivo) */}
         <Col xs={24} sm={24} md={12} lg={12} xl={12} className="login-form-col">
           <div className="login-form-container" data-year={new Date().getFullYear()}>
             <div className="login-header">

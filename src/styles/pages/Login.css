@@ -239,131 +239,196 @@
 /* Estilos para dispositivos móviles */
 @media (max-width: 768px) {
   .login-container {
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
-    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    position: relative;
+  }
+  
+  /* Fondo para móvil */
+  .mobile-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+    z-index: 1;
+    overflow: hidden;
+  }
+  
+  .mobile-background .stars,
+  .mobile-background .moon,
+  .mobile-background .mountains,
+  .mobile-background .clouds {
+    position: absolute;
+  }
+  
+  .mobile-background .moon {
+    width: 80px;
+    height: 80px;
+    top: 15%;
+    left: 15%;
+  }
+  
+  .mobile-background .mountains {
+    bottom: 0;
+    height: 40%;
+  }
+  
+  .mobile-footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+  }
+  
+  .mobile-footer-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
   
   .login-row {
+    flex-direction: column;
     height: 100vh;
+    position: relative;
+    z-index: 2;
   }
   
+  .login-illustration-content {
+    padding: 1rem;
+    height: 100%;
+  }
+  
+  .login-illustration-text {
+    margin-top: 15%;
+  }
+  
+  .illustration-title {
+    font-size: 20px !important;
+  }
+  
+  .illustration-subtitle {
+    font-size: 14px;
+  }
+  
+  /* Ajustes para los elementos decorativos */
+  .moon {
+    width: 80px;
+    height: 80px;
+    top: 15%;
+    left: 15%;
+  }
+  
+  .mountains {
+    height: 40%;
+  }
+  
+  /* Estilo para la columna del formulario en móvil - superpuesto sobre la ilustración */
   .login-form-col {
+    position: relative;
+    order: 2;
+    z-index: 10;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
     padding: 0;
-  }
-  
-  .login-form-container {
-    width: 90%;
-    max-width: 400px;
-    background-color: white;
-    border-radius: 16px;
-    padding: 30px 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    position: relative;
-    z-index: 1;
-  }
-  
-  /* Logo para móviles */
-  .login-form-col::before {
-    content: '📊'; /* Emoji de gráfico 📊 */
-    font-size: 48px;
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  }
-  
-  /* Título de la app para móviles */
-  .login-form-col::after {
-    content: 'VenTrack';
-    font-size: 32px;
-    font-weight: bold;
-    color: white;
-    position: absolute;
-    top: calc(15% + 60px);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background-color: transparent;
   }
   
   .login-title {
     font-size: 24px !important;
     margin-bottom: 8px !important;
-    text-align: center;
   }
   
   .login-subtitle {
     font-size: 14px !important;
-    margin-bottom: 24px !important;
-    text-align: center;
+    margin-bottom: 16px !important;
   }
   
   .login-form {
-    margin-top: 15px;
+    margin-top: 10px;
   }
   
   .login-button {
-    height: 48px;
+    height: 45px;
     font-size: 16px;
     border-radius: 8px;
   }
   
-  /* Estrellas animadas para el fondo */
-  @keyframes twinkle {
-    0% { opacity: 0.3; }
-    50% { opacity: 1; }
-    100% { opacity: 0.3; }
+  .login-title {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
   }
   
-  .login-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255, 255, 255, 0.2) 2px, transparent 2px),
-      radial-gradient(circle, rgba(255, 255, 255, 0.1) 3px, transparent 3px);
-    background-size: 100px 100px, 200px 200px, 300px 300px;
-    background-position: 0 0, 40px 60px, 130px 270px;
-    z-index: 0;
-    animation: twinkle 4s infinite alternate;
+  .login-subtitle {
+    font-size: 14px !important;
+    margin-bottom: 16px !important;
   }
   
-  /* Agregar copyright al final */
-  .login-form-container::after {
-    content: '© ' attr(data-year) ' Ventrack';
-    position: absolute;
-    bottom: -30px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 12px;
+  .login-form {
+    margin-top: 10px;
   }
-}
-
-@media (max-width: 768px) {
+  
+  .login-button {
+    height: 45px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  /* Ajustes para el formulario - panel flotante sobre la ilustración */
   .login-form-container {
-    padding: 1rem;
-    max-width: 100%;
+    width: 90%;
+    max-width: 350px;
+    padding: 25px 20px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
   
   .login-header {
+    margin-bottom: 1.5rem;
     text-align: center;
   }
   
-  .login-form-col {
-    padding: 1rem;
+  /* Footer para móvil */
+  .login-illustration-footer {
+    bottom: 20px;
+    width: 100%;
+    position: absolute;
+  }
+  
+  /* Ocultar el footer del contenedor del formulario en móvil */
+  .login-form-container::after {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-form-container {
+    width: 92%;
+    padding: 20px 15px;
+  }
+  
+  .login-title {
+    font-size: 22px !important;
+  }
+  
+  .login-subtitle {
+    font-size: 13px !important;
+  }
+  
+  .moon {
+    width: 60px;
+    height: 60px;
+    top: 10%;
+    left: 10%;
+  }
+  
+  .login-illustration-text {
+    margin-top: 10%;
   }
 }
